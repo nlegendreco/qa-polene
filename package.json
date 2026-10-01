@@ -1,0 +1,24 @@
+{
+  "name": "polene-qa",
+  "version": "1.0.0",
+  "description": "QA automatisée Polène (Playwright)",
+  "scripts": {
+    "test": "playwright test",
+    "test:prod": "QA_ENVS=prod playwright test",
+    "test:preprod": "QA_ENVS=preprod playwright test",
+    "test:demo-echec": "DEMO_ECHEC=1 QA_ENVS=prod PLAYWRIGHT_HTML_OUTPUT_DIR=playwright-report-demo-echec playwright test --grep @demo-echec --project \"prod · desktop-chrome\" --project \"prod · iphone\" --output test-results-demo-echec",
+    "rapport": "playwright show-report",
+    "typecheck": "tsc",
+    "rapport:demo-echec": "playwright show-report playwright-report-demo-echec"
+  },
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^26.6.3",
+    "dotenv": "^18.0.5",
+    "typescript": "^7.0.2"
+  },
+  "private": true
+}

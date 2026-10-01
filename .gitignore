@@ -1,0 +1,8 @@
+node_modules/
+test-results/
+playwright-report/
+.auth/
+.env
+.DS_Store
+playwright-report-demo-echec/
+test-results-demo-echec/
