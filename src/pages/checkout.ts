@@ -1,8 +1,10 @@
-import { expect, type Page } from '@playwright/test';
+import { expect, type Page, type Response } from '@playwright/test';
 import { formatCents, parsePriceToCents } from '../price';
 
 export interface TestBuyer {
   email: string;
+  /** Réponse au questionnaire « Comment avez-vous connu Polène Paris ? » de la page de confirmation. */
+  acquisitionSource: string;
   civility: 'M.' | 'Mme' | 'Mx';
   firstName: string;
   lastName: string;
@@ -108,6 +110,49 @@ export class CheckoutPage {
     const nameFrame = this.page.frameLocator('iframe[name^="card-fields-name"]');
     await nameFrame.getByRole('textbox').fill(card.name);
     await this.page.getByRole('button', { name: /^(Payer maintenant|Pay now|Complete order)$/i }).click();
+  }
+
+  /** Version visible du questionnaire (la page en contient deux : desktop et mobile). */
+  get acquisitionSurvey() {
+    return this.page.locator('form, section, div')
+      .filter({ hasText: /Comment avez-vous connu Polène|How did you hear about/i })
+      .filter({ has: this.page.getByRole('radio').filter({ visible: true }) })
+      .filter({ visible: true })
+      .last();
+  }
+
+  /**
+   * Répond au questionnaire de la page de confirmation.
+   * L'ordre des réponses change à chaque affichage : on choisit par libellé.
+   */
+  async answerAcquisitionSurvey(source: string) {
+    const survey = this.acquisitionSurvey;
+    await expect(survey, 'Le questionnaire « Comment avez-vous connu Polène Paris ? » doit être affiché').toBeVisible({ timeout: 20_000 });
+    // Le questionnaire existe en double dans la page (version desktop + version mobile masquée), avec les mêmes
+    // identifiants : cliquer sur le libellé coche le bouton de la version masquée. On coche donc directement
+    // le bouton radio de la version visible.
+    const escaped = source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const option = survey.locator('div, label').filter({ has: this.page.getByRole('radio') })
+      .filter({ hasText: new RegExp(`^\\s*${escaped}\\s*$`, 'i') }).last();
+    const radio = option.getByRole('radio').filter({ visible: true });
+    await radio.check();
+    await expect(radio, `La réponse « ${source} » doit être cochée`).toBeChecked();
+
+    // Preuve d'envoi : l'extension « source-survey » poste la réponse sur /api/checkout/order-source
+    // (serveur de l'app checkout Polène). L'extension enregistre le choix de façon asynchrone :
+    // si le clic sur « Envoyer » arrive trop tôt, rien ne part. On renvoie alors, jusqu'à 3 fois.
+    const submit = survey.getByRole('button', { name: /^(Envoyer|Submit|Send)$/i });
+    let response: Response | null = null;
+    for (let attempt = 1; attempt <= 3 && !response; attempt++) {
+      const saved = this.page.context().waitForEvent('response', {
+        predicate: r => r.url().includes('/api/checkout/order-source'),
+        timeout: 5_000,
+      }).catch(() => null);
+      if (await submit.isVisible()) await submit.click();
+      response = await saved;
+    }
+    expect(response, 'Aucune réponse du questionnaire n\'a été envoyée au serveur (requête /api/checkout/order-source absente après 3 essais)').not.toBeNull();
+    expect(response!.ok(), `L'enregistrement de la réponse a échoué (statut HTTP ${response!.status()})`).toBe(true);
   }
 
   /** Attend la page de confirmation et renvoie le numéro de confirmation affiché. */

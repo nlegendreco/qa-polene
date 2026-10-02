@@ -20,6 +20,21 @@ On commence petit : un POC qui prouve deux choses (un parcours testé automatiqu
 
 Légende des intervenants : **QA**, **Claude Code**, **Devs**, **Équipe** (QA + devs + PO).
 
+## Avancement
+
+> Mis à jour le 1er octobre 2026.
+
+| Étape | Statut | Détail |
+| --- | --- | --- |
+| 1.1 Préparer le dossier | ✅ Fait | Projet dans `~/Developer/qa`, dépôt GitHub `nlegendreco/qa-polene` |
+| 1.2 Configurer les 4 appareils | ✅ Fait | Desktop Chrome, desktop Safari, iPhone 15, Pixel 7 |
+| 1.3 Neutraliser ce qui perturbe | ✅ Fait | Bandeau cookies, AB Tasty, Klaviyo, pixels publicitaires. Popup de géolocalisation pas encore rencontrée depuis la France |
+| 1.4 Parcours d'achat nominal | ✅ Fait | 8/8 : prod jusqu'au checkout, préprod jusqu'à la confirmation de commande |
+| 1.5 Rapport | ✅ Fait | Étapes en français, capture par étape, vidéo, trace et requêtes lentes en cas d'échec |
+| 1.6 Échec volontaire | 🟡 À juger | Démo prête (`npm run test:demo-echec`), avis de la QA attendu |
+| Profil client P1 | ✅ Fait | 60 rue du Louvre, 01 99 00 00 00, questionnaire « Bouche à oreille » enregistré (commande VVGWK0PJK) |
+| POC 2 | ⚪ Pas commencé | |
+
 ## Ce qui est déjà acté
 
 - La référence, c'est la prod [polene-paris.com](https://www.polene-paris.com/) (pas de spécifications écrites).
@@ -295,6 +310,18 @@ Si l'émulation laisse passer des bugs Safari iOS : lot court sur TestMu AI ou B
 Lighthouse CI sur home, collection et fiche produit, avec un seuil minimum.
 
 ---
+
+## Pistes gardées pour plus tard
+
+### Tester automatiquement les emails
+
+Objectif : vérifier les emails envoyés aux clients (confirmation de commande et d'expédition, « Être prévenu(e) », coming soon, newsletter, compte client) : réception, contenu (numéro de commande, produit, total, langue, liens) et rendu visuel mobile et desktop.
+
+- **Pas d'outil local de capture d'emails** (Mailpit, MailHog) : c'est Shopify qui envoie, depuis ses serveurs, vers de vraies adresses.
+- **Constituer une collection d'emails au fil des tests** : enregistrer en `.eml` les emails reçus sur l'adresse `+qautomatic` (notifications test Shopify, vraies commandes préprod), dans un dossier `emails/` exclu de Git. Un test pourra les relire pour vérifier leur contenu et leur rendu, sans boîte de test.
+- **Notifications test Shopify** : Paramètres → Notifications → « Envoyer une notification test », pour recevoir chaque template sans passer de commande.
+- **Boîte de test lisible par API** quand on automatise la réception : testmail.app (adresse par tag, à partir de 9 $) ou Mailosaur (essai gratuit 14 jours, puis 9 à 79 $/mois). Une adresse par profil client.
+- **Lire la boîte pro** : la messagerie est sur Microsoft 365, ce qui demande une autorisation du service informatique. Non retenu pour l'instant.
 
 ## À décider plus tard
 

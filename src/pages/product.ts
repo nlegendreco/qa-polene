@@ -19,7 +19,9 @@ export class ProductPage {
   }
 
   get addToCartButton() {
-    return this.main.getByRole('button', { name: /^(Ajouter au panier|Add to (cart|bag))$/i });
+    // Libellé seul ("Ajouter au panier") ou suivi du nom du produit ("Add to cart - Numéro Un Nano - …").
+    // On exclut le bouton collant qui affiche aussi le prix ("Add to cart €423,95").
+    return this.main.getByRole('button', { name: /^(Ajouter au panier|Add to (cart|bag))( - .+)?$/i });
   }
 
   get cartNotification() {

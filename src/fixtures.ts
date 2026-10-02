@@ -30,7 +30,9 @@ function isBlocked(url: URL): boolean {
 export async function etape<T>(page: Page, testInfo: TestInfo, name: string, body: () => Promise<T>): Promise<T> {
   return base.step(name, async () => {
     const result = await body();
-    await testInfo.attach(`📸 ${name}`, { body: await page.screenshot(), contentType: 'image/png' });
+    // Pas de point dans le nom : Playwright prendrait la suite ("8. Payer…") pour une extension de fichier
+    // et l'image ne s'afficherait pas dans certains navigateurs.
+    await testInfo.attach(`📸 ${name.replace(/\./g, '')}`, { body: await page.screenshot(), contentType: 'image/png' });
     return result;
   }, { box: true });
 }

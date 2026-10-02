@@ -5,6 +5,7 @@ import { ProductPage, type ProductData } from '../src/pages/product';
 import { CartPage } from '../src/pages/cart';
 import { CheckoutPage } from '../src/pages/checkout';
 import { formatCents } from '../src/price';
+import { loadClientTest } from '../src/client-test';
 
 /**
  * Parcours d'achat nominal : un visiteur arrive sur la home, va dans une collection,
@@ -69,17 +70,10 @@ test('Parcours d\'achat nominal @smoke @tnr', async ({ page, qaEnv, isMobile }, 
     return;
   }
 
+  const client = loadClientTest();
+
   await etape(page, testInfo, '7. Renseigner contact et adresse de livraison', async () => {
-    await checkout.fillContactAndAddress({
-      email: process.env.PREPROD_EMAIL ?? 'qa+preprod@polene-paris.com',
-      civility: 'Mme',
-      firstName: 'QA',
-      lastName: 'Automatisée',
-      address: '69 rue de Richelieu',
-      postalCode: '75002',
-      city: 'Paris',
-      phone: '0612345678',
-    });
+    await checkout.fillContactAndAddress(client);
     await checkout.expectShippingMethodsOffered();
   });
 
@@ -95,5 +89,10 @@ test('Parcours d\'achat nominal @smoke @tnr', async ({ page, qaEnv, isMobile }, 
   await etape(page, testInfo, '9. Vérifier la confirmation de commande', async () => {
     const confirmation = await checkout.expectOrderConfirmed();
     testInfo.annotations.push({ type: 'Commande de test', description: `Confirmation n° ${confirmation}` });
+  });
+
+  await etape(page, testInfo, '10. Répondre au questionnaire « Comment avez-vous connu Polène Paris ? »', async () => {
+    await checkout.answerAcquisitionSurvey(client.acquisitionSource);
+    testInfo.annotations.push({ type: 'Source d\'acquisition', description: client.acquisitionSource });
   });
 });

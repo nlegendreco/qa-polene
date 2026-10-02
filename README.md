@@ -39,9 +39,11 @@ Pour regarder le navigateur pendant le test : ajouter `--headed`.
 7. *Préprod uniquement* : contact (civilité, prénom, nom, email) et adresse, modes d'expédition proposés. Les cases newsletter et SMS, pré-cochées, sont décochées.
 8. *Préprod uniquement* : paiement avec la carte de test Shopify Payments (4242 4242 4242 4242).
 9. *Préprod uniquement* : page de confirmation de commande. Le numéro de confirmation est noté dans le rapport.
+10. *Préprod uniquement* : réponse au questionnaire « Comment avez-vous connu Polène Paris ? » (réponse définie dans le profil client).
 
 En prod, le test s'arrête à l'étape 6 : aucune commande n'est passée.
 Chaque lancement complet crée **4 commandes de test en préprod** (une par appareil).
+Le client fictif utilisé est décrit dans [docs/profils-clients.md](docs/profils-clients.md).
 
 ## Préprod : à savoir
 

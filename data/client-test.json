@@ -1,0 +1,17 @@
+{
+  "description": "Client fictif utilisé pour les commandes de test en préprod. L'email n'est pas ici : il est lu dans PREPROD_EMAIL (fichier .env, non versionné).",
+  "civilite": "Mme",
+  "prenom": "QA",
+  "nom": "Automatisée",
+  "adresse": "60 rue du Louvre",
+  "codePostal": "75002",
+  "ville": "Paris",
+  "pays": "France",
+  "telephone": "0199000000",
+  "telephoneNote": "Numéro fixe de la plage 01 99 00 xx xx réservée à la fiction par l'ARCEP : il n'appartient à personne. La plage mobile 06 39 98 xx xx est refusée par le checkout Shopify.",
+  "sourceAcquisition": "Bouche à oreille",
+  "carte": {
+    "numero": "4242 4242 4242 4242",
+    "note": "Carte de test Shopify Payments, aucun débit réel. Date, CVV et nom sont dans le fichier .env."
+  }
+}
