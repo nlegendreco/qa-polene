@@ -22,18 +22,18 @@ Légende des intervenants : **QA**, **Claude Code**, **Devs**, **Équipe** (QA +
 
 ## Avancement
 
-> Mis à jour le 1er octobre 2026.
+> Mis à jour le 2 octobre 2026. **POC 1 validé par la QA.**
 
 | Étape | Statut | Détail |
 | --- | --- | --- |
 | 1.1 Préparer le dossier | ✅ Fait | Projet dans `~/Developer/qa`, dépôt GitHub `nlegendreco/qa-polene` |
 | 1.2 Configurer les 4 appareils | ✅ Fait | Desktop Chrome, desktop Safari, iPhone 15, Pixel 7 |
 | 1.3 Neutraliser ce qui perturbe | ✅ Fait | Bandeau cookies, AB Tasty, Klaviyo, pixels publicitaires. Popup de géolocalisation pas encore rencontrée depuis la France |
-| 1.4 Parcours d'achat nominal | ✅ Fait | 8/8 : prod jusqu'au checkout, préprod jusqu'à la confirmation de commande |
+| 1.4 Parcours d'achat nominal | ✅ Fait | 8/8 : prod jusqu'au checkout, préprod jusqu'à la confirmation de commande et au questionnaire « Comment avez-vous connu Polène Paris ? » (10 étapes) |
 | 1.5 Rapport | ✅ Fait | Étapes en français, capture par étape, vidéo, trace et requêtes lentes en cas d'échec |
-| 1.6 Échec volontaire | 🟡 À juger | Démo prête (`npm run test:demo-echec`), avis de la QA attendu |
+| 1.6 Échec volontaire | ✅ Fait | Démo `npm run test:demo-echec`, rapport jugé clair par la QA |
 | Profil client P1 | ✅ Fait | 60 rue du Louvre, 01 99 00 00 00, questionnaire « Bouche à oreille » enregistré (commande VVGWK0PJK) |
-| POC 2 | ⚪ Pas commencé | |
+| POC 2 | ⚪ Prochaine étape | Premier point à trancher : la référence visuelle (préprod et prod n'ont ni les mêmes textes ni les mêmes prix) |
 
 ## Ce qui est déjà acté
 
@@ -152,9 +152,9 @@ Claude examine chaque capture avec une grille par type de page et liste ce qui s
 
 Le POC est validé si toutes ces cases sont cochées :
 
-- [ ] Le parcours passe sur les 4 appareils, en prod (jusqu'au checkout) et en préprod (jusqu'à la confirmation).
-- [ ] 5 relances d'affilée donnent 5 fois le même résultat.
-- [ ] Un échec se comprend dans le rapport en moins de 5 minutes, sans aide d'un dev.
+- [x] Le parcours passe sur les 4 appareils, en prod (jusqu'au checkout) et en préprod (jusqu'à la confirmation).
+- [x] 5 relances d'affilée donnent 5 fois le même résultat. *Mesuré en prod (66/68 sur l'ensemble des passages, 1 lenteur réseau) ; en préprod, pas de série de 5 pour éviter 20 commandes.*
+- [x] Un échec se comprend dans le rapport en moins de 5 minutes, sans aide d'un dev.
 - [ ] 10 passages visuels sans changement donnent 0 fausse alerte.
 - [ ] Les 4 régressions injectées sont toutes détectées.
 - [ ] Accepter un changement visuel attendu prend moins de 10 minutes.

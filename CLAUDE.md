@@ -76,16 +76,16 @@ Conventions :
 
 ## Suivi
 
-> Dernière mise à jour : 1er octobre 2026.
+> Dernière mise à jour : 2 octobre 2026.
 
 ### Avancement
 
-- **POC 1 (parcours + rapport)** : presque terminé. Parcours 8/8 (prod + préprod × 4 appareils, ~2 min), 10 étapes en préprod dont le questionnaire d'acquisition. Profil P1 validé. Reste l'avis de la QA sur le rapport (1.6).
-- **POC 2 (tests visuels)** : pas commencé.
+- **POC 1 (parcours + rapport)** : ✅ validé par la QA le 2 octobre 2026. Parcours 8/8 (prod + préprod × 4 appareils, ~2 min), 10 étapes en préprod dont le questionnaire d'acquisition. Profil P1 validé.
+- **POC 2 (tests visuels)** : prochaine étape.
 
 ### Prochaines actions
 
-- [ ] QA : regarder le rapport et la démo d'échec, donner son avis (critère Go/No-Go 1.6).
+- [x] QA : rapport et démo d'échec jugés clairs (critère Go/No-Go 1.6), 2 octobre 2026.
 - [x] Profil P1 validé jusqu'à la confirmation (commandes T19558 et J8GYD9V36, 2 octobre 2026).
 - [x] Questionnaire d'acquisition validé (commande VVGWK0PJK, 2 octobre 2026) : le test attend la réponse du serveur `/api/checkout/order-source`.
 - [ ] QA : confirmer dans l'admin préprod que le client de la commande VVGWK0PJK a bien « Acquisition Source » = Bouche à oreille.
