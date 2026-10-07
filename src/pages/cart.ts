@@ -17,7 +17,8 @@ export class CartPage {
   }
 
   async expectLoaded() {
-    await expect(this.main.getByRole('heading', { name: /Votre panier|Your (shopping )?(cart|bag)/i })).toBeVisible();
+    // Titre exact : le bloc de recommandations s'appelle « Complétez votre panier ».
+    await expect(this.main.getByRole('heading', { name: /^(Votre panier|Your (shopping )?(cart|bag))$/i })).toBeVisible();
   }
 
   line(productHandle: string) {
