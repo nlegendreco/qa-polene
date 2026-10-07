@@ -21,20 +21,35 @@ Sans `PREPROD_PASSWORD`, seuls les tests de prod sont lancés (un avertissement 
 | `npm test` | Lance tous les tests (prod + préprod) sur les 4 appareils |
 | `npm run test:prod` | Prod uniquement |
 | `npm run test:preprod` | Préprod uniquement |
-| `npm run rapport:polene` | Ouvre le **Rapport Polène** du dernier lancement (tableau de bord, détail des tests) |
-| `npm run rapport:polene -- visuel` | Idem pour les tests visuels (aussi : `regressions`, `demo-echec`) |
-| `npm run rapport` | Ouvre le rapport Playwright d'origine (détail technique) |
+| `npm run rapport:polene` | Ouvre le **sommaire** des derniers lancements : une carte par série avec son verdict, qui mène à son Rapport Polène |
+| `npm run rapport:polene -- visuel` | Ouvre directement le Rapport Polène d'une série (`tnr`, `visuel`, `regressions`, `demo-echec`) |
+| `npm run rapport` | Ouvre le rapport Playwright d'origine du parcours (détail technique) |
 | `npm run test:demo-echec` | Démo d'un échec volontaire (bouton « Ajouter au panier » masqué) |
-| `npm run rapport:demo-echec` | Ouvre le rapport Playwright de la démo d'échec |
 | `npm run test:visuel` | Tests visuels (prod) : compare 3 pages × 4 appareils à la référence |
 | `npm run test:visuel:maj` | Sauvegarde la référence actuelle dans `archives/references/<date>/`, puis la reprend (après une MEP validée, avec l'accord de tout le monde) |
-| `npm run rapport:visuel` | Ouvre le rapport Playwright des tests visuels |
 | `npm run test:regressions` | Démo : 4 régressions injectées (desktop Chrome + iPhone), chacune **doit** échouer |
-| `npm run rapport:regressions` | Ouvre le rapport Playwright de la démo des régressions |
-| `npm run archiver -- <nom>` | Conserve tous les rapports (Polène et Playwright) dans `archives/<date>-<nom>/` (hors Git), voir [docs/demo-poc1.md](docs/demo-poc1.md) |
+| `npm run archiver -- <nom>` | Conserve les rapports de toutes les séries dans `archives/<date>-<nom>/` (hors Git), voir [docs/demo-poc.md](docs/demo-poc.md) |
 
 Pour lancer un seul appareil : `npx playwright test --project "prod · iphone"`.
 Pour regarder le navigateur pendant le test : ajouter `--headed`.
+
+### Où sont les résultats
+
+Chaque série range tout dans un seul dossier, `resultats/<série>/` (hors Git), remplacé à chaque lancement de la série :
+
+```
+resultats/
+  tnr/            npm test, test:prod, test:preprod (parcours d'achat et structure des collections)
+  visuel/         npm run test:visuel
+  regressions/    npm run test:regressions
+  demo-echec/     npm run test:demo-echec
+    rapport-polene/      le Rapport Polène
+    playwright-report/   le rapport Playwright d'origine
+    test-results/        fichiers bruts (captures, vidéos, traces)
+    historique.json      les 40 derniers lancements, pour les graphiques
+```
+
+Pour un essai qui ne doit pas remplacer le dernier lancement d'une série : `SERIE=essai npx playwright test …` écrit dans `resultats/essai/`.
 
 ## Ce que fait le parcours d'achat (`tests/parcours-achat.spec.ts`)
 
@@ -70,7 +85,7 @@ Chaque lancement produit deux rapports :
 
 Le rapport reprend la charte de polene-paris.com : logo, polices du site (Canela, Sackers, chargées depuis le site, il faut donc une connexion internet ; sinon des polices proches s'affichent), beiges et formes du thème. Les textes sont un peu plus grands et plus marqués que sur le site pour la lecture, et les graphiques ont leurs propres couleurs (bleu pour les durées, cognac et rose prune pour les raisons d'échec).
 
-Le rapport est servi en local (la trace en a besoin) : laisser la fenêtre du terminal ouverte, Ctrl+C pour arrêter. L'historique des lancements est gardé dans `historique-rapports/` (hors Git).
+Le rapport est servi en local (la trace en a besoin) : laisser la fenêtre du terminal ouverte, Ctrl+C pour arrêter. L'historique des lancements est gardé dans `resultats/<série>/historique.json` (hors Git).
 
 **Le rapport Playwright d'origine** (`npm run rapport`) reste disponible pour le détail technique, avec un lien depuis chaque fiche du Rapport Polène.
 

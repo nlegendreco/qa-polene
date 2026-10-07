@@ -21,6 +21,12 @@ const envs = requestedEnvs.filter(name => {
   return true;
 });
 
+// Série lancée : chaque série range tout dans resultats/<série>/ (Rapport Polène, rapport Playwright,
+// fichiers bruts, historique), remplacé à chaque lancement de la série. SERIE=<nom> pour un essai qui ne doit
+// pas remplacer le dernier lancement.
+const serie = process.env.SERIE || (process.env.DEMO_ECHEC ? 'demo-echec' : process.env.VISUEL ? 'visuel' : process.env.REGRESSIONS ? 'regressions' : 'tnr');
+const dossierResultats = `resultats/${serie}`;
+
 const excludedTags = [
   !process.env.DEMO_ECHEC && '@demo-echec',
   !process.env.VISUEL && '@visuel',
@@ -52,7 +58,7 @@ for (const name of envs) {
 
 export default defineConfig({
   testDir: './tests',
-  outputDir: './test-results',
+  outputDir: `${dossierResultats}/test-results`,
   timeout: 120_000,
   expect: {
     timeout: 15_000,
@@ -73,9 +79,9 @@ export default defineConfig({
   grepInvert: excludedTags.length ? new RegExp(excludedTags.join('|')) : undefined,
   reporter: [
     ['list'],
-    ['html', { outputFolder: 'playwright-report', open: 'never' }],
+    ['html', { outputFolder: `${dossierResultats}/playwright-report`, open: 'never' }],
     // Rapport Polène : tableau de bord et détail des tests, en français (npm run rapport:polene).
-    ['./src/rapport/reporter.ts'],
+    ['./src/rapport/reporter.ts', { serie, dossier: dossierResultats }],
   ],
   use: {
     actionTimeout: 15_000,

@@ -13,8 +13,8 @@ import type {
  * Il reprend ce que montre le rapport Playwright (étapes, captures, vidéo, trace, comparaison visuelle,
  * essais successifs) et ajoute un tableau de bord avec l'historique des lancements.
  *
- * Le dossier suit celui du rapport Playwright : playwright-report-visuel → rapport-polene-visuel.
- * L'historique est gardé à part (historique-rapports/), pour survivre au remplacement du rapport.
+ * Tout est rangé dans le dossier de la série (resultats/<série>/) : rapport-polene/, à côté de playwright-report/
+ * et test-results/. L'historique (historique.json) est à côté du rapport, pour survivre à son remplacement.
  */
 
 const ANSI = /\u001b\[[0-9;]*m/g;
@@ -29,7 +29,7 @@ const APPAREILS: Record<string, string> = {
 };
 
 const NOMS_RAPPORTS: Record<string, string> = {
-  '': 'Parcours et non-régression',
+  'tnr': 'Parcours et non-régression',
   'visuel': 'Tests visuels',
   'regressions': 'Démo · régressions injectées',
   'demo-echec': 'Démo · échec volontaire',
@@ -45,7 +45,9 @@ const TEXTE_MAX = 200_000;
 const HISTORIQUE_MAX = 40;
 
 interface Options {
-  /** Dossier du rapport. Par défaut, déduit du dossier du rapport Playwright. */
+  /** Série lancée (tnr, visuel, regressions, demo-echec), qui donne le titre du rapport. */
+  serie?: string;
+  /** Dossier de la série, qui contient aussi playwright-report/ (voir playwright.config.ts). */
   dossier?: string;
 }
 
@@ -53,16 +55,14 @@ export default class RapportPolene implements Reporter {
   private config!: FullConfig;
   private suite!: Suite;
   private debut = new Date();
-  private readonly dossier: string;
-  private readonly suffixe: string;
-  private readonly dossierPlaywright: string;
+  private readonly serie: string;
+  private readonly dossierSerie: string;
   private compteur = 0;
   private copies = new Map<string, string>();
 
   constructor(options: Options = {}) {
-    this.dossierPlaywright = process.env.PLAYWRIGHT_HTML_OUTPUT_DIR ?? 'playwright-report';
-    this.suffixe = path.basename(this.dossierPlaywright).replace(/^playwright-report-?/, '');
-    this.dossier = options.dossier ?? (this.suffixe ? `rapport-polene-${this.suffixe}` : 'rapport-polene');
+    this.serie = options.serie ?? 'tnr';
+    this.dossierSerie = options.dossier ?? `resultats/${this.serie}`;
   }
 
   printsToStdio() {
@@ -77,17 +77,18 @@ export default class RapportPolene implements Reporter {
 
   async onEnd(resultat: FullResult) {
     const racine = this.config.configFile ? path.dirname(this.config.configFile) : process.cwd();
-    const sortie = path.resolve(racine, this.dossier);
+    const serie = path.resolve(racine, this.dossierSerie);
+    const sortie = path.join(serie, 'rapport-polene');
     // Sécurité : on ne remplace qu'un ancien Rapport Polène, jamais un autre dossier.
     if (existsSync(sortie) && !existsSync(path.join(sortie, 'donnees.js'))) {
-      console.error(`Rapport Polène non écrit : le dossier ${this.dossier} existe et ne contient pas de rapport Polène.`);
+      console.error(`Rapport Polène non écrit : le dossier ${path.relative(racine, sortie)} existe et ne contient pas de rapport Polène.`);
       return;
     }
     rmSync(sortie, { recursive: true, force: true });
     mkdirSync(path.join(sortie, 'donnees'), { recursive: true });
 
     const tests = this.suite.allTests().map(test => this.convertirTest(test, sortie, racine));
-    const fichierHistorique = path.resolve(racine, 'historique-rapports', `${this.dossier}.json`);
+    const fichierHistorique = path.join(serie, 'historique.json');
     const historique = this.lireHistorique(fichierHistorique);
 
     const lancement: Lancement = {
@@ -105,7 +106,7 @@ export default class RapportPolene implements Reporter {
 
     const envs = [...new Set(tests.map(t => t.env).filter(Boolean))];
     const donnees: DonneesRapport = {
-      titre: NOMS_RAPPORTS[this.suffixe] ?? this.suffixe,
+      titre: NOMS_RAPPORTS[this.serie] ?? this.serie,
       genereLe: new Date().toISOString(),
       lancement,
       environnements: envs.map(e => environments[e as keyof typeof environments]?.label ?? e),
@@ -114,7 +115,7 @@ export default class RapportPolene implements Reporter {
       workers: this.config.workers,
       reessais: Math.max(...this.config.projects.map(p => p.retries), 0),
       commande: process.env.npm_lifecycle_event ? `npm run ${process.env.npm_lifecycle_event}` : 'npx playwright test',
-      rapportPlaywright: path.relative(sortie, path.resolve(racine, this.dossierPlaywright)),
+      rapportPlaywright: '../playwright-report',
       tests,
       historique: nouvelHistorique,
     };
@@ -134,8 +135,7 @@ export default class RapportPolene implements Reporter {
       if (existsSync(visualiseur)) cpSync(visualiseur, path.join(sortie, 'trace'), { recursive: true });
     }
 
-    const nom = this.suffixe ? ` -- ${this.suffixe}` : '';
-    console.log(`\n  Rapport Polène : npm run rapport:polene${nom}\n`);
+    console.log(`\n  Rapport Polène : npm run rapport:polene -- ${this.serie}\n`);
   }
 
   private convertirTest(test: TestCase, sortie: string, racine: string): Test {

@@ -1,15 +1,7 @@
 node_modules/
-test-results/
-playwright-report/
 .auth/
 .env
 .DS_Store
-playwright-report-demo-echec/
-test-results-demo-echec/
+# Rapports et fichiers bruts de chaque série (resultats/<série>/), archives conservées
+resultats/
 archives/
-playwright-report-visuel/
-test-results-visuel/
-playwright-report-regressions/
-test-results-regressions/
-rapport-polene*/
-historique-rapports/
