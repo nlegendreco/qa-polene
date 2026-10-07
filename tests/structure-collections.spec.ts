@@ -23,7 +23,7 @@ const COLLECTIONS = [
 function lireGrille(page: Page) {
   return page.evaluate(() => {
     const grille = document.querySelector('.collection__product-grid');
-    const total = Number(document.querySelector('collection-infinite-scroll')?.getAttribute('data-total-products') ?? NaN);
+    const total = Number(grille?.getAttribute('data-total-products') ?? NaN);
     const boite = (el: Element) => { const b = el.getBoundingClientRect(); return { x: Math.round(b.x), y: Math.round(b.y + scrollY), largeur: Math.round(b.width), hauteur: Math.round(b.height) }; };
     const image = (el: Element) => {
       const img = [...el.querySelectorAll('img')].find(i => i.getClientRects().length > 0);
@@ -59,7 +59,12 @@ function lireGrille(page: Page) {
 /** Fait charger toutes les photos de la grille (elles ne se chargent qu'à l'approche de l'écran). */
 async function chargerToutesLesImages(page: Page) {
   await page.evaluate(async () => {
-    document.querySelector('collection-infinite-scroll')?.remove();
+    // Le nombre de produits de la collection n'est écrit que sur le défilement infini : on le garde sur la grille
+    // avant de retirer l'élément (sinon il charge la suite de la collection pendant qu'on défile).
+    const defilement = document.querySelector('collection-infinite-scroll');
+    const total = defilement?.getAttribute('data-total-products');
+    if (total) document.querySelector('.collection__product-grid')?.setAttribute('data-total-products', total);
+    defilement?.remove();
     // En desktop, le thème ne met pas en page les cartes loin de l'écran : leurs photos auraient l'air absentes.
     const dessinComplet = document.createElement('style');
     dessinComplet.textContent = '* { content-visibility: visible !important; }';
@@ -94,7 +99,7 @@ for (const collection of COLLECTIONS) {
     await etape(page, testInfo, '2. Vérifier les cartes produit', async () => {
       await chargerToutesLesImages(page);
       grille = await lireGrille(page);
-      testInfo.annotations.push({ type: 'Produits', description: `${grille.cartes.length} cartes affichées sur ${grille.total} produits` });
+      testInfo.annotations.push({ type: 'Produits', description: `${grille.cartes.length} cartes affichées${Number.isFinite(grille.total) ? ` sur ${grille.total} produits` : ''}` });
 
       expect(grille.cartes.length, 'La collection doit afficher des produits').toBeGreaterThan(0);
       if (Number.isFinite(grille.total)) {
