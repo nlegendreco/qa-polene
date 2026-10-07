@@ -26,6 +26,7 @@ const APPAREILS: Record<string, string> = {
   'iphone': 'iPhone',
   'android': 'Android',
   'connexion': 'Connexion préprod',
+  'donnees': 'Données préprod',
 };
 
 const NOMS_RAPPORTS: Record<string, string> = {

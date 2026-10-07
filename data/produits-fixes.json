@@ -1,0 +1,64 @@
+{
+  "statut": "Liste validée par la QA le 7 octobre 2026 (roadmap phase 1.1). Détail et raisons : docs/produits-fixes.md",
+  "produits": [
+    {
+      "id": "P01",
+      "role": "En stock simple",
+      "handle": "numero-un-textured-black",
+      "etat": "en-stock"
+    },
+    {
+      "id": "P02",
+      "role": "Tailles toutes disponibles",
+      "handle": "eroz-ring-24-carat-gold-gilded",
+      "etat": "tailles",
+      "tailles": { "disponibles": ["50", "52", "54", "56"], "indisponibles": [] }
+    },
+    {
+      "id": "P03",
+      "role": "Tailles partielles",
+      "handle": "eole-draped-ring-24-carat-gold-gilded",
+      "etat": "tailles",
+      "tailles": { "disponibles": ["50", "54"], "indisponibles": ["52", "56"] }
+    },
+    {
+      "id": "P04",
+      "role": "Rupture totale",
+      "handle": "numero-un-nano-textured-black",
+      "etat": "rupture"
+    },
+    {
+      "id": "P05",
+      "role": "Coming soon",
+      "handle": "numero-neuf-mini-textured-taupe",
+      "etat": "coming-soon"
+    },
+    {
+      "id": "P06",
+      "role": "Précommande",
+      "handle": "sole-tan",
+      "etat": "precommande"
+    },
+    {
+      "id": "P07",
+      "role": "Nouveauté",
+      "handle": "tsubi-raffia",
+      "etat": "en-stock",
+      "nouveaute": true
+    },
+    {
+      "id": "P08",
+      "role": "Multi-coloris",
+      "handle": "cyme-mini-textured-camel",
+      "etat": "en-stock",
+      "colorisMinimum": 10
+    },
+    {
+      "id": "P09",
+      "role": "Petit prix",
+      "handle": "atla-mirror-black",
+      "etat": "en-stock",
+      "prixMaximumEuros": 100
+    }
+  ]
+}

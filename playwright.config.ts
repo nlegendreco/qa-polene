@@ -39,10 +39,27 @@ for (const name of envs) {
   if (env.passwordProtected) {
     projects.push({ name: `${env.name} · connexion`, testMatch: /auth\.setup\.ts/ });
   }
+  if (env.name === 'preprod') {
+    // Santé des produits fixes (phase 1.5) : ce sont les données qu'on vérifie, un seul navigateur suffit.
+    projects.push({
+      name: `${env.name} · donnees`,
+      testMatch: /sante-donnees\.spec\.ts/,
+      metadata: { env: env.name },
+      dependencies: [`${env.name} · connexion`],
+      use: {
+        ...DEVICES['desktop-chrome'],
+        baseURL: env.baseURL,
+        locale: 'fr-FR',
+        timezoneId: 'Europe/Paris',
+        storageState: '.auth/preprod.json',
+      },
+    });
+  }
   for (const [deviceName, device] of Object.entries(DEVICES)) {
     projects.push({
       name: `${env.name} · ${deviceName}`,
       testMatch: /.*\.spec\.ts/,
+      testIgnore: /sante-donnees\.spec\.ts/,
       metadata: { env: env.name },
       dependencies: env.passwordProtected ? [`${env.name} · connexion`] : [],
       use: {
