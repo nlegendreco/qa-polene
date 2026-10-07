@@ -64,6 +64,13 @@ export const test = base.extend<Fixtures>({
       button => button.click(),
       { noWaitAfter: true },
     );
+    // Préprod : fenêtre « It looks like you're in France… » qui propose une autre boutique et recouvre la page
+    // (theme-geo-suggestion, puis theme-store-redirect-modal depuis le 7 octobre 2026). On la ferme.
+    await page.addLocatorHandler(
+      page.locator('theme-geo-suggestion component-modal.active [role=dialog], component-modal.active[data-ref="theme-store-redirect-modal"] [role=dialog]'),
+      fenetre => fenetre.getByRole('button', { name: /Close modal|Fermer/i }).click(),
+      { noWaitAfter: true },
+    );
 
     // Suivi des requêtes réseau, pour expliquer un échec dû à une page qui ne finit pas de charger.
     const started = new Map<object, { url: string; type: string; start: number }>();
