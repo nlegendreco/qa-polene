@@ -74,6 +74,8 @@ export default defineConfig({
   reporter: [
     ['list'],
     ['html', { outputFolder: 'playwright-report', open: 'never' }],
+    // Rapport Polène : tableau de bord et détail des tests, en français (npm run rapport:polene).
+    ['./src/rapport/reporter.ts'],
   ],
   use: {
     actionTimeout: 15_000,

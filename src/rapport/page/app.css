@@ -1,0 +1,548 @@
+/* Rapport Polène : charte reprise de polene-paris.com (thème Shopify, octobre 2026).
+   Polices du site : Primary = Canela (titres), Secondary = Cormorant Garamond (texte), Tertiary = Sackers
+   (menu et boutons). Chargées depuis le CDN de Polène (aucun fichier copié dans le dépôt), avec des polices de
+   secours si le réseau manque. Couleurs : variables du thème (--black, --beige, --grey…).
+   Ajustements de lecture demandés par la QA : Canela en Light plutôt qu'en Thin, texte un cran plus gras, petites
+   capitales en Jost (11 à 12 px) ; Sackers, très large, est gardée pour le menu et les boutons. */
+
+@font-face { font-family: 'Polène Primary'; src: url('https://www.polene-paris.com/cdn/shop/t/34/assets/canelaweb-light.woff2') format('woff2'); font-weight: 300; font-display: swap; }
+@font-face { font-family: 'Polène Secondary'; src: url('https://www.polene-paris.com/cdn/shop/t/34/assets/cormorantgaramond-light.woff2') format('woff2'); font-weight: 300; font-display: swap; }
+@font-face { font-family: 'Polène Secondary'; src: url('https://www.polene-paris.com/cdn/shop/t/34/assets/cormorantgaramond-regular.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Polène Tertiary'; src: url('https://www.polene-paris.com/cdn/shop/t/34/assets/sackers.woff2') format('woff2'); font-weight: 500; font-display: swap; }
+
+:root {
+  /* Couleurs du thème Polène */
+  --fond: #ffffff;                 /* --white */
+  --fond-doux: #f9f8f6;            /* --light-beige */
+  --fond-creme: #f1f0ee;           /* --dark-beige */
+  --beige: #edeae7;                /* --beige */
+  --encre: #000000;                /* --black */
+  --encre-2: #4d4d4d;
+  --encre-3: #757575;              /* --grey */
+  --trait: rgba(0, 0, 0, 0.1);     /* --border-grey-1 */
+  --trait-fort: #e6e6e6;           /* --light-grey */
+  --accent: #000000;               /* traits de structure : noir, comme les boutons du site */
+  /* Couleurs des graphiques (hors statuts), tons de cuir : bleu, cognac, rose prune. Vérifiées pour les daltoniens
+     (validateur dataviz, 6 octobre 2026). Le bleu porte toujours le temps (durées). */
+  --donnee-1: #2f5da8;
+  --donnee-2: #b0662e;
+  --donnee-3: #b86aa8;
+  --temps: var(--donnee-1);
+  --temps-fond: #eaf0f8;
+  /* Couleurs de statut (validées pour les daltoniens, toujours avec une icône et un libellé).
+     Le rouge est celui du thème (--red) ; le « vert » du thème est un gris olive, illisible comme « réussi ». */
+  --ok: #0f8060;
+  --ok-fond: #e8f3ef;
+  --ok-texte: #0a5c45;
+  --instable: #c98a14;
+  --instable-fond: #f8f0e0;
+  --instable-texte: #7a5208;
+  --echec: #d92e50;
+  --echec-fond: #fbebee;
+  --echec-texte: #a8203c;
+  --ignore: #b3b3b3;
+  --ignore-fond: #f1f0ee;
+  /* Polices */
+  --titre: 'Polène Primary', 'Cormorant Garamond', 'Times New Roman', serif;
+  /* Même police que le site (Cormorant Garamond), mais la version Google : celle du CDN Polène n'a pas les chiffres
+     alignés (« 1440 » y sort en chiffres elzéviriens, peu lisibles dans un rapport plein de durées et de tailles). */
+  --serif: 'Cormorant Garamond', 'Polène Secondary', 'Times New Roman', Georgia, serif;
+  --sans: 'Jost', 'Futura', 'Avenir Next', system-ui, sans-serif;
+  --sackers: 'Polène Tertiary', var(--sans);
+  --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --rayon: 0;
+  --marge: 12px;                   /* --grid-margin du site */
+  --transition: 0.3s ease;         /* --transition-ease */
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--fond);
+  color: var(--encre);
+  font: 500 18px/1.35 var(--serif);  /* --ts-body : 18 px / 1,25 sur le site ; graisse 500 pour la lecture */
+  font-variant-numeric: lining-nums;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+button { font: inherit; color: inherit; }
+img, video { max-width: 100%; display: block; }
+/* Titres en Canela fin, comme les noms de produits et les titres de section du site. */
+h1, h2, h3 { font-family: var(--titre); font-weight: 300; margin: 0; letter-spacing: -0.01em; font-variant-numeric: lining-nums; }
+h1 { font-size: clamp(30px, 4vw, 46px); line-height: 1.05; }
+strong, b { font-weight: 600; }
+h2 { font-size: 28px; line-height: 1.1; }
+h3 { font-size: 21px; line-height: 1.1; }
+pre, code { font-family: var(--mono); font-size: 12.5px; }
+/* Capitales Sackers : menus, boutons, prix et mentions du site (8 à 10 px sur le site, un peu plus ici pour la lecture). */
+.capitales {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 15px;
+  letter-spacing: 0;
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+.discret { color: var(--encre-3); }
+/* Mentions de détail (fichier, emplacement) : Sackers 8 px gris, comme « Edition Noir Grainé » sous un nom de produit. */
+.mini { display: block; margin-top: 4px; font-family: var(--sans); font-size: 11px; line-height: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; color: var(--encre-3); }
+.second { color: var(--encre-2); }
+.chiffres { font-variant-numeric: tabular-nums; }
+.masque-visuel { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+:focus-visible { outline: 2px solid var(--encre); outline-offset: 2px; }
+
+/* En-tête : comme le header du site (menu en capitales à gauche, logo au centre, fine ligne dessous). */
+.entete {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--fond);
+}
+/* Même largeur que le contenu (main) : sur grand écran, menu et titre ne partent plus dans les coins. */
+.entete { padding: 0 24px; }
+.entete__ligne {
+  max-width: 1232px;
+  margin: 0 auto;
+  padding: 14px 0 12px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid var(--trait);
+}
+.entete nav { display: flex; gap: 40px; }
+.entete nav .capitales { font-family: var(--sackers); }
+.entete nav a { text-decoration: none; padding: 4px 0; border-bottom: 1px solid transparent; transition: border-color var(--transition); }
+.entete nav a.actif, .entete nav a:hover { border-bottom-color: var(--encre); }
+.logo { justify-self: center; display: block; color: var(--encre); line-height: 0; }
+.logo svg { width: 143px; height: 29px; display: block; }
+.entete__infos { justify-self: end; text-align: right; line-height: 1.4; }
+.entete__infos strong { display: block; font-family: var(--titre); font-weight: 300; font-size: 18px; }
+.entete__infos span { font-family: var(--sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--encre-3); }
+
+main { max-width: 1280px; margin: 0 auto; padding: 40px 24px 80px; }
+section + section { margin-top: 56px; }
+.titre-section { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+.titre-section p { margin: 0; font-family: var(--sans); font-size: 11px; line-height: 15px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+/* Statuts */
+.icone { width: 1em; height: 1em; flex: none; }
+.pastille {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px 4px 8px;
+  border-radius: 999px;
+  font-family: var(--sans);
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+.pastille--reussi { background: var(--ok-fond); color: var(--ok-texte); }
+.pastille--echec { background: var(--echec-fond); color: var(--echec-texte); }
+.pastille--instable { background: var(--instable-fond); color: var(--instable-texte); }
+.pastille--ignore, .pastille--interrompu { background: var(--ignore-fond); color: var(--encre-2); }
+.puce {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  color: #fff;
+  flex: none;
+}
+.puce .icone { width: 12px; height: 12px; }
+.puce--reussi { background: var(--ok); }
+.puce--echec { background: var(--echec); }
+.puce--instable { background: var(--instable); color: var(--encre); }
+.puce--ignore, .puce--interrompu { background: var(--ignore); }
+
+/* Étiquettes : comme le bouton « Vue 3D » de la fiche produit (pilule, trait fin). */
+.etiquette {
+  display: inline-block;
+  padding: 5px 10px 4px;
+  border: 1px solid var(--trait);
+  border-radius: 999px;
+  font-family: var(--sans);
+  font-size: 11px;
+  line-height: 14px;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--encre);
+  white-space: nowrap;
+}
+
+/* Verdict du tableau de bord : aplat beige, comme les fonds du site. */
+.verdict {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 32px;
+  align-items: end;
+  padding: 40px 44px 36px;
+  background: var(--fond-doux);
+}
+.verdict__titre { display: flex; align-items: center; gap: 18px; }
+.verdict__titre h1 { font-size: clamp(34px, 4.4vw, 54px); }
+.verdict__titre .puce { width: 40px; height: 40px; }
+.verdict__titre .puce .icone { width: 20px; height: 20px; }
+.verdict p { margin: 12px 0 0; }
+.verdict p.discret { font-family: var(--sans); font-size: 11px; line-height: 14px; text-transform: uppercase; letter-spacing: 0.05em; }
+.verdict__chiffre { text-align: right; }
+.verdict__chiffre strong { display: block; font: 300 88px/0.9 var(--titre); letter-spacing: -0.03em; }
+.verdict__chiffre span { display: block; margin-top: 10px; }
+.verdict__barre { grid-column: 1 / -1; }
+
+.jauge { display: flex; gap: 2px; height: 6px; overflow: hidden; }
+.jauge span { display: block; min-width: 3px; }
+.legende { display: flex; flex-wrap: wrap; gap: 6px 20px; margin-top: 12px; font-family: var(--sans); font-size: 11px; line-height: 15px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--encre-2); }
+.legende span { display: inline-flex; align-items: center; gap: 6px; }
+.legende i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.legende i.trait { height: 2px; width: 14px; border-radius: 1px; }
+
+/* Tuiles */
+.tuiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--marge); }
+.tuile {
+  display: block;
+  padding: 18px 20px 20px;
+  border: 1px solid var(--trait);
+  border-top: 3px solid var(--tuile, var(--trait-fort));   /* couleur du statut de la tuile */
+  text-decoration: none;
+  transition: border-color var(--transition);
+}
+a.tuile:hover { border-color: var(--encre); }
+.tuile strong { display: block; margin-top: 14px; font: 300 44px/1 var(--titre); letter-spacing: -0.02em; }
+.tuile .tuile__titre { display: flex; align-items: center; gap: 8px; color: var(--encre); }
+.tuile .tuile__titre .puce { width: 16px; height: 16px; }
+.tuile .tuile__titre .puce .icone { width: 10px; height: 10px; }
+
+/* Cartes et grilles */
+.grille-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--marge); }
+.carte { border: 1px solid var(--trait); padding: 24px 26px; min-width: 0; }
+.carte h3 { margin-bottom: 6px; }
+.carte > p.discret { margin: 0 0 18px; font-family: var(--sans); font-size: 11px; line-height: 15px; text-transform: uppercase; letter-spacing: 0.05em; }
+.vide { padding: 28px; text-align: center; color: var(--encre-3); background: var(--fond-doux); font-style: italic; }
+
+/* Matrice tests × appareils */
+/* position: relative retient les textes masqués (position absolue) dans la zone qui défile. */
+.matrice-cadre { position: relative; overflow-x: auto; border-top: 1px solid var(--encre); }
+table { border-collapse: collapse; width: 100%; }
+.matrice th, .matrice td { padding: 12px 14px; border-bottom: 1px solid var(--trait); text-align: left; }
+.matrice thead th { font-family: var(--sans); font-size: 11px; line-height: 15px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; color: var(--encre-3); white-space: nowrap; }
+.matrice thead th.cellule { text-align: center; }
+.matrice tbody th { font-weight: 400; min-width: 160px; font-size: 18px; }
+.matrice tbody th small, .matrice tbody th .discret { font-family: var(--sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+.matrice tbody th a { text-decoration: none; }
+.matrice tbody th a:hover { text-decoration: underline; }
+.matrice td.cellule { text-align: center; width: 1%; }
+.matrice td.cellule a { display: inline-flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; padding: 4px 10px; }
+.matrice td.cellule a:hover { background: var(--fond-doux); }
+.matrice td.cellule small { font-family: var(--sans); font-size: 11px; line-height: 14px; color: var(--encre-3); white-space: nowrap; }
+
+/* Graphiques */
+.graphique { position: relative; }
+.graphique svg { width: 100%; height: auto; display: block; overflow: visible; }
+.graphique .axe text { font: 500 11px var(--sans); text-transform: uppercase; letter-spacing: 0.05em; fill: var(--encre-3); }
+.graphique .axe-texte { font: 500 11px var(--sans); text-transform: uppercase; letter-spacing: 0.05em; fill: var(--encre); }
+.graphique .grille line { stroke: var(--trait-fort); stroke-width: 1; }
+.graphique .ligne-base { stroke: var(--encre); stroke-width: 1; }
+.graphique .curseur { stroke: var(--encre-3); stroke-width: 1; }
+.chiffres-detail { margin-top: 14px; font-size: 15px; }
+.chiffres-detail summary { cursor: pointer; font-family: var(--sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--encre); }
+.chiffres-detail table { margin-top: 8px; }
+.defilement { position: relative; overflow-x: auto; }
+.chiffres-detail th, .chiffres-detail td { padding: 6px 8px; border-bottom: 1px solid var(--trait); text-align: right; font-variant-numeric: tabular-nums; }
+.chiffres-detail th { font-family: var(--sans); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; color: var(--encre-3); }
+.chiffres-detail th:first-child, .chiffres-detail td:first-child { text-align: left; }
+
+.barres { display: grid; gap: 14px; }
+.barre { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; text-decoration: none; }
+.barre__libelle { display: flex; justify-content: space-between; gap: 12px; font-size: 16px; }
+.barre__libelle span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.barre__libelle span:last-child { white-space: nowrap; flex-shrink: 0; font-family: var(--sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; align-self: center; }
+.barre__piste { position: relative; height: 8px; background: var(--fond-creme); }
+.barre__piste i { display: block; height: 100%; background: var(--barre, var(--temps)); border-radius: 0 4px 4px 0; min-width: 4px; }
+/* Repère de la durée habituelle sur la barre d'un test. */
+.barre__piste b { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; background: var(--encre); }
+a.barre:hover .barre__libelle span:first-child { text-decoration: underline; }
+
+#infobulle {
+  position: fixed;
+  z-index: 50;
+  pointer-events: none;
+  max-width: 280px;
+  padding: 10px 12px;
+  background: var(--encre);
+  color: #fff;
+  font-size: 15px;
+  line-height: 1.35;
+}
+#infobulle strong { font-weight: 400; }
+#infobulle .ligne-info { display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+#infobulle .ligne-info i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+
+/* Points d'historique */
+.points { display: inline-flex; gap: 3px; align-items: center; }
+.points span { width: 8px; height: 8px; border-radius: 50%; background: var(--trait-fort); }
+.points span.reussi { background: var(--ok); }
+.points span.echec { background: var(--echec); }
+.points span.instable { background: var(--instable); }
+.points span.ignore, .points span.interrompu { background: var(--ignore); }
+.points span.actuel { box-shadow: 0 0 0 2px var(--fond), 0 0 0 3px var(--encre); }
+
+/* Liste des tests */
+.filtres { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; margin-bottom: 24px; }
+.groupe-filtres { display: flex; flex-wrap: wrap; gap: 6px; }
+/* Filtres : pilules à trait fin, noires quand elles sont actives (comme les vignettes de coloris du site). */
+.filtre {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px 6px;
+  border: 1px solid var(--trait);
+  border-radius: 999px;
+  background: var(--fond);
+  font-family: var(--sans);
+  font-size: 11px;
+  line-height: 14px;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color var(--transition);
+}
+.filtre:hover { border-color: var(--encre); }
+.filtre.actif { background: var(--encre); border-color: var(--encre); color: #fff; }
+.filtre .nombre { color: var(--encre-3); }
+.filtre.actif .nombre { color: #b3b3b3; }
+/* Recherche : comme le champ email du pied de page (trait du bas, capitales). */
+.recherche {
+  flex: 1 1 220px;
+  max-width: 360px;
+  padding: 10px 0;
+  border: 0;
+  border-bottom: 1px solid var(--encre);
+  border-radius: 0;
+  background: transparent;
+  font-family: var(--sans);
+  font-size: 12px;
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+.recherche::placeholder { color: var(--encre-3); }
+.recherche:focus { outline: none; border-bottom-width: 2px; }
+
+.liste { border-top: 1px solid var(--encre); }
+.ligne-test {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 16px 4px;
+  border-bottom: 1px solid var(--trait);
+  text-decoration: none;
+  transition: background var(--transition);
+}
+.ligne-test:hover { background: var(--fond-doux); }
+.ligne-test__titre { font-size: 19px; }
+.ligne-test__infos { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 6px; font-family: var(--sans); font-size: 11px; line-height: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--encre-3); }
+.ligne-test__droite { display: flex; align-items: center; gap: 16px; font-family: var(--sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--encre-2); white-space: nowrap; }
+.motif { color: var(--echec-texte); }
+.motif--instable { color: var(--instable-texte); }
+
+/* Fiche d'un test */
+/* Fil d'Ariane : comme « Sacs / Numéro Un » sur la fiche produit. */
+.fil { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 22px; font-family: var(--sans); font-size: 11px; line-height: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--encre); }
+.fil a { text-decoration: none; }
+.fil a:hover { text-decoration: underline; }
+.fiche-entete { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: start; padding-bottom: 28px; border-bottom: 1px solid var(--trait); }
+.fiche-entete h1 { font-size: clamp(30px, 3.6vw, 44px); }
+.fiche-entete .meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 16px; }
+.fiche-entete .meta .discret { font-family: var(--sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+.fiche-entete .actions { display: flex; flex-direction: column; gap: 8px; align-items: stretch; min-width: 230px; }
+/* Boutons : comme « Ajouter au panier » (aplat noir, capitales Sackers, angles droits, 40 px de haut). */
+.bouton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 8px 20px;
+  border: 1px solid var(--encre);
+  border-radius: 0;
+  background: var(--fond);
+  font-family: var(--sackers);
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--transition), color var(--transition);
+}
+.bouton:hover { background: var(--encre); color: #fff; }
+.bouton--plein { background: var(--encre); color: #fff; }
+.bouton--plein:hover { background: #333; border-color: #333; }
+.bouton[aria-disabled="true"] { opacity: 0.3; pointer-events: none; }
+.autres-appareils { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+.autres-appareils a { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px 4px 6px; border: 1px solid var(--trait); border-radius: 999px; text-decoration: none; font-family: var(--sans); font-size: 11px; line-height: 14px; text-transform: uppercase; letter-spacing: 0.05em; transition: border-color var(--transition); }
+.autres-appareils a:hover { border-color: var(--encre); }
+.autres-appareils a.actif { border-color: var(--encre); }
+.autres-appareils .puce { width: 16px; height: 16px; }
+.autres-appareils .puce .icone { width: 10px; height: 10px; }
+
+.informations { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 10px 28px; margin: 0; }
+.informations dt { font-family: var(--sans); font-size: 11px; line-height: 20px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--encre-3); }
+.informations dd { margin: 0; overflow-wrap: anywhere; }
+
+.onglets { display: flex; gap: 24px; border-bottom: 1px solid var(--trait); margin-bottom: 28px; overflow-x: auto; }
+.onglets button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 0;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  margin-bottom: -1px;
+  background: none;
+  font-family: var(--sans);
+  font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  cursor: pointer;
+  white-space: nowrap;
+  color: var(--encre-3);
+}
+.onglets button[aria-selected="true"] { border-bottom-color: var(--encre); color: var(--encre); }
+.onglets .puce { width: 16px; height: 16px; }
+.onglets .puce .icone { width: 10px; height: 10px; }
+
+.erreur {
+  padding: 26px 28px;
+  background: var(--echec-fond);
+  border-left: 2px solid var(--echec);
+}
+.erreur--instable { background: var(--instable-fond); border-left-color: var(--instable); }
+.erreur + .erreur { margin-top: 12px; }
+.erreur__resume { margin: 0; font-family: var(--titre); font-weight: 300; font-size: 24px; line-height: 1.2; letter-spacing: -0.01em; font-variant-numeric: lining-nums; }
+.erreur ul { margin: 14px 0 0; padding-left: 18px; }
+.erreur li { margin: 3px 0; }
+.erreur p.discret { font-family: var(--sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+.erreur details { margin-top: 16px; }
+.erreur details summary, .repli summary, .piece summary { cursor: pointer; font-family: var(--sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--encre); }
+.code {
+  margin: 10px 0 0;
+  padding: 14px 16px;
+  background: var(--fond);
+  border: 1px solid var(--trait);
+  overflow: auto;
+  max-height: 420px;
+  white-space: pre;
+  line-height: 1.5;
+}
+
+/* Étapes */
+.etapes { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--encre); }
+.etape { border-bottom: 1px solid var(--trait); }
+.etape__ligne { display: grid; grid-template-columns: 22px minmax(0, 1fr) 160px 70px; gap: 14px; align-items: center; padding: 16px 4px; }
+.etape--echec { background: #fffafb; }
+.etape__titre { font-size: 18px; }
+.etape__erreur { margin-top: 4px; font-size: 15px; color: var(--echec-texte); }
+.etape__temps { height: 4px; background: var(--fond-creme); position: relative; overflow: hidden; }
+.etape__temps i { position: absolute; top: 0; bottom: 0; background: var(--accent); min-width: 3px; }
+.etape__duree { text-align: right; font-family: var(--sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--encre-2); font-variant-numeric: tabular-nums; }
+.etape__corps { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 18px; padding: 0 4px 18px 40px; }
+.etape__corps:empty { display: none; }
+.miniature { display: block; padding: 0; border: 1px solid var(--trait); background: var(--fond-doux); cursor: zoom-in; overflow: hidden; max-height: 180px; transition: border-color var(--transition); }
+.miniature:hover { border-color: var(--encre); }
+.miniature img { width: 100%; object-fit: cover; object-position: top; }
+.sous-etapes { margin: 0; padding: 0; list-style: none; font-size: 15px; color: var(--encre-2); }
+.sous-etapes > summary, details > summary.capitales { font-family: var(--sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+.sous-etapes li { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; border-bottom: 1px solid var(--trait); }
+.sous-etapes li.ko { color: var(--echec-texte); }
+.sous-etapes ul { list-style: none; padding-left: 16px; margin: 0; width: 100%; }
+.sous-etapes li > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sous-etapes li > span:last-child, .sous-etapes li.parent > div > span:last-child { white-space: nowrap; flex-shrink: 0; font-family: var(--sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; align-self: center; }
+.sous-etapes li.parent { display: block; }
+.sous-etapes li.parent > div { display: flex; justify-content: space-between; gap: 12px; }
+.etape summary { cursor: pointer; font-family: var(--sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--encre); margin-top: 4px; }
+
+/* Comparateur visuel */
+.comparateur { border: 1px solid var(--trait); }
+.comparateur + .comparateur { margin-top: 18px; }
+.comparateur__barre { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--trait); background: var(--fond-doux); }
+.comparateur__barre > strong, .comparateur__barre > span:first-child { font-family: var(--titre); font-weight: 300; font-size: 19px; }
+.comparateur__barre label { font-family: var(--sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+.modes { display: inline-flex; border: 1px solid var(--encre); overflow: hidden; }
+.modes button { padding: 9px 14px 8px; border: 0; border-right: 1px solid var(--encre); background: var(--fond); font-family: var(--sackers); font-size: 11px; line-height: 14px; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; transition: background var(--transition), color var(--transition); }
+.modes button:last-child { border-right: 0; }
+.modes button:hover { background: var(--fond-creme); }
+.modes button[aria-pressed="true"] { background: var(--encre); color: #fff; }
+.comparateur__vue { padding: 16px; }
+.comparateur__note { margin: 0 0 12px; font-size: 15px; color: var(--encre-2); }
+.defile { max-height: 78vh; overflow: auto; background: var(--fond-doux); border: 1px solid var(--trait); }
+.cote-a-cote { display: grid; grid-template-columns: 1fr 1fr; gap: var(--marge); }
+.cote-a-cote .capitales { display: block; margin-bottom: 8px; color: var(--encre); }
+.rideau { position: relative; }
+.rideau__dessus { position: absolute; inset: 0; overflow: hidden; }
+.rideau__dessus img { max-width: none; }
+.rideau__trait { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--echec); pointer-events: none; }
+.rideau-reglage { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; font-family: var(--sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--encre); }
+.rideau-reglage input { flex: 1; accent-color: var(--encre); }
+.taille-reelle img { width: auto !important; max-width: none; }
+
+/* Pièces jointes */
+.pieces { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--marge); }
+.piece { border: 1px solid var(--trait); padding: 12px; min-width: 0; }
+.piece__titre { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 10px; font-family: var(--sans); font-size: 11px; line-height: 15px; text-transform: uppercase; letter-spacing: 0.05em; }
+.piece__titre span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.piece__titre a { color: var(--encre-3); white-space: nowrap; flex-shrink: 0; }
+.piece--large { grid-column: 1 / -1; }
+.repli { border: 1px solid var(--trait); padding: 14px 16px; }
+.repli + .repli { margin-top: 10px; }
+
+/* Visionneuse plein écran */
+#visionneuse {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(0, 0, 0, 0.92);
+  overflow: auto;
+  padding: 56px 24px 24px;
+  cursor: zoom-out;
+}
+#visionneuse img { margin: 0 auto; max-width: min(100%, 1440px); background: #fff; }
+#visionneuse .fermer { position: fixed; top: 14px; right: 18px; color: #fff; background: none; border: 1px solid rgba(255, 255, 255, 0.6); padding: 9px 14px 8px; font-family: var(--sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; }
+#visionneuse .legende-image { position: fixed; top: 20px; left: 24px; color: #fff; font-family: var(--sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+/* Pied de page : comme celui du site (trait fin, capitales grises, « © Polène »). */
+.pied { margin-top: 72px; padding-top: 18px; border-top: 1px solid var(--trait); font-family: var(--sans); font-size: 11px; line-height: 15px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--encre-3); display: flex; flex-wrap: wrap; gap: 8px 28px; }
+.pied a { color: var(--encre); }
+
+@media (max-width: 900px) {
+  .grille-2 { grid-template-columns: minmax(0, 1fr); }
+  .verdict { grid-template-columns: minmax(0, 1fr); padding: 30px 22px; }
+  .verdict__chiffre { text-align: left; }
+  .verdict__chiffre strong { font-size: 64px; }
+  .etape__ligne { grid-template-columns: 22px minmax(0, 1fr) 70px; }
+  .etape__temps { display: none; }
+  .etape__corps { grid-template-columns: minmax(0, 1fr); padding-left: 4px; }
+  .cote-a-cote { grid-template-columns: minmax(0, 1fr); }
+  .fiche-entete { grid-template-columns: minmax(0, 1fr); }
+  .fiche-entete .actions { flex-direction: row; flex-wrap: wrap; min-width: 0; }
+}
+@media (max-width: 640px) {
+  main { padding: 24px 16px 56px; }
+  .entete { padding: 0 16px; }
+  /* Sackers est trop large pour le menu sur téléphone : Jost, plus étroite. */
+  .entete nav .capitales { font-family: var(--sans); }
+  /* Les graphiques rétrécissent avec l'écran (unités du dessin) : textes agrandis d'autant. */
+  .graphique .axe text, .graphique .axe-texte { font-size: 18px; }
+  .entete__ligne { grid-template-columns: 1fr auto; }
+  .entete nav { grid-column: 1 / -1; grid-row: 2; gap: 24px; }
+  .logo { justify-self: start; }
+  .logo svg { width: 110px; height: 22px; }
+  .ligne-test { grid-template-columns: 22px minmax(0, 1fr); }
+  .ligne-test__droite { grid-column: 2; flex-wrap: wrap; }
+  .tuile strong { font-size: 36px; }
+}

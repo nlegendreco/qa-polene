@@ -14,7 +14,9 @@
     "test:visuel:maj": "node scripts/sauvegarder-references.mjs && VISUEL=1 QA_ENVS=prod PLAYWRIGHT_HTML_OUTPUT_DIR=playwright-report-visuel playwright test --grep @visuel --workers 2 --output test-results-visuel --update-snapshots",
     "rapport:visuel": "playwright show-report playwright-report-visuel",
     "test:regressions": "REGRESSIONS=1 QA_ENVS=prod PLAYWRIGHT_HTML_OUTPUT_DIR=playwright-report-regressions playwright test --grep @regressions --project \"prod · desktop-chrome\" --project \"prod · iphone\" --output test-results-regressions",
-    "rapport:regressions": "playwright show-report playwright-report-regressions"
+    "rapport:regressions": "playwright show-report playwright-report-regressions",
+    "archiver": "node scripts/archiver-rapport.mjs",
+    "rapport:polene": "node scripts/ouvrir-rapport.mjs"
   },
   "author": "",
   "license": "ISC",
