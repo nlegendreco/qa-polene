@@ -21,9 +21,17 @@ Sans `PREPROD_PASSWORD`, seuls les tests de prod sont lancés (un avertissement 
 | `npm test` | Lance tous les tests (prod + préprod) sur les 4 appareils |
 | `npm run test:prod` | Prod uniquement |
 | `npm run test:preprod` | Préprod uniquement |
-| `npm run rapport` | Ouvre le dernier rapport HTML |
+| `npm run rapport:polene` | Ouvre le **Rapport Polène** du dernier lancement (tableau de bord, détail des tests) |
+| `npm run rapport:polene -- visuel` | Idem pour les tests visuels (aussi : `regressions`, `demo-echec`) |
+| `npm run rapport` | Ouvre le rapport Playwright d'origine (détail technique) |
 | `npm run test:demo-echec` | Démo d'un échec volontaire (bouton « Ajouter au panier » masqué) |
-| `npm run rapport:demo-echec` | Ouvre le rapport de la démo d'échec |
+| `npm run rapport:demo-echec` | Ouvre le rapport Playwright de la démo d'échec |
+| `npm run test:visuel` | Tests visuels (prod) : compare 3 pages × 4 appareils à la référence |
+| `npm run test:visuel:maj` | Sauvegarde la référence actuelle dans `archives/references/<date>/`, puis la reprend (après une MEP validée, avec l'accord de tout le monde) |
+| `npm run rapport:visuel` | Ouvre le rapport Playwright des tests visuels |
+| `npm run test:regressions` | Démo : 4 régressions injectées (desktop Chrome + iPhone), chacune **doit** échouer |
+| `npm run rapport:regressions` | Ouvre le rapport Playwright de la démo des régressions |
+| `npm run archiver -- <nom>` | Conserve tous les rapports (Polène et Playwright) dans `archives/<date>-<nom>/` (hors Git), voir [docs/demo-poc1.md](docs/demo-poc1.md) |
 
 Pour lancer un seul appareil : `npx playwright test --project "prod · iphone"`.
 Pour regarder le navigateur pendant le test : ajouter `--headed`.
@@ -52,10 +60,66 @@ Le client fictif utilisé est décrit dans [docs/profils-clients.md](docs/profil
 
 ## Le rapport
 
-Chaque étape apparaît en français, avec une capture d'écran prise à la fin de l'étape. En cas d'échec, on a aussi :
-- la vidéo du test ;
-- la trace Playwright (« View Trace ») : frise chronologique cliquable avec le DOM, le réseau et la console à chaque instant ;
-- la liste des requêtes lentes ou bloquées (🐢), utile quand une page ne finit pas de charger.
+Chaque lancement produit deux rapports :
+
+**Le Rapport Polène** (`npm run rapport:polene`), en français, aux couleurs de Polène :
+- **tableau de bord** : verdict du lancement, réussis / échecs / instables / ignorés, durée, commandes de test créées, tableau test × appareil, graphiques des derniers lancements (résultats et durée), raisons des échecs (« Écart visuel », « Délai dépassé », « Limite d'appels Shopify (429) »…), tests à surveiller (échecs ou instabilités sur les 10 derniers lancements), tests les plus longs comparés à leur durée habituelle ;
+- **liste des tests** filtrable par statut, appareil et texte, avec les derniers résultats de chaque test ;
+- **fiche d'un test** : erreur résumée en français (détail technique replié), étapes avec leur durée et leur capture, onglets par essai, vidéo, trace Playwright (frise chronologique cliquable avec le DOM, le réseau et la console), requêtes lentes ou bloquées (🐢) ;
+- **comparateur visuel** en cas d'écart : côte à côte (défilement synchronisé), curseur, différence en rouge, attendu, obtenu, taille réelle.
+
+Le rapport reprend la charte de polene-paris.com : logo, polices du site (Canela, Sackers, chargées depuis le site, il faut donc une connexion internet ; sinon des polices proches s'affichent), beiges et formes du thème. Les textes sont un peu plus grands et plus marqués que sur le site pour la lecture, et les graphiques ont leurs propres couleurs (bleu pour les durées, cognac et rose prune pour les raisons d'échec).
+
+Le rapport est servi en local (la trace en a besoin) : laisser la fenêtre du terminal ouverte, Ctrl+C pour arrêter. L'historique des lancements est gardé dans `historique-rapports/` (hors Git).
+
+**Le rapport Playwright d'origine** (`npm run rapport`) reste disponible pour le détail technique, avec un lien depuis chaque fiche du Rapport Polène.
+
+## Les tests visuels (`tests/visuel.spec.ts`, POC 2)
+
+3 pages capturées en entier sur les 4 appareils, soit 12 captures, comparées pixel par pixel à la référence :
+
+| Page | Adresse |
+|---|---|
+| Accueil | `/` |
+| Fiche produit | `/products/numero-un-textured-black` (Numéro Un noir grainé, en ligne depuis 2017) |
+| Panier | `/cart` avec ce produit, ajouté directement par l'API Shopify |
+
+Les collections ne sont plus comparées en pixels : les mentions de stock (« Être prévenu(e) », « Précommande le … ») changent plusieurs fois par jour en prod. Elles sont vérifiées par leur structure (voir plus bas).
+
+- **Prod uniquement** pour l'instant : la préprod n'a ni les mêmes textes ni les mêmes prix.
+- **Référence** : dossier `references/<page>/<appareil>.png`. C'est l'« état validé » de la QA.
+- **2 navigateurs à la fois** (au lieu de 4) pour ne pas saturer le Mac : environ 2 minutes par passage.
+- **Densité 1 pixel par point** sur tous les appareils : même mise en page que sur le vrai appareil, mais en densité 3 l'iPhone émulé réduit les photos différemment d'un passage à l'autre.
+- **Un second essai automatique** si une capture diffère : un vrai défaut échoue deux fois. Un test qui passe au second essai est marqué « flaky » (instable) dans le rapport, à surveiller. La démo des régressions n'a pas de second essai.
+- **Pas lancés par défaut** avec `npm test` ou `npm run test:prod`, pour ne pas mélanger les deux rapports.
+- **En cas d'écart**, le rapport montre l'attendu, l'obtenu et la différence (en rouge), avec un curseur pour comparer.
+- **Accepter un changement voulu** : `npm run test:visuel:maj` remplace les captures qui ont changé, après avoir sauvegardé les anciennes dans `archives/references/<date-heure>/`.
+
+Avant chaque capture, le test stabilise la page :
+- images et polices chargées jusqu'en bas de page, fin des téléchargements, images entièrement décodées ;
+- tout le contenu dessiné, même loin de l'écran (sinon les cartes produit des collections desktop sortent en cases blanches) ;
+- vidéos de la home arrêtées et cachées : on vérifie l'image fixe placée dessous et ce qui est posé dessus (une image de vidéo n'est jamais dessinée deux fois pareil) ;
+- bandeaux de sacs qui défilent tout seuls sur la home figés sur leur première position ;
+- défilement instantané (le thème défile en douceur, la capture partirait en plein mouvement) ;
+- bulle de chat Zendesk et curseur personnalisé masqués ;
+- pas de vidéo du test (l'attendu, l'obtenu et la différence suffisent ; l'enregistrement surchargeait la machine) ;
+- barres fixées en bas d'écran sur mobile (ajout au panier, filtres, récapitulatif du panier) remises à leur place dans la page.
+
+Une zone qui change sans que ce soit un bug est recouverte d'un aplat rose (zone ignorée). C'est le cas des photos Instagram de l'accueil, qui changent à chaque post de Polène (le titre du bloc reste vérifié), et du bloc de recommandations du panier, titre compris (il s'appelle tantôt « Polène suggère », tantôt « Complétez votre panier »). Ce bloc a une hauteur fixe pendant la capture : sinon, selon les produits suggérés, tout le bas du panier se décale de quelques pixels. Les réglages sont dans `src/visuel.ts` et `src/visuel.css`.
+
+**Sensibilité** : aucun pixel différent n'est toléré, et une nuance de couleur compte à partir du seuil 0,2 (réglage par défaut de Playwright). Le seuil était à 0,3 tant que les collections étaient comparées (Safari y lissait les vignettes différemment à chaque passage). Avec 0,3, un header blanc décalé de 10 px sur le ciel clair de l'accueil iPhone passait inaperçu ; avec 0,2 il est détecté, sans fausse alerte sur les 3 pages restantes.
+
+**Démo des régressions** (`tests/regressions-injectees.spec.ts`) : le test casse lui-même la page juste avant la capture, sans toucher au site. Il décale le header de 10 px sur l'accueil, masque la photo de la fiche produit, masque son prix et fait déborder le titre du produit dans le panier. Chaque test doit échouer et montrer la différence en rouge. Un test vert voudrait dire qu'une régression est passée inaperçue. Dans le Rapport Polène, ces échecs s'affichent « Détecté » ; un échec dû à autre chose (limite d'appels Shopify, délai) s'affiche « Non vérifié ».
+
+## Les collections (`tests/structure-collections.spec.ts`)
+
+Collections Sacs (sans PLP break) et Crossbody (avec une grande photo dans la grille), en prod sur les 4 appareils. Pour chaque collection :
+1. la page s'ouvre (titre, bouton Filtres) ;
+2. chaque carte produit a un nom, un prix, un lien et une photo chargée (48 cartes au plus sur la première page) ;
+3. la grille a 4 colonnes sur ordinateur et 2 sur mobile, des cartes de même largeur, rien ne dépasse de l'écran ;
+4. chaque PLP break a sa photo chargée, est plus large qu'une carte et son lien répond.
+
+Ce test fait partie de `npm run test:prod`.
 
 ## Ce que les tests neutralisent
 
@@ -67,11 +131,19 @@ Chaque étape apparaît en français, avec une capture d'écran prise à la fin 
 ## Structure
 
 ```
-playwright.config.ts      Appareils, environnements, rapport
+playwright.config.ts      Appareils, environnements, rapports
 src/environments.ts       URL et réglages de la prod et de la préprod
 src/fixtures.ts           Neutralisations, captures par étape, diagnostic réseau
 src/pages/                Un fichier par type de page (en-tête, collection, produit, panier, checkout)
+src/shopify.ts            Appels directs à la boutique, avec nouvel essai si Shopify limite (code 429)
+src/rapport/              Rapport Polène : collecte des résultats (reporter.ts) et page du rapport (page/)
+scripts/                  Ouverture du rapport, archivage, sauvegarde des références
 tests/auth.setup.ts       Saisie du mot de passe préprod (une fois par lancement)
 tests/parcours-achat.spec.ts
+tests/structure-collections.spec.ts  Structure des collections (cartes, grille, PLP breaks)
 tests/demo-echec.spec.ts
+tests/visuel.spec.ts      Tests visuels (POC 2)
+tests/regressions-injectees.spec.ts  Démo des régressions détectées (POC 2.5)
+src/visuel.ts, visuel.css Stabilisation des pages avant capture
+references/               Captures de référence des tests visuels
 ```

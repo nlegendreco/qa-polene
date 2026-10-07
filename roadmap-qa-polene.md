@@ -22,7 +22,7 @@ Légende des intervenants : **QA**, **Claude Code**, **Devs**, **Équipe** (QA +
 
 ## Avancement
 
-> Mis à jour le 2 octobre 2026. **POC 1 validé par la QA.**
+> Mis à jour le 6 octobre 2026 (soir). **POC 1 validé par la QA. POC 2 : références reprises, 3 pages × 4 appareils stables, 8/8 régressions détectées, collections vérifiées par leur structure. Rapport Polène sur mesure (V1) à relire. Reste : critère des 10 minutes à la première MEP. Cartographie et passe exploratoire faites : classement codé / pixel / IA / manuel à relire.**
 
 | Étape | Statut | Détail |
 | --- | --- | --- |
@@ -33,7 +33,14 @@ Légende des intervenants : **QA**, **Claude Code**, **Devs**, **Équipe** (QA +
 | 1.5 Rapport | ✅ Fait | Étapes en français, capture par étape, vidéo, trace et requêtes lentes en cas d'échec |
 | 1.6 Échec volontaire | ✅ Fait | Démo `npm run test:demo-echec`, rapport jugé clair par la QA |
 | Profil client P1 | ✅ Fait | 60 rue du Louvre, 01 99 00 00 00, questionnaire « Bouche à oreille » enregistré (commande VVGWK0PJK) |
-| POC 2 | ⚪ Prochaine étape | Premier point à trancher : la référence visuelle (préprod et prod n'ont ni les mêmes textes ni les mêmes prix) |
+| Archive POC 1 | ✅ Fait | Lancement 8/8 conservé dans `archives/2026-10-02-poc1/` (hors Git), déroulé de démo dans [docs/demo-poc1.md](docs/demo-poc1.md) |
+| 2.1 Choisir les pages | ✅ Fait | Accueil, fiche Numéro Un noir grainé, panier avec ce produit. **Prod uniquement** (décision QA du 2 octobre 2026). Collections retirées des pixels le 6 octobre 2026 (stocks qui changent plusieurs fois par jour) : Sacs et Crossbody (avec PLP break) vérifiées par leur structure (`tests/structure-collections.spec.ts`, décision QA) |
+| 2.2 Stabiliser les captures | ✅ Fait | 10 passages de suite (160 captures) : 0 fausse alerte. 3 captures ont eu besoin du second essai automatique (2 ratés de dessin Safari, 1 page trop lente), 1 vraie anomalie passagère détectée (logos de paiement non chargés sous Safari) |
+| 2.3 Référence prod | ✅ Reprise | 6 octobre 2026, accord QA : accueil (nouvelle campagne, carrousels automatiques figés) et panier (bloc « Polène suggère » à hauteur fixe) repris, fiche produit inchangée. 12 captures. Anciennes références gardées dans `archives/references/<date-heure>/` (sauvegarde automatique avant chaque reprise). Seuil de couleur passé de 0,3 à 0,2 ; aucune fausse alerte sur 2 passages complets, 1 partiel et 1 panier seul (série de 10 à refaire avant la première MEP) |
+| 2.4 Format de rapport | ✅ V1 faite | Rapport Polène sur mesure, gratuit, en français (`npm run rapport:polene`) : tableau de bord avec statistiques et historique, liste filtrable, fiche de test avec vidéo, trace et comparateur visuel. Charte de polene-paris.com (polices, logo, couleurs). Argos et Allure écartés. À faire relire par la QA |
+| 2.5 Régressions injectées | ✅ Fait | 4 régressions × 2 appareils, 8/8 détectées (`npm run test:regressions`, 6 octobre 2026). Le prix masqué ne change que 44 à 45 pixels : aucune tolérance en nombre de pixels |
+| Cartographie du site | ✅ Fait | 6 octobre 2026 : 629 pages de la prod inventoriées, découpage en lots A (santé du site), B (invariants par page), C (pixel sur contenu figé), D (revue IA), à trancher par la QA |
+| Passe exploratoire | ✅ Fait | 6 octobre 2026 : 55 interactions × 4 appareils en prod, 17 pages représentatives × 4 appareils, compte client préprod (desktop + iPhone), sans commande. Classement par page dans [docs/automatisation-par-page.md](docs/automatisation-par-page.md) |
 
 ## Ce qui est déjà acté
 
@@ -155,10 +162,10 @@ Le POC est validé si toutes ces cases sont cochées :
 - [x] Le parcours passe sur les 4 appareils, en prod (jusqu'au checkout) et en préprod (jusqu'à la confirmation).
 - [x] 5 relances d'affilée donnent 5 fois le même résultat. *Mesuré en prod (66/68 sur l'ensemble des passages, 1 lenteur réseau) ; en préprod, pas de série de 5 pour éviter 20 commandes.*
 - [x] Un échec se comprend dans le rapport en moins de 5 minutes, sans aide d'un dev.
-- [ ] 10 passages visuels sans changement donnent 0 fausse alerte.
-- [ ] Les 4 régressions injectées sont toutes détectées.
-- [ ] Accepter un changement visuel attendu prend moins de 10 minutes.
-- [ ] Le format de rapport visuel est choisi (natif ou Argos).
+- [x] 10 passages visuels sans changement donnent 0 fausse alerte. *Mesuré le 2 octobre 2026 en prod, avec un second essai automatique (3 captures sur 160 en ont eu besoin).*
+- [x] Les 4 régressions injectées sont toutes détectées. *8/8 (desktop Chrome + iPhone), revérifié le 6 octobre 2026 avec les nouvelles références.*
+- [ ] Accepter un changement visuel attendu prend moins de 10 minutes. *À mesurer à la première MEP (décision QA du 6 octobre 2026).*
+- [x] Le format de rapport visuel est choisi. *Rapport Polène sur mesure, gratuit (décision QA du 6 octobre 2026, Allure essayé puis écarté). V1 faite le jour même.*
 
 ---
 
@@ -322,6 +329,14 @@ Objectif : vérifier les emails envoyés aux clients (confirmation de commande e
 - **Notifications test Shopify** : Paramètres → Notifications → « Envoyer une notification test », pour recevoir chaque template sans passer de commande.
 - **Boîte de test lisible par API** quand on automatise la réception : testmail.app (adresse par tag, à partir de 9 $) ou Mailosaur (essai gratuit 14 jours, puis 9 à 79 $/mois). Une adresse par profil client.
 - **Lire la boîte pro** : la messagerie est sur Microsoft 365, ce qui demande une autorisation du service informatique. Non retenu pour l'instant.
+
+### Un rapport plus lisible, aux couleurs de Polène
+
+Objectif (demande de la QA, 2 octobre 2026) : un rapport plus user-friendly et moins technique que le rapport HTML de Playwright, avec les informations choisies par la QA.
+
+- **Allure essayé puis écarté** (6 octobre 2026) : la QA y perdait des fonctions du rapport Playwright (vidéo en cas d'échec, comparaison visuelle) et le trouvait moins lisible. Seuls les graphiques ont plu (voir d'un coup d'œil si tout va bien). Retiré du projet.
+- **Rapport Polène sur mesure** ✅ V1 le 6 octobre 2026 (`npm run rapport:polene`), gratuit, codé dans le dépôt (`src/rapport/`) : tableau de bord (verdict, statuts, test × appareil, historique des résultats et des durées, raisons des échecs, tests à surveiller, tests les plus longs, commandes créées), liste filtrable, fiche de test (erreur en français, étapes et captures, essais, vidéo, trace, comparateur visuel côte à côte / curseur / différence). Démos : « Détecté » / « Non vérifié ». À faire relire par la QA.
+- **Garder le rapport Playwright** pour le détail technique, lié depuis chaque fiche.
 
 ## À décider plus tard
 
