@@ -6,3 +6,8 @@ playwright-report/
 .DS_Store
 playwright-report-demo-echec/
 test-results-demo-echec/
+archives/
+playwright-report-visuel/
+test-results-visuel/
+playwright-report-regressions/
+test-results-regressions/

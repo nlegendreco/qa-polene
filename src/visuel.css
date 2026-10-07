@@ -1,0 +1,54 @@
+/* Appliqué uniquement au moment des captures visuelles (POC 2). */
+
+/* Bulle de chat Zendesk : widget tiers, hors du thème. */
+iframe#launcher,
+iframe[title*="messagerie"],
+iframe[title*="messaging"] {
+  visibility: hidden !important;
+}
+
+/* Vidéos (ciel de la home…) : une image de vidéo n'est jamais dessinée deux fois pareil, surtout sous Safari.
+   On les cache pour vérifier l'image fixe placée dessous et ce qui est posé dessus. */
+video {
+  visibility: hidden !important;
+}
+
+/* Photos Instagram de l'accueil (application Instafeed) : derniers posts de Polène, leur nombre et leur format
+   changent à chaque publication. Cachées, le bloc et son titre restent vérifiés. */
+.instagram img {
+  visibility: hidden !important;
+}
+
+/* Bandeaux de sacs qui défilent tout seuls (accueil, campagne d'octobre 2026) : la position change à chaque capture.
+   Figés sur leur première position, les sacs restent vérifiés. Seuls ces carrousels ont data-autoscroll="true". */
+component-carousel[data-autoscroll="true"] .component-carousel__slides,
+component-carousel[data-autoscroll="true"] .component-carousel__slide {
+  transform: none !important;
+}
+
+/* Panier : le bloc « Polène suggère » est ignoré (aplat rose), mais sa hauteur suit les produits suggérés
+   (370 à 382 px selon les noms) et décale tout le bas de la page. Hauteur fixe, plus grande que le contenu. */
+.cart__inner--recommendation product-recommendations {
+  height: 420px !important;
+  overflow: hidden !important;
+}
+
+/* Curseur personnalisé du thème : suit la souris, sa position varie d'une capture à l'autre. */
+.cursor {
+  visibility: hidden !important;
+}
+
+/* Barres fixées en bas de l'écran sur mobile (ajout au panier, filtres, récapitulatif du panier) :
+   dans une capture pleine page elles tomberaient au milieu de l'image. On les remet à leur place dans la page. */
+.product-add-to-cart,
+collection-toggles,
+.cart__inner--summary {
+  position: static !important;
+}
+
+/* La barre de filtres fait la largeur de l'écran : remise dans la page (qui a une marge de 12 px), elle déborderait
+   et le navigateur mobile dézoomerait toute la page, ce qui redessine toutes les photos. */
+collection-toggles,
+collection-toggles > * {
+  max-width: 100% !important;
+}

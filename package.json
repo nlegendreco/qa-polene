@@ -9,7 +9,12 @@
     "test:demo-echec": "DEMO_ECHEC=1 QA_ENVS=prod PLAYWRIGHT_HTML_OUTPUT_DIR=playwright-report-demo-echec playwright test --grep @demo-echec --project \"prod · desktop-chrome\" --project \"prod · iphone\" --output test-results-demo-echec",
     "rapport": "playwright show-report",
     "typecheck": "tsc",
-    "rapport:demo-echec": "playwright show-report playwright-report-demo-echec"
+    "rapport:demo-echec": "playwright show-report playwright-report-demo-echec",
+    "test:visuel": "VISUEL=1 QA_ENVS=prod PLAYWRIGHT_HTML_OUTPUT_DIR=playwright-report-visuel playwright test --grep @visuel --workers 2 --retries 1 --output test-results-visuel",
+    "test:visuel:maj": "node scripts/sauvegarder-references.mjs && VISUEL=1 QA_ENVS=prod PLAYWRIGHT_HTML_OUTPUT_DIR=playwright-report-visuel playwright test --grep @visuel --workers 2 --output test-results-visuel --update-snapshots",
+    "rapport:visuel": "playwright show-report playwright-report-visuel",
+    "test:regressions": "REGRESSIONS=1 QA_ENVS=prod PLAYWRIGHT_HTML_OUTPUT_DIR=playwright-report-regressions playwright test --grep @regressions --project \"prod · desktop-chrome\" --project \"prod · iphone\" --output test-results-regressions",
+    "rapport:regressions": "playwright show-report playwright-report-regressions"
   },
   "author": "",
   "license": "ISC",
