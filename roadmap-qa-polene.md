@@ -22,18 +22,18 @@ Légende des intervenants : **QA**, **Claude Code**, **Devs**, **Équipe** (QA +
 
 ## Avancement
 
-> Mis à jour le 6 octobre 2026 (soir). **POC 1 validé par la QA. POC 2 : références reprises, 3 pages × 4 appareils stables, 8/8 régressions détectées, collections vérifiées par leur structure. Rapport Polène sur mesure (V1) à relire. Reste : critère des 10 minutes à la première MEP. Cartographie et passe exploratoire faites : classement codé / pixel / IA / manuel à relire.**
+> Mis à jour le 7 octobre 2026. **POC 1 et POC 2 validés par la QA. Exécution de référence archivée (`archives/2026-10-07-poc/`, voir [docs/demo-poc.md](docs/demo-poc.md)). Reste : critère des 10 minutes à la première MEP. Cartographie et passe exploratoire faites : classement codé / pixel / IA / manuel à relire.**
 
 | Étape | Statut | Détail |
 | --- | --- | --- |
 | 1.1 Préparer le dossier | ✅ Fait | Projet dans `~/Developer/qa`, dépôt GitHub `nlegendreco/qa-polene` |
 | 1.2 Configurer les 4 appareils | ✅ Fait | Desktop Chrome, desktop Safari, iPhone 15, Pixel 7 |
-| 1.3 Neutraliser ce qui perturbe | ✅ Fait | Bandeau cookies, AB Tasty, Klaviyo, pixels publicitaires. Popup de géolocalisation pas encore rencontrée depuis la France |
+| 1.3 Neutraliser ce qui perturbe | ✅ Fait | Bandeau cookies, AB Tasty, Klaviyo, pixels publicitaires. Fenêtre de géolocalisation de la préprod (« It looks like you're in France… ») fermée automatiquement depuis le 7 octobre 2026, jour où elle a bloqué les 4 parcours préprod |
 | 1.4 Parcours d'achat nominal | ✅ Fait | 8/8 : prod jusqu'au checkout, préprod jusqu'à la confirmation de commande et au questionnaire « Comment avez-vous connu Polène Paris ? » (10 étapes) |
 | 1.5 Rapport | ✅ Fait | Étapes en français, capture par étape, vidéo, trace et requêtes lentes en cas d'échec |
 | 1.6 Échec volontaire | ✅ Fait | Démo `npm run test:demo-echec`, rapport jugé clair par la QA |
 | Profil client P1 | ✅ Fait | 60 rue du Louvre, 01 99 00 00 00, questionnaire « Bouche à oreille » enregistré (commande VVGWK0PJK) |
-| Archive POC 1 | ✅ Fait | Lancement 8/8 conservé dans `archives/2026-10-02-poc1/` (hors Git), déroulé de démo dans [docs/demo-poc1.md](docs/demo-poc1.md) |
+| Archive des POC | ✅ Fait | 7 octobre 2026 : exécution de référence des deux POC (tnr 17/17 dont 4 commandes préprod, visuel 12/12, régressions 8/8 détectées, démo d'échec) dans `archives/2026-10-07-poc/` (hors Git, zip sur le drive interne), sommaire par `npm run rapport:polene -- archives/2026-10-07-poc`. Déroulé de démo dans [docs/demo-poc.md](docs/demo-poc.md) |
 | 2.1 Choisir les pages | ✅ Fait | Accueil, fiche Numéro Un noir grainé, panier avec ce produit. **Prod uniquement** (décision QA du 2 octobre 2026). Collections retirées des pixels le 6 octobre 2026 (stocks qui changent plusieurs fois par jour) : Sacs et Crossbody (avec PLP break) vérifiées par leur structure (`tests/structure-collections.spec.ts`, décision QA) |
 | 2.2 Stabiliser les captures | ✅ Fait | 10 passages de suite (160 captures) : 0 fausse alerte. 3 captures ont eu besoin du second essai automatique (2 ratés de dessin Safari, 1 page trop lente), 1 vraie anomalie passagère détectée (logos de paiement non chargés sous Safari) |
 | 2.3 Référence prod | ✅ Reprise | 6 octobre 2026, accord QA : accueil (nouvelle campagne, carrousels automatiques figés) et panier (bloc « Polène suggère » à hauteur fixe) repris, fiche produit inchangée. 12 captures. Anciennes références gardées dans `archives/references/<date-heure>/` (sauvegarde automatique avant chaque reprise). Seuil de couleur passé de 0,3 à 0,2 ; aucune fausse alerte sur 2 passages complets, 1 partiel et 1 panier seul (série de 10 à refaire avant la première MEP) |

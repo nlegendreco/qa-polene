@@ -5,7 +5,7 @@ Tests automatisés (Playwright, TypeScript) du site Shopify [polene-paris.com](h
 - Feuille de route détaillée et avancement : [roadmap-qa-polene.md](roadmap-qa-polene.md)
 - Installation et commandes : [README.md](README.md)
 - Clients fictifs utilisés par les tests : [docs/profils-clients.md](docs/profils-clients.md)
-- Présenter le POC 1 (exécution archivée, déroulé de démo) : [docs/demo-poc1.md](docs/demo-poc1.md)
+- Présenter les POC (exécution archivée, déroulé de démo) : [docs/demo-poc.md](docs/demo-poc.md)
 - Ce qui est automatisable par page (codé, pixel, IA, manuel) et résultats de la passe du 6 octobre 2026 : [docs/automatisation-par-page.md](docs/automatisation-par-page.md)
 
 ## Règles de travail
@@ -38,14 +38,16 @@ npm run test:prod                       # prod, 4 appareils, sans commande
 npm run test:preprod                    # préprod, 4 appareils = 4 commandes de test
 npx playwright test --project "prod · iphone" --headed
 npx playwright test --ui                # suivi visuel étape par étape
-npm run rapport:polene                  # Rapport Polène du dernier lancement (tableau de bord + détail), servi en local
-npm run rapport:polene -- visuel        # … des tests visuels (aussi : regressions, demo-echec, ou un chemin d'archive)
-npm run rapport                         # rapport Playwright d'origine (détail technique)
+npm run rapport:polene                  # sommaire des dernières séries (une carte par série), servi en local
+npm run rapport:polene -- visuel        # Rapport Polène d'une série (tnr, visuel, regressions, demo-echec)
+npm run rapport:polene -- archives/2026-10-07-poc   # sommaire d'une archive (exécution de référence des POC)
+npm run rapport                         # rapport Playwright d'origine de la série tnr (détail technique)
 npm run test:demo-echec                 # échec volontaire (POC 1.6)
 npm run test:visuel                     # POC 2 : 3 pages × 4 appareils comparées à references/ (prod)
 npm run test:visuel:maj                 # sauvegarde references/ dans archives/references/<date>/, puis reprend la référence (accord QA)
 npm run test:regressions                # POC 2.5 : 4 régressions injectées, les 8 tests doivent échouer
-npm run archiver -- <nom>               # conserve les rapports dans archives/<date>-<nom>/ (hors Git)
+npm run archiver -- <nom>               # copie les rapports de toutes les séries dans archives/<date>-<nom>/ (hors Git)
+SERIE=essai npx playwright test …       # essai rangé dans resultats/essai/, sans remplacer le dernier lancement
 npm run typecheck
 ```
 
@@ -61,12 +63,12 @@ src/shopify.ts         appelShopify : appel direct à la boutique, réessaie sur
 src/price.ts           Lecture des prix quel que soit le format (640 €, €495,95, $880…)
 src/client-test.ts     Charge le client fictif (data/client-test.json + PREPROD_EMAIL)
 src/rapport/           Rapport Polène : reporter.ts (données + historique), types.ts, page/ (index.html, app.css, app.js, logo-polene.svg)
-scripts/               ouvrir-rapport (serveur local), archiver-rapport, sauvegarder-references
+scripts/               ouvrir-rapport (serveur local + sommaire), archiver-rapport, sauvegarder-references
 tests/                 auth.setup.ts, parcours-achat, structure-collections, demo-echec, visuel, regressions-injectees (.spec.ts)
 references/            Captures de référence visuelles : references/<page>/<projet>.png
 ```
 
-Rapport Polène (`src/rapport/`) : écrit à chaque lancement dans `rapport-polene[-<série>]/` (même suffixe que le rapport Playwright de la série), avec les pièces jointes copiées dans `donnees/`. L'historique (40 derniers lancements par série) est dans `historique-rapports/` : il alimente les graphiques. Les deux sont hors Git. Page statique en JS sans dépendance ; la trace s'ouvre seulement si le rapport est servi par `npm run rapport:polene` (le serveur ne laisse lire que les dossiers `rapport-polene*` et `playwright-report*`). Démos (`@regressions`, `@demo-echec`) : un échec y compte comme « Détecté », sauf s'il vient d'autre chose qu'une vérification (429, délai) : « Non vérifié ».
+Résultats : chaque série (`tnr` par défaut, `visuel`, `regressions`, `demo-echec`, déduite de `VISUEL`, `REGRESSIONS`, `DEMO_ECHEC` ou forcée par `SERIE`) range tout dans `resultats/<série>/`, hors Git : `rapport-polene/`, `playwright-report/`, `test-results/` et `historique.json` (40 derniers lancements, pour les graphiques). Rapport Polène (`src/rapport/`) : pièces jointes copiées dans `donnees/`, page statique en JS sans dépendance ; la trace s'ouvre seulement si le rapport est servi par `npm run rapport:polene` (le serveur ne sert que `resultats/` ou l'archive demandée, jamais le projet, et génère le sommaire des séries à la racine). Démos (`@regressions`, `@demo-echec`) : un échec y compte comme « Détecté », sauf s'il vient d'autre chose qu'une vérification (429, délai) : « Non vérifié ».
 
 Charte du rapport, relevée sur polene-paris.com le 6 octobre 2026 (le Figma « Design System » ne contenait qu'une couverture et deux couleurs) :
 - **Polices** chargées depuis le CDN du thème (`cdn/shop/t/34/assets/`, ouvert à tous les sites) : Canela Light (`canelaweb-light`, titres) et Sackers (menu de l'en-tête et boutons, sur ordinateur seulement : trop large sur téléphone). Ce sont des polices sous licence : ne pas les copier dans le dépôt. Hors ligne ou si le thème change de numéro (`t/34`), les polices de secours prennent le relais.
@@ -111,42 +113,34 @@ Conventions :
 - **iPhone émulé (WebKit) en capture pleine page** : en densité 3, les photos sont réduites différemment d'un passage à l'autre (écarts sur toute la collection), d'où `deviceScaleFactor: 1` dans les tests visuels. Même ainsi, Safari oublie parfois de dessiner des photos chargées en bas d'une page de 9 000 px (1 fois sur 8) : `--retries 1` sur `test:visuel`, jamais sur la démo des régressions.
 - **Vérifier une capture** : `sips -c` de macOS recadre au centre et ignore le décalage. Recadrer autrement avant de conclure qu'une capture est fausse.
 - **Compte client préprod** : créé le 6 octobre 2026, email du client de test suffixé `+qacompte`, identifiants dans `.auth/compte-preprod.json` (hors Git). Contient une adresse fictive impossible à supprimer. Mot de passe oublié : un essai par jour au plus (« Too many attempts »).
-- **Fenêtre de géolocalisation préprod** : `theme-geo-suggestion component-modal.active [role=dialog]`, bouton « Close modal ». Elle recouvre la page : la fermer par `addLocatorHandler` sur la fenêtre, pas sur `theme-geo-suggestion` (élément sans taille).
+- **Fenêtre de géolocalisation préprod** : « It looks like you're in France… », bouton « Close modal ». D'abord `theme-geo-suggestion component-modal.active [role=dialog]`, puis depuis le 7 octobre 2026 `component-modal.active[data-ref="theme-store-redirect-modal"]`, qui a bloqué les 4 parcours préprod. Elle recouvre la page : fermée par `addLocatorHandler` sur la fenêtre (`src/fixtures.ts`), pas sur `theme-geo-suggestion` (élément sans taille).
 - **Flèches de carrousel** (accueil, bandeau bijoux, galeries boutiques) : boutons de 1 × 1 px réservés aux lecteurs d'écran, impossibles à cliquer. Les tester au clavier (`focus()` puis Entrée).
 - **Pièges d'émulation** : WebKit (Safari, iPhone) renvoie un `innerText` vide pour les cartes de collection encore hors écran, utiliser `textContent`. L'iPhone émulé refuse `mouse.wheel`, utiliser `window.scrollBy`. Sur mobile, le header fixe recouvre un bouton amené en haut d'écran : le centrer avant de cliquer. Le blocage d'Elevar provoque « Importing a module script failed » sous WebKit, à filtrer des erreurs JS.
 - **Bot protection** : en local, aucun blocage. Depuis une CI (IP de datacenter), il faudra les signatures Web Bot Auth de Shopify (une par domaine, valables 3 mois).
 
 ## Suivi
 
-> Dernière mise à jour : 6 octobre 2026 (soir).
+> Dernière mise à jour : 7 octobre 2026.
 
 ### Avancement
 
-- **POC 1 (parcours + rapport)** : ✅ validé par la QA le 2 octobre 2026. Parcours 8/8 (prod + préprod × 4 appareils, ~2 min), 10 étapes en préprod dont le questionnaire d'acquisition. Profil P1 validé.
-- **POC 2 (tests visuels)** : presque terminé. 3 pages × 4 appareils en prod (accueil, fiche produit, panier), références reprises le 6 octobre 2026 avec l'accord de la QA (anciennes gardées dans `archives/references/`), seuil 0,2 (1 passage complet 12/12 avant la hauteur fixe du bloc du panier ; depuis : 1 passage complet 12/12, 1 partiel 9/9 sans Chrome, le panier seul 4/4 ; série de 10 à refaire avant la première MEP), 8/8 régressions injectées détectées. Collections vérifiées par leur structure (8/8). Rapport Polène sur mesure V1 (`npm run rapport:polene`), habillé avec la charte du site (polices, logo, couleurs), Allure retiré. Reste : critère « 10 minutes » mesuré à la première MEP (décision QA), relecture du rapport par la QA.
+- **POC 1 (parcours + rapport)** : ✅ validé par la QA le 2 octobre 2026. Parcours prod + préprod × 4 appareils, 10 étapes en préprod dont le questionnaire d'acquisition. Profil P1 validé.
+- **POC 2 (tests visuels)** : ✅ validé par la QA le 7 octobre 2026. 3 pages × 4 appareils en prod, seuil 0,2, 8/8 régressions injectées détectées, collections vérifiées par leur structure, Rapport Polène sur mesure.
+- **Exécution de référence des POC** (7 octobre 2026) : `archives/2026-10-07-poc/` (hors Git, zip à copier sur le drive interne), ouverte par `npm run rapport:polene -- archives/2026-10-07-poc`. Code des POC : tag Git `poc-valides`. tnr 17/17 (commandes préprod 553GLKT54, FJ25K80G3, IM8IXTTU8, DXFTKEXQR), visuel 12/12, régressions 8/8 détectées, démo d'échec 2/2. Détail et déroulé : [docs/demo-poc.md](docs/demo-poc.md). Anciennes archives (2 octobre) et rapports à la racine mis à la Corbeille du Mac le 7 octobre.
 - **Cartographie et passe exploratoire** (6 octobre 2026) : 629 pages inventoriées, interactions jouées sur 4 appareils, compte client préprod. Aucune panne trouvée, 11 nouveaux constats (13 à 23). Classement codé / pixel / IA / manuel dans [docs/automatisation-par-page.md](docs/automatisation-par-page.md).
 
 ### Prochaines actions
 
-- [x] QA : rapport et démo d'échec jugés clairs (critère Go/No-Go 1.6), 2 octobre 2026.
-- [x] Profil P1 validé jusqu'à la confirmation (commandes T19558 et J8GYD9V36, 2 octobre 2026).
-- [x] Questionnaire d'acquisition validé (commande VVGWK0PJK, 2 octobre 2026) : le test attend la réponse du serveur `/api/checkout/order-source`.
+- [ ] QA : déposer `archives/2026-10-07-poc.zip` (492 Mo) sur le drive interne de l'équipe (pas sur GitHub : captures avec l'email du client de test).
 - [ ] QA : confirmer dans l'admin préprod que le client de la commande VVGWK0PJK a bien « Acquisition Source » = Bouche à oreille.
 - [ ] Décider s'il faut réécrire l'historique Git pour retirer l'email du premier commit (force push, irréversible : seulement avec confirmation).
-- [x] POC 2 : référence visuelle = prod uniquement pour l'instant (décision QA, 2 octobre 2026).
 - [ ] QA : relire les 12 captures de `references/` reprises le 6 octobre 2026 (« état validé »).
 - [ ] Refaire une série de 10 passages visuels au seuil 0,2 (critère 2.2) avant la première MEP, en espaçant à cause de la limite Shopify.
-- [x] Références reprises le 6 octobre 2026 (accord QA « relance toi-même ») : accueil (nouvelle campagne validée par la QA) et panier ; fiche produit inchangée. Anciennes captures gardées : `archives/2026-10-06-references-avant-maj/` et `archives/references/<date-heure>/`.
-- [x] Collections : vérifiées par leur structure plutôt qu'en pixels (décision QA du 6 octobre 2026), `tests/structure-collections.spec.ts`, 8/8.
-- [x] Format de rapport : Rapport Polène sur mesure, gratuit (6 octobre 2026). Argos écarté ; Allure essayé puis retiré (perte de la vidéo et des comparaisons visuelles, moins lisible, seuls les graphiques ont plu).
-- [ ] QA : relire le Rapport Polène (`npm run rapport:polene`, `-- visuel`, `-- regressions`, `-- demo-echec`) et dire ce qui manque ou gêne.
-- [x] Critère « accepter un changement visuel en moins de 10 minutes » : à mesurer à la première MEP (décision QA, 6 octobre 2026).
-- [x] Références stockées dans Git (décision QA du 7 octobre 2026) : 13 captures, 25 Mo, jusqu'à autant à chaque reprise après MEP. Git LFS reste possible plus tard (réécriture de l'historique).
-- [ ] QA : mesurer le temps pour accepter un changement visuel attendu (critère < 10 min).
+- [ ] QA : relire le Rapport Polène et le sommaire (`npm run rapport:polene`) et dire ce qui manque ou gêne.
+- [ ] QA : mesurer le temps pour accepter un changement visuel attendu (critère < 10 min), à la première MEP.
 - [ ] Discuter de l'organisation des profils clients (un profil par cas de test, convention de nommage, adresse email par profil).
 - [ ] QA : trancher le découpage proposé après la cartographie de la prod du 6 octobre 2026 (artefact « Cartographie QA Polène ») : A santé du site (codé), B invariants par type de page (codé), C pixel sur contenu figé, D revue IA des pages visuelles.
 - [ ] Revoir l'exhaustivité de la page témoin préprod (toutes les sections du thème, cas limites).
-- [x] Passe exploratoire avec interactions (prod 4 appareils, préprod avec compte client, 17 pages représentatives), 6 octobre 2026 : [docs/automatisation-par-page.md](docs/automatisation-par-page.md). Aucune commande créée.
 - [ ] QA : relire `docs/automatisation-par-page.md` et choisir les vérifications à intégrer en premier.
 - [ ] Accès admin préprod : la QA n'a pas le droit d'installer le connecteur Shopify Claude (6 octobre 2026). Demander au propriétaire de la boutique `asia-polene` soit l'installation du connecteur, soit une clé d'API d'administration en lecture (produits, champs personnalisés, clients, commandes) à ranger dans `.env` (roadmap, phase 1.3). Débloque : lecture du catalogue sans limite, états coming soon / précommande, vérification des commandes, nettoyage du compte de test.
 - [ ] Décider si les scripts de la passe exploratoire (aujourd'hui temporaires, hors dépôt) doivent rejoindre le dépôt.
@@ -184,6 +178,9 @@ Conventions :
 - Le périmètre de chaque release (Jira) doit être connu avant le TNR, pour ne pas compter les changements voulus comme des échecs. On commence par un simple fichier de périmètre.
 - Playwright reste le langage des tests. TestMu AI ou BrowserStack éventuellement plus tard, pour de vrais iPhone. Appium et Maestro écartés (pas d'app native).
 - Email du client de test : adresse `+qautomatic` de la QA, dans `.env` uniquement.
+- Tests visuels : référence = prod uniquement pour l'instant (2 octobre 2026). Références stockées dans Git (7 octobre 2026, 25 Mo par reprise ; Git LFS possible plus tard, avec réécriture de l'historique).
+- Rapport : Rapport Polène sur mesure, gratuit (6 octobre 2026). Argos écarté ; Allure essayé puis retiré (perte de la vidéo et des comparaisons visuelles, moins lisible).
+- Exécutions conservées : une archive par jalon (`npm run archiver -- <nom>`), hors Git, zip sur le drive interne ; le code correspondant est repéré par un tag Git.
 
 ### Pistes gardées pour plus tard
 
