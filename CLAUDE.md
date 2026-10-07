@@ -7,6 +7,7 @@ Tests automatisés (Playwright, TypeScript) du site Shopify [polene-paris.com](h
 - Clients fictifs utilisés par les tests : [docs/profils-clients.md](docs/profils-clients.md)
 - Présenter les POC (exécution archivée, déroulé de démo) : [docs/demo-poc.md](docs/demo-poc.md)
 - Ce qui est automatisable par page (codé, pixel, IA, manuel) et résultats de la passe du 6 octobre 2026 : [docs/automatisation-par-page.md](docs/automatisation-par-page.md)
+- Produits fixes de la préprod (phase 1) et contrôle de leur état : [docs/produits-fixes.md](docs/produits-fixes.md)
 
 ## Règles de travail
 
@@ -35,7 +36,8 @@ Autres boutiques de prod (pas encore testées) : `uk-polene`, `jp-polene`… une
 
 ```bash
 npm run test:prod                       # prod, 4 appareils, sans commande
-npm run test:preprod                    # préprod, 4 appareils = 4 commandes de test
+npm run test:preprod                    # préprod, 4 appareils = 4 commandes de test (+ contrôle des produits fixes)
+npm run test:donnees                    # préprod : état des 9 produits fixes, Chrome seul, sans commande (à tout moment)
 npx playwright test --project "prod · iphone" --headed
 npx playwright test --ui                # suivi visuel étape par étape
 npm run rapport:polene                  # sommaire des dernières séries (une carte par série), servi en local
@@ -62,9 +64,10 @@ src/visuel.ts|css      Stabilisation avant capture visuelle (images, vidéos, d�
 src/shopify.ts         appelShopify : appel direct à la boutique, réessaie sur la limite 429 puis message clair
 src/price.ts           Lecture des prix quel que soit le format (640 €, €495,95, $880…)
 src/client-test.ts     Charge le client fictif (data/client-test.json + PREPROD_EMAIL)
+src/produits-fixes.ts  Charge les produits fixes de la préprod (data/produits-fixes.json : handle, état prévu, tailles…)
 src/rapport/           Rapport Polène : reporter.ts (données + historique), types.ts, page/ (index.html, app.css, app.js, logo-polene.svg)
 scripts/               ouvrir-rapport (serveur local + sommaire), archiver-rapport, sauvegarder-references
-tests/                 auth.setup.ts, parcours-achat, structure-collections, demo-echec, visuel, regressions-injectees (.spec.ts)
+tests/                 auth.setup.ts, parcours-achat, structure-collections, sante-donnees, demo-echec, visuel, regressions-injectees (.spec.ts)
 references/            Captures de référence visuelles : references/<page>/<projet>.png
 ```
 
@@ -83,7 +86,8 @@ Conventions :
 - Localiser par rôle et nom accessible (`getByRole`), avec des expressions qui acceptent FR et EN (la préprod mélange les deux).
 - Chemins relatifs à l'URL de base (`'cart'`, `'products/<handle>'`), jamais `'/cart'`, sinon le préfixe `/fr-fr/` saute.
 - Comparer les prix en centimes via `parsePriceToCents`. Le prix de référence vient du JSON Shopify `products/<handle>.js`.
-- Étiquettes : `@smoke` (parcours MEP), `@tnr` (non-régression), `@demo-echec`, `@visuel` et `@regressions` (exclus par défaut, activés par `DEMO_ECHEC=1`, `VISUEL=1` et `REGRESSIONS=1`). Ne pas créer de test temporaire étiqueté `@visuel` pendant une série : il serait ramassé.
+- Produits fixes préprod : projet à part `preprod · donnees` (Chrome seul, appareil « Données préprod » dans le rapport), exclu des projets par appareil (`testIgnore`). Un test préprod qui a besoin d'un état précis (rupture, précommande…) prend son produit par `produitFixe('P04')`, jamais un handle écrit en dur.
+- Étiquettes : `@smoke` (parcours MEP), `@tnr` (non-régression), `@donnees` (produits fixes), `@demo-echec`, `@visuel` et `@regressions` (exclus par défaut, activés par `DEMO_ECHEC=1`, `VISUEL=1` et `REGRESSIONS=1`). Ne pas créer de test temporaire étiqueté `@visuel` pendant une série : il serait ramassé.
 - Ne jamais reprendre la référence visuelle (`--update-snapshots`) sans l'accord de la QA : c'est son « état validé ». Toujours lancer `npm run test:visuel` avant `test:visuel:maj` et regarder les écarts : la mise à jour remplace les captures différentes sans les montrer. `test:visuel:maj` sauvegarde d'abord toutes les références dans `archives/references/<date-heure>/` (la QA veut garder les anciennes captures) ; pour une seule page, lancer `node scripts/sauvegarder-references.mjs` avant. Vérifier ensuite qu'aucune page mobile n'est plus large que l'écran (une capture iPhone doit faire 393 px de large).
 - Collections : vérifiées par leur structure (`tests/structure-collections.spec.ts` : cartes, nom, prix, lien, photo, colonnes, PLP breaks), pas en pixels (décision QA du 6 octobre 2026).
 - Messages d'assertion en français, compréhensibles par la QA.
@@ -94,7 +98,8 @@ Conventions :
 - **Compteur panier** : texte masqué « Shopping cart with N items » dans le lien panier du header.
 - **Menu mobile** : toucher une catégorie ouvre un sous-menu, il faut ensuite toucher « Voir tout ».
 - **Ajout au panier** : la notification `component-cart-notification.is-active` apparaît. Le bouton de la fiche est `.cta-primary-add-to-cart` (attribut `data-state` : submit, disabled, modal).
-- **États produit** : en stock, tailles, tailles partielles, rupture (« Être prévenu(e) »), coming soon (modale, métachamp), précommande (`properties[_is_preorder]`, expire seule après sa date), nouveauté (`LABEL:NEW`). Coming soon et précommande ne sont pas dans le JSON public.
+- **États produit** : en stock, tailles, tailles partielles, rupture (« Être prévenu(e) »), coming soon (modale, métachamp), précommande (`properties[_is_preorder]`, expire seule après sa date), nouveauté (`LABEL:NEW`). Coming soon et précommande ne sont pas dans le JSON public : sans accès admin, les lire sur les cartes de `collections/all` (`data-tracking-state` : active, disabled, coming-soon, preorder ; 10 pages suffisent) plutôt que fiche par fiche (500 fiches de 450 Ko, plus de 40 min).
+- **Nouvelle fiche produit en préprod** (déployée le 7 octobre 2026 vers 10 h 40, même thème `pp-polene`) : menu « Select size » au lieu de la fenêtre « Choose your size », vignettes coloris en carrousel (« Cyme Mini - Textured Camel, 1 of 24 ») au lieu de « Explore all (24) », onglet « Size & fit ». Bouton `.cta-primary-add-to-cart` : `data-state` active, inactive (taille à choisir), disabled, coming-soon, preorder (ancienne fiche : submit, modal). Les deux versions alternent parce que l'équipe utilise la fonction **Roll Out** de Shopify en préprod pour comparer l'ancienne et la nouvelle fiche : chaque nouveau navigateur de test peut tomber sur l'une ou l'autre. Le parcours d'achat préprod n'a pas été relancé sur la nouvelle fiche (commandes).
 - **A/B tests en préprod** : la préprod peut contenir un A/B test en cours de déploiement (ex. 2 octobre 2026 : bouton « Add to cart - <nom du produit> » sur la fiche produit). Un écart de libellé n'est donc pas forcément un bug : vérifier avec l'équipe avant de corriger le test.
 - **Questionnaire d'acquisition** : extension checkout `source-survey` de l'app Polène `polene-opc-pp`. À l'envoi, elle poste `{source, order}` sur `<APP_URL>/api/checkout/order-source` (préprod : `https://one-page-checkout-pp.vercel.app`). Rien ne part si aucune réponse n'est enregistrée. Deux instances (une desktop, une mobile).
 - **Checkout** : bloc Contact spécifique à Polène avec civilité (M., Mme, Mx), prénom et nom obligatoires. Cases newsletter et SMS pré-cochées. Le total existe en double (résumé mobile replié + colonne desktop). Confirmation précédée de « En cours de traitement… ». La page de confirmation affiche un questionnaire « Comment avez-vous connu Polène Paris ? » (10 réponses, ordre aléatoire à chaque affichage, bouton « Envoyer »).
@@ -127,10 +132,15 @@ Conventions :
 - **POC 1 (parcours + rapport)** : ✅ validé par la QA le 2 octobre 2026. Parcours prod + préprod × 4 appareils, 10 étapes en préprod dont le questionnaire d'acquisition. Profil P1 validé.
 - **POC 2 (tests visuels)** : ✅ validé par la QA le 7 octobre 2026. 3 pages × 4 appareils en prod, seuil 0,2, 8/8 régressions injectées détectées, collections vérifiées par leur structure, Rapport Polène sur mesure.
 - **Exécution de référence des POC** (7 octobre 2026) : `archives/2026-10-07-poc/` (hors Git, zip à copier sur le drive interne), ouverte par `npm run rapport:polene -- archives/2026-10-07-poc`. Code des POC : tag Git `poc-valides`. tnr 17/17 (commandes préprod 553GLKT54, FJ25K80G3, IM8IXTTU8, DXFTKEXQR), visuel 12/12, régressions 8/8 détectées, démo d'échec 2/2. Détail et déroulé : [docs/demo-poc.md](docs/demo-poc.md). Anciennes archives (2 octobre) et rapports à la racine mis à la Corbeille du Mac le 7 octobre.
+- **Phase 1 · préprod déterministe** (démarrée le 7 octobre 2026) : 9 produits fixes validés par la QA (`data/produits-fixes.json`, pas de P10 « moyens de paiement » : carte seule en préprod), test de santé des données `npm run test:donnees` fait (1.5 ✅, 4 passages verts, détection vérifiée en faussant P03 et P04). Piste à l'étude : une collection QA en préprod regroupant ces produits. Restent : convention d'équipe (1.2), accès admin (1.3, bloqué), script de remise en état (1.4, attend 1.3). Détail : [docs/produits-fixes.md](docs/produits-fixes.md).
 - **Cartographie et passe exploratoire** (6 octobre 2026) : 629 pages inventoriées, interactions jouées sur 4 appareils, compte client préprod. Aucune panne trouvée, 11 nouveaux constats (13 à 23). Classement codé / pixel / IA / manuel dans [docs/automatisation-par-page.md](docs/automatisation-par-page.md).
 
 ### Prochaines actions
 
+- [ ] Décider de la collection QA en préprod (produits fixes réunis sur une page de collection) et de qui la crée.
+- [ ] QA / équipe : faire repousser la date de précommande de Solé Tan (`sole-tan`, seul produit en précommande, expire le 15 novembre 2026) et proposer la convention `qa-fixture` (phase 1.2).
+- [ ] Relancer le parcours d'achat préprod (4 commandes, avec accord) sur la nouvelle fiche produit déployée le 7 octobre 2026.
+- [ ] Après validation des produits fixes : faire prendre au parcours préprod un produit fixe (P01) au lieu du « premier produit en stock de Sacs ».
 - [ ] QA : déposer `archives/2026-10-07-poc.zip` (492 Mo) sur le drive interne de l'équipe (pas sur GitHub : captures avec l'email du client de test).
 - [ ] QA : confirmer dans l'admin préprod que le client de la commande VVGWK0PJK a bien « Acquisition Source » = Bouche à oreille.
 - [ ] Décider s'il faut réécrire l'historique Git pour retirer l'email du premier commit (force push, irréversible : seulement avec confirmation).
@@ -170,6 +180,7 @@ Conventions :
 21. Préprod : aucun moyen de supprimer une adresse enregistrée (ni dans la liste, ni dans la fiche adresse).
 22. Préprod, mot de passe oublié : après envoi, retour à la connexion sans message de confirmation.
 23. Préprod : la fenêtre de géolocalisation en anglais propose d'aller sur `polene-preprod.myshopify.com`, une autre boutique.
+24. Préprod : Cyme Mini noire et taupe (`cyme-mini-textured-black`, `-taupe`) ont une option « Color » à 3 valeurs (Black, Brown, Grey) pour une seule variante, et affichent « Choose your size » sur un sac (7 octobre 2026). Probablement un essai en cours : à confirmer avant de s'en servir.
 
 ### Décisions actées
 

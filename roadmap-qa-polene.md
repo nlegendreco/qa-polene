@@ -22,7 +22,7 @@ Légende des intervenants : **QA**, **Claude Code**, **Devs**, **Équipe** (QA +
 
 ## Avancement
 
-> Mis à jour le 7 octobre 2026. **POC 1 et POC 2 validés par la QA. Exécution de référence archivée (`archives/2026-10-07-poc/`, voir [docs/demo-poc.md](docs/demo-poc.md)). Reste : critère des 10 minutes à la première MEP. Cartographie et passe exploratoire faites : classement codé / pixel / IA / manuel à relire.**
+> Mis à jour le 7 octobre 2026. **POC 1 et POC 2 validés par la QA. Exécution de référence archivée (`archives/2026-10-07-poc/`, voir [docs/demo-poc.md](docs/demo-poc.md)). Reste : critère des 10 minutes à la première MEP. Cartographie et passe exploratoire faites : classement codé / pixel / IA / manuel à relire. Phase 1 démarrée : 9 produits fixes validés, test de santé des données fait (`npm run test:donnees`).**
 
 | Étape | Statut | Détail |
 | --- | --- | --- |
@@ -40,6 +40,11 @@ Légende des intervenants : **QA**, **Claude Code**, **Devs**, **Équipe** (QA +
 | 2.4 Format de rapport | ✅ V1 faite | Rapport Polène sur mesure, gratuit, en français (`npm run rapport:polene`) : tableau de bord avec statistiques et historique, liste filtrable, fiche de test avec vidéo, trace et comparateur visuel. Charte de polene-paris.com (polices, logo, couleurs). Argos et Allure écartés. À faire relire par la QA |
 | 2.5 Régressions injectées | ✅ Fait | 4 régressions × 2 appareils, 8/8 détectées (`npm run test:regressions`, 6 octobre 2026). Le prix masqué ne change que 44 à 45 pixels : aucune tolérance en nombre de pixels |
 | Cartographie du site | ✅ Fait | 6 octobre 2026 : 629 pages de la prod inventoriées, découpage en lots A (santé du site), B (invariants par page), C (pixel sur contenu figé), D (revue IA), à trancher par la QA |
+| Phase 1.1 Produits fixes | ✅ Validés | 7 octobre 2026 : 9 produits choisis dans le relevé de la préprod (474 produits visibles), tous déjà dans l'état voulu et présents en prod. Pas de produit « moyens de paiement » (carte seule en préprod). Détail : [docs/produits-fixes.md](docs/produits-fixes.md) |
+| Phase 1.2 Convention d'équipe | ⏳ À proposer | Tag `qa-fixture`, date de précommande lointaine (Solé Tan expire le 15 novembre 2026) |
+| Phase 1.3 Accès API admin | ⛔ Bloqué | La QA ne peut pas installer le connecteur sur `asia-polene` : à demander au propriétaire de la boutique |
+| Phase 1.4 Remise en état | ⏳ Attend 1.3 | |
+| Phase 1.5 Santé des données | ✅ Fait | `npm run test:donnees` (et dans `test:preprod`) : 9 contrôles sur Chrome, sans commande. 4 passages verts ; deux attentes faussées exprès bien signalées (« P04 Rupture totale n'est plus en rupture… »). Reconnaît l'ancienne et la nouvelle fiche produit (déployée en préprod le 7 octobre 2026) |
 | Passe exploratoire | ✅ Fait | 6 octobre 2026 : 55 interactions × 4 appareils en prod, 17 pages représentatives × 4 appareils, compte client préprod (desktop + iPhone), sans commande. Classement par page dans [docs/automatisation-par-page.md](docs/automatisation-par-page.md) |
 
 ## Ce qui est déjà acté
@@ -57,7 +62,7 @@ Légende des intervenants : **QA**, **Claude Code**, **Devs**, **Équipe** (QA +
 
 ## POC : prouver que ça marche, sur un périmètre minuscule
 
-> **Étape en cours.**
+> ✅ POC 1 et POC 2 validés par la QA (7 octobre 2026).
 
 Le POC tourne en local sur un Mac, sans CI et sans outil payant. Il touche la prod FR en lecture seule (aucune commande) et la préprod `asia-polene`, où l'achat va jusqu'à la confirmation. Les rapports présentés à la fin sont les vrais rapports, pas des maquettes.
 
@@ -170,6 +175,8 @@ Le POC est validé si toutes ces cases sont cochées :
 ---
 
 ## Phase 1 : une préprod déterministe (~1 semaine)
+
+> **Étape en cours** (depuis le 7 octobre 2026). Proposition et état : [docs/produits-fixes.md](docs/produits-fixes.md).
 
 Avoir des données de test qui ne bougent pas, pour que tout écart vienne de la release.
 

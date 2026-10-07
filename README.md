@@ -21,6 +21,7 @@ Sans `PREPROD_PASSWORD`, seuls les tests de prod sont lancés (un avertissement 
 | `npm test` | Lance tous les tests (prod + préprod) sur les 4 appareils |
 | `npm run test:prod` | Prod uniquement |
 | `npm run test:preprod` | Préprod uniquement |
+| `npm run test:donnees` | Préprod : vérifie que les produits fixes sont dans leur état prévu (rupture, précommande…), sans commande. Voir [docs/produits-fixes.md](docs/produits-fixes.md) |
 | `npm run rapport:polene` | Ouvre le **sommaire** des derniers lancements : une carte par série avec son verdict, qui mène à son Rapport Polène |
 | `npm run rapport:polene -- visuel` | Ouvre directement le Rapport Polène d'une série (`tnr`, `visuel`, `regressions`, `demo-echec`) |
 | `npm run rapport` | Ouvre le rapport Playwright d'origine du parcours (détail technique) |
@@ -39,7 +40,8 @@ Chaque série range tout dans un seul dossier, `resultats/<série>/` (hors Git),
 
 ```
 resultats/
-  tnr/            npm test, test:prod, test:preprod (parcours d'achat et structure des collections)
+  tnr/            npm test, test:prod, test:preprod (parcours d'achat, structure des collections, données préprod)
+  donnees/        npm run test:donnees
   visuel/         npm run test:visuel
   regressions/    npm run test:regressions
   demo-echec/     npm run test:demo-echec
@@ -156,6 +158,8 @@ scripts/                  Ouverture du rapport, archivage, sauvegarde des réfé
 tests/auth.setup.ts       Saisie du mot de passe préprod (une fois par lancement)
 tests/parcours-achat.spec.ts
 tests/structure-collections.spec.ts  Structure des collections (cartes, grille, PLP breaks)
+tests/sante-donnees.spec.ts  État des produits fixes de la préprod (phase 1.5)
+data/produits-fixes.json  Produits fixes de la préprod et leur état prévu (lus par src/produits-fixes.ts)
 tests/demo-echec.spec.ts
 tests/visuel.spec.ts      Tests visuels (POC 2)
 tests/regressions-injectees.spec.ts  Démo des régressions détectées (POC 2.5)
