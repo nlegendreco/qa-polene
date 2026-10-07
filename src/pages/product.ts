@@ -1,4 +1,5 @@
 import { expect, type Page } from '@playwright/test';
+import { appelShopify } from '../shopify';
 
 export interface ProductData {
   handle: string;
@@ -30,8 +31,7 @@ export class ProductPage {
 
   /** Données de référence du produit, lues dans le JSON public de Shopify. */
   async fetchProductData(handle: string): Promise<ProductData> {
-    const response = await this.page.request.get(`products/${handle}.js`);
-    expect(response.ok(), `Le JSON du produit ${handle} doit être accessible`).toBeTruthy();
+    const response = await appelShopify(this.page, `La lecture du JSON du produit ${handle}`, () => this.page.request.get(`products/${handle}.js`));
     const json = await response.json() as { title: string; variants: { available: boolean; price: number }[] };
     const variant = json.variants.find(v => v.available);
     if (!variant) throw new Error(`Le produit ${handle} n'a aucune variante disponible`);
