@@ -48,13 +48,26 @@ Vérifié le 7 octobre 2026 : 4 passages verts de suite, et deux attentes fauss�
 | Étape roadmap | Qui | Statut |
 |---|---|---|
 | 1.1 Valider la liste | QA | ✅ Validée le 7 octobre 2026 (9 produits, pas de P10) |
-| 1.2 Convention d'équipe : tag `qa-fixture` sur ces produits, personne d'autre ne les modifie ; date de précommande lointaine | Équipe | À proposer. Le relevé du 7 octobre montre que la préprod bouge : des centaines de produits mis à jour à 10 h 26, et une nouvelle fiche produit déployée dans la matinée |
-| 1.3 Accès API d'administration à `asia-polene` (produits, stock, champs personnalisés) | Devs / propriétaire de la boutique | Bloqué : la QA n'a pas le droit d'installer le connecteur |
+| 1.2 Convention d'équipe : tag `qa-fixture` sur ces produits (choisi par la QA le 7 octobre 2026), personne d'autre ne les modifie ; date de précommande lointaine ; collection automatique « QA · Produits de test » (tag = `qa-fixture`, tri manuel, hors menu) ; jamais d'export Matrixify depuis la QA | Équipe | En cours. Le relevé du 7 octobre montre que la préprod bouge : des centaines de produits mis à jour à 10 h 26, et une nouvelle fiche produit déployée dans la matinée |
+| 1.3 Accès API d'administration à `asia-polene` (produits, stock, champs personnalisés) | QA · Claude Code | 🟡 Lecture ✅ le 7 octobre 2026 par la CLI Shopify (`shopify store auth` avec le compte de la QA, sans app à créer). Écriture à demander au moment de modifier |
 | 1.4 Script de remise en état avant chaque TNR (stock, champs coming soon et précommande, dates) | Claude Code | Attend l'accès 1.3 |
 | 1.5 Test de santé des données | Claude Code | ✅ Fait (`npm run test:donnees`) |
 
 Une fois les produits validés, les tests préprod pourront s'en servir : aujourd'hui, le parcours d'achat préprod prend encore « le premier produit en stock de la collection Sacs », qui change selon les jours.
 
+## Où chaque état est rangé dans l'admin
+
+Relevé le 7 octobre 2026 par la CLI Shopify, en lecture seule. C'est ce que le script de remise en état (1.4) devra remettre en place.
+
+| État | Où il est rangé | Exemple |
+|---|---|---|
+| Stock, rupture, tailles | Stock de l'entrepôt **« Online »**, le seul qui alimente le site. Les boutiques (Conciergerie V2, Champs Élysées…) n'y comptent pas | Éole Draped : les tailles 52 et 56 ont 0 en « Online » mais 1 pièce en boutique. Le site les affiche épuisées, l'admin les dit « disponibles » |
+| Coming soon | Champ personnalisé du produit `coming_soon.enabled` = vrai | Numéro Neuf Mini Taupe |
+| Précommande | Champ personnalisé de la **variante** `preorder.date` (pas un plan de vente) | Solé Tan : `2026-11-15` |
+| Nouveauté | Tag `LABEL:NEW` | Tsubi Raffia |
+
+Boutique : « Polène PREPROD », formule Enterprise. Ce n'est pas une boutique de développement.
+
 ## Comment l'état a été relevé
 
-Sans accès admin, on lit ce que voit un visiteur : le catalogue public (`products.json`), et l'état posé par le thème sur chaque carte de la collection « All » (`data-tracking-state` : active, disabled, coming-soon, preorder). Les états coming soon et précommande ne figurent pas dans le catalogue public. Au 7 octobre 2026 : 245 produits en stock, 220 en rupture, 8 coming soon, 1 précommande.
+Pour choisir les produits, sans accès admin, on a lu ce que voit un visiteur : le catalogue public (`products.json`), et l'état posé par le thème sur chaque carte de la collection « All » (`data-tracking-state` : active, disabled, coming-soon, preorder). Les états coming soon et précommande ne figurent pas dans le catalogue public. Depuis, la CLI Shopify lit l'admin directement (section précédente). Au 7 octobre 2026 : 245 produits en stock, 220 en rupture, 8 coming soon, 1 précommande.

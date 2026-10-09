@@ -8,6 +8,8 @@ Tests automatisés (Playwright, TypeScript) du site Shopify [polene-paris.com](h
 - Présenter les POC (exécution archivée, déroulé de démo) : [docs/demo-poc.md](docs/demo-poc.md)
 - Ce qui est automatisable par page (codé, pixel, IA, manuel) et résultats de la passe du 6 octobre 2026 : [docs/automatisation-par-page.md](docs/automatisation-par-page.md)
 - Produits fixes de la préprod (phase 1) et contrôle de leur état : [docs/produits-fixes.md](docs/produits-fixes.md)
+- Plan des données QA de la préprod (produits et collections QA à créer, en attente de validation) : [docs/plan-donnees-qa.md](docs/plan-donnees-qa.md)
+- Reprise de la phase 1 (décisions, ce qu'on a appris, prochaines étapes) : [docs/reprise-phase-1.md](docs/reprise-phase-1.md)
 
 ## Règles de travail
 
@@ -51,7 +53,10 @@ npm run test:regressions                # POC 2.5 : 4 régressions injectées, l
 npm run archiver -- <nom>               # copie les rapports de toutes les séries dans archives/<date>-<nom>/ (hors Git)
 SERIE=essai npx playwright test …       # essai rangé dans resultats/essai/, sans remplacer le dernier lancement
 npm run typecheck
+npx shopify store execute --store asia-polene.myshopify.com --query-file <fichier.graphql>   # admin préprod, lecture seule
 ```
+
+Admin préprod par la CLI Shopify (dans le projet) : connexion `shopify store auth` faite par la QA avec son compte (jeton temporaire, à refaire s'il expire), droits actuels en lecture (produits, stocks, emplacements, publications). `--allow-mutations` (toute modification) seulement avec l'accord explicite de la QA, en lui montrant la modification avant.
 
 ## Organisation du code
 
@@ -132,13 +137,13 @@ Conventions :
 - **POC 1 (parcours + rapport)** : ✅ validé par la QA le 2 octobre 2026. Parcours prod + préprod × 4 appareils, 10 étapes en préprod dont le questionnaire d'acquisition. Profil P1 validé.
 - **POC 2 (tests visuels)** : ✅ validé par la QA le 7 octobre 2026. 3 pages × 4 appareils en prod, seuil 0,2, 8/8 régressions injectées détectées, collections vérifiées par leur structure, Rapport Polène sur mesure.
 - **Exécution de référence des POC** (7 octobre 2026) : `archives/2026-10-07-poc/` (hors Git, zip à copier sur le drive interne), ouverte par `npm run rapport:polene -- archives/2026-10-07-poc`. Code des POC : tag Git `poc-valides`. tnr 17/17 (commandes préprod 553GLKT54, FJ25K80G3, IM8IXTTU8, DXFTKEXQR), visuel 12/12, régressions 8/8 détectées, démo d'échec 2/2. Détail et déroulé : [docs/demo-poc.md](docs/demo-poc.md). Anciennes archives (2 octobre) et rapports à la racine mis à la Corbeille du Mac le 7 octobre.
-- **Phase 1 · préprod déterministe** (démarrée le 7 octobre 2026) : 9 produits fixes validés par la QA (`data/produits-fixes.json`, pas de P10 « moyens de paiement » : carte seule en préprod), test de santé des données `npm run test:donnees` fait (1.5 ✅, 4 passages verts, détection vérifiée en faussant P03 et P04). Piste à l'étude : une collection QA en préprod regroupant ces produits. Restent : convention d'équipe (1.2), accès admin (1.3, bloqué), script de remise en état (1.4, attend 1.3). Détail : [docs/produits-fixes.md](docs/produits-fixes.md).
+- **Phase 1 · préprod déterministe** (démarrée le 7 octobre 2026) : 9 produits fixes validés par la QA (`data/produits-fixes.json`, pas de P10 « moyens de paiement » : carte seule en préprod), test de santé des données `npm run test:donnees` fait (1.5 ✅, 4 passages verts, détection vérifiée en faussant P03 et P04). Collection QA décidée (tag `qa-fixture`), à créer. Accès admin en lecture par la CLI Shopify (1.3, 7 octobre 2026). Restent : écriture (tag, collection, date de précommande), convention annoncée à l'équipe (1.2), script de remise en état (1.4). Détail : [docs/produits-fixes.md](docs/produits-fixes.md).
 - **Cartographie et passe exploratoire** (6 octobre 2026) : 629 pages inventoriées, interactions jouées sur 4 appareils, compte client préprod. Aucune panne trouvée, 11 nouveaux constats (13 à 23). Classement codé / pixel / IA / manuel dans [docs/automatisation-par-page.md](docs/automatisation-par-page.md).
 
 ### Prochaines actions
 
-- [ ] Décider de la collection QA en préprod (produits fixes réunis sur une page de collection) et de qui la crée.
-- [ ] QA / équipe : faire repousser la date de précommande de Solé Tan (`sole-tan`, seul produit en précommande, expire le 15 novembre 2026) et proposer la convention `qa-fixture` (phase 1.2).
+- [ ] QA / équipe : faire repousser la date de précommande de Solé Tan (`sole-tan`, seul produit en précommande, expire le 15 novembre 2026) et annoncer la convention `qa-fixture` à l'équipe (phase 1.2).
+- [ ] QA : valider `docs/plan-donnees-qa.md` (7 octobre 2026 : la QA préfère des **copies** QA des produits plutôt que de marquer les vrais, car les réimports prod → préprod écraseraient les réglages). Puis pilote (QA02 + C1), test de base, extension. Remplace le tag sur les vrais produits et le report de date de Solé Tan.
 - [ ] Relancer le parcours d'achat préprod (4 commandes, avec accord) sur la nouvelle fiche produit déployée le 7 octobre 2026.
 - [ ] Après validation des produits fixes : faire prendre au parcours préprod un produit fixe (P01) au lieu du « premier produit en stock de Sacs ».
 - [ ] QA : déposer `archives/2026-10-07-poc.zip` (492 Mo) sur le drive interne de l'équipe (pas sur GitHub : captures avec l'email du client de test).
@@ -152,7 +157,7 @@ Conventions :
 - [ ] QA : trancher le découpage proposé après la cartographie de la prod du 6 octobre 2026 (artefact « Cartographie QA Polène ») : A santé du site (codé), B invariants par type de page (codé), C pixel sur contenu figé, D revue IA des pages visuelles.
 - [ ] Revoir l'exhaustivité de la page témoin préprod (toutes les sections du thème, cas limites).
 - [ ] QA : relire `docs/automatisation-par-page.md` et choisir les vérifications à intégrer en premier.
-- [ ] Accès admin préprod : la QA n'a pas le droit d'installer le connecteur Shopify Claude (6 octobre 2026). Demander au propriétaire de la boutique `asia-polene` soit l'installation du connecteur, soit une clé d'API d'administration en lecture (produits, champs personnalisés, clients, commandes) à ranger dans `.env` (roadmap, phase 1.3). Débloque : lecture du catalogue sans limite, états coming soon / précommande, vérification des commandes, nettoyage du compte de test.
+- [ ] Accès admin préprod pour les commandes et les clients (vérification des commandes de test, nettoyage du compte de test) : ajouter `read_orders,read_customers` au prochain `shopify store auth`, avec l'accord de la QA.
 - [ ] Décider si les scripts de la passe exploratoire (aujourd'hui temporaires, hors dépôt) doivent rejoindre le dépôt.
 
 ### Constats à remonter à l'équipe
@@ -183,6 +188,8 @@ Conventions :
 24. Préprod : Cyme Mini noire et taupe (`cyme-mini-textured-black`, `-taupe`) ont une option « Color » à 3 valeurs (Black, Brown, Grey) pour une seule variante, et affichent « Choose your size » sur un sac (7 octobre 2026). Probablement un essai en cours : à confirmer avant de s'en servir.
 
 ### Décisions actées
+
+- Produits fixes préprod (7 octobre 2026) : tag `qa-fixture`, sur des **copies QA** des produits (titre `QA <Modèle> - <Cas>`, handle `qa-…`), pas sur les vrais, que les réimports prod → préprod écraseraient. Pas d'étiquette QA visible sur le site. Détail en cours de validation : `docs/plan-donnees-qa.md`. L'équipe exporte parfois des métaobjets de la préprod vers la prod avec Matrixify : la QA ne l'utilise jamais.
 
 - La référence est la prod polene-paris.com (pas de spécifications). Les références sont mises à jour après chaque MEP, avec l'accord de tout le monde.
 - Préprod : catalogue non iso volontairement, une dizaine de produits fixes à statut forcé pour des tests déterministes.
