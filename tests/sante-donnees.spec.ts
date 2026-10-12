@@ -1,7 +1,7 @@
 import type { Page } from '@playwright/test';
 import { test, expect, etape } from '../src/fixtures';
 import { formatCents } from '../src/price';
-import { PRODUITS_FIXES, type EtatProduit, type ProduitFixe } from '../src/produits-fixes';
+import { DONNEES_QA, HANDLES_CHERCHABLES, HANDLES_QA, PRODUITS_FIXES, contenuCollectionQa, type EtatProduit } from '../src/produits-fixes';
 import { appelShopify } from '../src/shopify';
 
 /**
@@ -105,6 +105,12 @@ for (const produit of PRODUITS_FIXES) {
       if (produit.nouveaute !== undefined) {
         expect.soft(json.tags.includes('LABEL:NEW'), `${nom} : le tag LABEL:NEW (étiquette « Nouveauté ») ${produit.nouveaute ? 'a été retiré' : 'a été ajouté'}`).toBe(produit.nouveaute);
       }
+      if (produit.tags) {
+        const enTrop = json.tags.filter(t => !produit.tags!.includes(t));
+        const manquants = produit.tags.filter(t => !json.tags.includes(t));
+        expect.soft(enTrop, `${nom} : tag(s) en trop, ajouté(s) par quelqu'un ou par une automatisation : ${enTrop.join(', ')}. Il peut entrer dans de vraies collections. Remise en état : npm run donnees:qa`).toEqual([]);
+        expect.soft(manquants, `${nom} : tag(s) retiré(s) : ${manquants.join(', ')}. Remise en état : npm run donnees:qa`).toEqual([]);
+      }
       if (produit.prixMaximumEuros !== undefined) {
         expect.soft(prixMinimum, `${nom} : le prix (${formatCents(prixMinimum)}) dépasse ${produit.prixMaximumEuros} €`).toBeLessThanOrEqual(produit.prixMaximumEuros * 100);
       }
@@ -147,3 +153,59 @@ for (const produit of PRODUITS_FIXES) {
     });
   });
 }
+
+/** Produits par page de collection (thème Polène). */
+const PRODUITS_PAR_PAGE = 48;
+
+/** Handles des produits liés depuis la page (cartes de collection, résultats de recherche). */
+async function handlesAffiches(page: Page): Promise<string[]> {
+  const liens = await page.getByRole('main').locator('a[href*="/products/"]').evaluateAll(as => as.map(a => a.getAttribute('href') ?? ''));
+  return [...new Set(liens.map(l => l.split('/products/')[1]?.split(/[?#/]/)[0] ?? '').filter(Boolean))];
+}
+
+for (const collection of DONNEES_QA.collections) {
+  const nom = `${collection.id} ${collection.titre}`;
+
+  test(`Données · ${nom} @donnees`, async ({ page }, testInfo) => {
+    testInfo.annotations.push({ type: 'Collection QA', description: `${nom} : collections/${collection.handle}` });
+    // Par tag (automatique) ou liste fixe (manuelle) : la collection doit montrer ces produits QA, et eux seuls.
+    const attendus = contenuCollectionQa(collection);
+
+    await etape(page, testInfo, '1. Ouvrir la collection', async () => {
+      const reponse = await page.goto(`collections/${collection.handle}`, { waitUntil: 'load' });
+      expect(reponse?.status(), `${nom} : la collection ${collection.handle} n'existe plus ou n'est plus publiée en préprod (code ${reponse?.status()}). Remise en état : npm run donnees:qa`).toBe(200);
+    });
+
+    await etape(page, testInfo, '2. Vérifier les produits affichés', async () => {
+      const affiches = await handlesAffiches(page);
+      testInfo.annotations.push({ type: 'Produits', description: `${affiches.length} produit(s) : ${affiches.join(', ')}` });
+      // Au-delà d'une page (48 produits), seule la première page est affichée : on vérifie qu'elle est pleine.
+      const surPlusieursPages = attendus.length > PRODUITS_PAR_PAGE;
+      const manquants = surPlusieursPages ? [] : attendus.filter(h => !affiches.includes(h));
+      const enTrop = affiches.filter(h => !attendus.includes(h));
+      if (surPlusieursPages) {
+        expect.soft(affiches.length, `${nom} : la première page devrait montrer ${PRODUITS_PAR_PAGE} des ${attendus.length} produits, elle en montre ${affiches.length}`).toBe(PRODUITS_PAR_PAGE);
+      }
+      expect.soft(manquants, `${nom} : produit(s) QA absent(s) de la collection : ${manquants.join(', ')}. Tag qa-fixture retiré ou produit dépublié ? Remise en état : npm run donnees:qa`).toEqual([]);
+      expect.soft(enTrop, `${nom} : produit(s) qui n'ont rien à faire dans la collection QA : ${enTrop.join(', ')}. Quelqu'un leur a mis le tag qa-fixture ?`).toEqual([]);
+    });
+  });
+}
+
+test('Données · Produits QA cachés de la recherche @donnees', async ({ page }, testInfo) => {
+  // Les produits QA sont cachés de la recherche (seo.hidden) : un client ou un collègue de la préprod ne doit pas tomber dessus.
+  // Sauf le produit dédié à la recherche (QA22 « Searchable »).
+  for (const recherche of ['QA', 'QA Numéro', 'QA Filler']) {
+    await etape(page, testInfo, `Chercher « ${recherche} »`, async () => {
+      await page.goto(`search?q=${encodeURIComponent(recherche)}&type=product`, { waitUntil: 'load' });
+      const trouves = (await handlesAffiches(page)).filter(h => HANDLES_QA.includes(h) && !HANDLES_CHERCHABLES.includes(h));
+      expect.soft(trouves, `Produit(s) QA visible(s) en cherchant « ${recherche} » : ${trouves.join(', ')}. Le réglage « caché de la recherche » a sauté. Remise en état : npm run donnees:qa`).toEqual([]);
+    });
+  }
+  for (const handle of HANDLES_CHERCHABLES) {
+    await etape(page, testInfo, `Chercher « Searchable »`, async () => {
+      await page.goto(`search?q=Searchable&type=product`, { waitUntil: 'load' });
+      expect.soft(await handlesAffiches(page), `La recherche « Searchable » doit trouver ${handle}, le produit QA visible dans la recherche`).toContain(handle);
+    });
+  }
+});

@@ -23,12 +23,77 @@ export interface ProduitFixe {
   colorisMinimum?: number;
   /** Prix maximum, en euros, pour le cas « petit prix ». */
   prixMaximumEuros?: number;
+  /** Tags exacts attendus (produits QA : `qa-fixture` et ceux du cas, rien d'autre). */
+  tags?: string[];
 }
 
-export const PRODUITS_FIXES = (JSON.parse(readFileSync(join(__dirname, '..', 'data', 'produits-fixes.json'), 'utf8')) as { produits: ProduitFixe[] }).produits;
+const racine = join(__dirname, '..', 'data');
+
+const fixes = (JSON.parse(readFileSync(join(racine, 'produits-fixes.json'), 'utf8')) as { produits: ProduitFixe[] }).produits;
+
+/**
+ * Données QA de la préprod (data/donnees-qa.json, créées par `npm run donnees:qa`) : des copies des vrais
+ * produits, à nous, que les réimports prod → préprod ne touchent pas. Plan : docs/plan-donnees-qa.md.
+ */
+interface ProduitQa {
+  id: string;
+  titre: string;
+  handle: string;
+  cas: string;
+  etat: EtatProduit;
+  tags: string[];
+  /** Stock en ligne : un nombre, ou un stock par taille ({ "50": 20, "52": 0 }). */
+  stock: number | Record<string, number>;
+  sansTagQa?: boolean;
+  visibleRecherche?: boolean;
+}
+
+interface DonneesQa {
+  tagQa: string;
+  produits: ProduitQa[];
+  remplissage?: Omit<ProduitQa, 'id'> & { nombre: number };
+  collections: { id: string; titre: string; handle: string; cas: string; contenu: { tags?: string[]; produits?: string[] } }[];
+}
+
+export const DONNEES_QA = JSON.parse(readFileSync(join(racine, 'donnees-qa.json'), 'utf8')) as DonneesQa;
+
+const tagsQa = (p: ProduitQa) => (p.sansTagQa ? p.tags : [DONNEES_QA.tagQa, ...p.tags]);
+
+/** Produits de remplissage (QA Filler 01…) : pas testés un par un, seulement comptés dans les collections. */
+const remplissage = DONNEES_QA.remplissage;
+const FILLERS: ProduitQa[] = Array.from({ length: remplissage?.nombre ?? 0 }, (_, i) => {
+  const n = String(i + 1).padStart(2, '0');
+  return { ...remplissage!, id: `F${n}`, titre: remplissage!.titre.replace('{n}', n), handle: remplissage!.handle.replace('{n}', n) };
+});
+
+export const PRODUITS_QA: ProduitFixe[] = DONNEES_QA.produits.map(p => ({
+  // Les tags exacts couvrent aussi l'étiquette « Nouveauté » (LABEL:NEW) : pas de champ `nouveaute`, sinon double message.
+  id: p.id, role: p.cas, handle: p.handle, etat: p.etat, tags: tagsQa(p),
+  ...(typeof p.stock === 'object' ? {
+    tailles: {
+      disponibles: Object.keys(p.stock).filter(t => (p.stock as Record<string, number>)[t] > 0),
+      indisponibles: Object.keys(p.stock).filter(t => (p.stock as Record<string, number>)[t] === 0),
+    },
+  } : {}),
+}));
+
+/** Produits QA visibles dans la recherche (les autres sont cachés). */
+export const HANDLES_CHERCHABLES = DONNEES_QA.produits.filter(p => p.visibleRecherche).map(p => p.handle);
+
+/** Handles attendus dans une collection QA : par tag (y compris le remplissage) ou liste manuelle. */
+export function contenuCollectionQa(collection: DonneesQa['collections'][number]): string[] {
+  const tous = [...DONNEES_QA.produits, ...FILLERS];
+  if (collection.contenu.tags) return tous.filter(p => tagsQa(p).some(t => collection.contenu.tags!.includes(t))).map(p => p.handle);
+  return (collection.contenu.produits ?? []).map(id => tous.find(p => p.id === id)!.handle);
+}
+
+/** Tous les handles QA (cas et remplissage). */
+export const HANDLES_QA = [...DONNEES_QA.produits, ...FILLERS].map(p => p.handle);
+
+export const PRODUITS_FIXES = [...fixes, ...PRODUITS_QA];
 
 export function produitFixe(id: string): ProduitFixe {
   const produit = PRODUITS_FIXES.find(p => p.id === id);
-  if (!produit) throw new Error(`Produit fixe inconnu : ${id}. Voir data/produits-fixes.json`);
+  if (!produit) throw new Error(`Produit fixe inconnu : ${id}. Voir data/produits-fixes.json et data/donnees-qa.json`);
   return produit;
 }
