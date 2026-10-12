@@ -1,0 +1,335 @@
+{
+  "statut": "Données QA de la préprod (docs/plan-donnees-qa.md), créées et remises en état par `npm run donnees:qa`. Pilote QA02 + C1 fait le 9 octobre 2026. C4 (PLP breaks) pas encore : il réutilise des métaobjets de vraies collections, à étudier à part. Entrées de menu dans le menu Shopify `menu-v3-accessories-leather-stationery` (colonne Leather Stationery du panneau Accessories).",
+  "boutique": "asia-polene.myshopify.com",
+  "emplacementEnLigne": "Online",
+  "tagQa": "qa-fixture",
+  "modeleCarrousel": "handbags",
+  "menu": "menu-v3-accessories-leather-stationery",
+  "produits": [
+    {
+      "id": "QA01",
+      "titre": "QA Numéro Un - In Stock",
+      "handle": "qa-numero-un-in-stock",
+      "copieDe": "numero-un-textured-black",
+      "cas": "Sac en stock : fiche complète, ajout au panier, achat préprod",
+      "etat": "en-stock",
+      "tags": [],
+      "stock": 1000
+    },
+    {
+      "id": "QA02",
+      "titre": "QA Numéro Un Nano - Out of Stock",
+      "handle": "qa-numero-un-nano-out-of-stock",
+      "copieDe": "numero-un-nano-textured-black",
+      "cas": "Rupture : « Être prévenu(e) », fenêtre d'alerte (sans envoi)",
+      "etat": "rupture",
+      "tags": [],
+      "stock": 0
+    },
+    {
+      "id": "QA03",
+      "titre": "QA Numéro Un - Last Unit",
+      "handle": "qa-numero-un-last-unit",
+      "copieDe": "numero-un-textured-black",
+      "cas": "Dernière pièce : quantité bloquée à 1 au panier",
+      "etat": "en-stock",
+      "tags": [],
+      "stock": 1
+    },
+    {
+      "id": "QA04",
+      "titre": "QA Numéro Neuf Mini - Coming Soon",
+      "handle": "qa-numero-neuf-mini-coming-soon",
+      "copieDe": "numero-neuf-mini-textured-taupe",
+      "cas": "Coming soon : bouton, fenêtre d'inscription (sans envoi), carte",
+      "etat": "coming-soon",
+      "tags": [],
+      "stock": 50,
+      "metafields": [{ "namespace": "coming_soon", "key": "enabled", "type": "boolean", "value": "true" }]
+    },
+    {
+      "id": "QA05",
+      "titre": "QA Solé - Preorder",
+      "handle": "qa-sole-preorder",
+      "copieDe": "sole-tan",
+      "cas": "Précommande : date affichée, ajout au panier, panier et checkout en précommande",
+      "etat": "precommande",
+      "tags": [],
+      "stock": 50,
+      "metafieldsVariantes": { "*": [{ "namespace": "preorder", "key": "date", "type": "date", "value": "2030-12-31" }] }
+    },
+    {
+      "id": "QA06",
+      "titre": "QA Cyme Tote Nano - Delayed Preorder",
+      "handle": "qa-cyme-tote-nano-delayed-preorder",
+      "copieDe": "cyme-tote-nano-textured-taupe",
+      "cas": "Précommande retardée : ce qu'affiche la fiche",
+      "etat": "precommande",
+      "tags": [],
+      "stock": 50,
+      "metafieldsVariantes": { "*": [
+        { "namespace": "preorder", "key": "date", "type": "date", "value": "2030-06-30" },
+        { "namespace": "preorder", "key": "delayed_date", "type": "date", "value": "2031-03-31" }
+      ] }
+    },
+    {
+      "id": "QA07",
+      "titre": "QA Numéro Un - Expired Preorder",
+      "handle": "qa-numero-un-expired-preorder",
+      "copieDe": "numero-un-textured-black",
+      "cas": "Précommande expirée : le produit redevient normal tout seul",
+      "etat": "en-stock",
+      "tags": [],
+      "stock": 50,
+      "metafieldsVariantes": { "*": [{ "namespace": "preorder", "key": "date", "type": "date", "value": "2020-01-01" }] }
+    },
+    {
+      "id": "QA08",
+      "titre": "QA Tsubi - New",
+      "handle": "qa-tsubi-new",
+      "copieDe": "tsubi-raffia",
+      "cas": "Étiquette « New » sur la carte",
+      "etat": "en-stock",
+      "tags": ["LABEL:NEW"],
+      "stock": 50
+    },
+    {
+      "id": "QA09",
+      "titre": "QA Eroz Ring - All Sizes",
+      "handle": "qa-eroz-ring-all-sizes",
+      "copieDe": "eroz-ring-24-carat-gold-gilded",
+      "cas": "Toutes les tailles disponibles, guide des tailles",
+      "etat": "tailles",
+      "tags": [],
+      "stock": { "50": 20, "52": 20, "54": 20, "56": 20 }
+    },
+    {
+      "id": "QA10",
+      "titre": "QA Éole Draped Ring - Partial Sizes",
+      "handle": "qa-eole-draped-ring-partial-sizes",
+      "copieDe": "eole-draped-ring-24-carat-gold-gilded",
+      "cas": "Seules les tailles en stock sont proposées",
+      "etat": "tailles",
+      "tags": [],
+      "stock": { "50": 20, "52": 0, "54": 20, "56": 0 }
+    },
+    {
+      "id": "QA11",
+      "titre": "QA Eroz Cuff - Sizes Out of Stock",
+      "handle": "qa-eroz-cuff-sizes-out-of-stock",
+      "copieDe": "eroz-cuff-24-carat-gold-gilded",
+      "cas": "Produit à tailles entièrement épuisé",
+      "etat": "rupture",
+      "tags": [],
+      "stock": { "S": 0, "M": 0, "L": 0 }
+    },
+    {
+      "id": "QA12",
+      "titre": "QA Éole Cuff - Size Preorder",
+      "handle": "qa-eole-cuff-size-preorder",
+      "copieDe": "eole-cuff-24-carat-gold-gilded",
+      "cas": "Une taille (M) en précommande, les autres en stock. Le jonc Éole du plan n'existe pas en préprod : manchette Éole à la place",
+      "etat": "tailles",
+      "tags": [],
+      "stock": { "S": 20, "M": 20, "L": 20 },
+      "metafieldsVariantes": { "M": [{ "namespace": "preorder", "key": "date", "type": "date", "value": "2030-12-31" }] }
+    },
+    {
+      "id": "QA13",
+      "titre": "QA Cyme Mini - Textured Camel",
+      "handle": "qa-cyme-mini-textured-camel",
+      "copieDe": "cyme-mini-textured-camel",
+      "cas": "Coloris en stock, famille QA",
+      "etat": "en-stock",
+      "tags": ["family_qa-cyme-mini"],
+      "stock": 50,
+      "metafields": [{ "namespace": "filter", "key": "families", "type": "list.single_line_text_field", "value": "[\"qa-cyme-mini\"]" }]
+    },
+    {
+      "id": "QA14",
+      "titre": "QA Cyme Mini - Textured Black",
+      "handle": "qa-cyme-mini-textured-black",
+      "copieDe": "cyme-mini-textured-black",
+      "cas": "Coloris en rupture, dans la même famille",
+      "etat": "rupture",
+      "tags": ["family_qa-cyme-mini"],
+      "stock": 0,
+      "metafields": [{ "namespace": "filter", "key": "families", "type": "list.single_line_text_field", "value": "[\"qa-cyme-mini\"]" }]
+    },
+    {
+      "id": "QA15",
+      "titre": "QA Cyme Mini - Merino Ebony",
+      "handle": "qa-cyme-mini-merino-ebony",
+      "copieDe": "cyme-mini-merino-ebony",
+      "cas": "Coloris d'une autre matière (le sélecteur regroupe par matière)",
+      "etat": "en-stock",
+      "tags": ["family_qa-cyme-mini"],
+      "stock": 50,
+      "metafields": [{ "namespace": "filter", "key": "families", "type": "list.single_line_text_field", "value": "[\"qa-cyme-mini\"]" }]
+    },
+    {
+      "id": "QA16",
+      "titre": "QA Numéro Dix - Video",
+      "handle": "qa-numero-dix-video",
+      "copieDe": "numero-dix-textured-camel",
+      "cas": "Vidéo dans la galerie (réglages video.* repris du vrai produit)",
+      "etat": "en-stock",
+      "tags": [],
+      "stock": 50
+    },
+    {
+      "id": "QA17",
+      "titre": "QA Atla Mirror - Accessory",
+      "handle": "qa-atla-mirror-accessory",
+      "copieDe": "atla-mirror-black",
+      "cas": "Fiche d'accessoire, petit prix (< 100 €)",
+      "etat": "en-stock",
+      "tags": [],
+      "stock": 50
+    },
+    {
+      "id": "QA18",
+      "titre": "QA Numéro Un - High Price",
+      "handle": "qa-numero-un-high-price",
+      "copieDe": "numero-un-textured-black",
+      "cas": "Prix au-dessus de 1 000 € (espace des milliers). Prix en dollars, converti en euros pour la France",
+      "etat": "en-stock",
+      "tags": [],
+      "stock": 50,
+      "prix": "1420.00"
+    },
+    {
+      "id": "QA19",
+      "titre": "QA AirPods Case - Recommendations",
+      "handle": "qa-airpods-case-recommendations",
+      "copieDe": "airpods-case-black",
+      "cas": "Recommandations fixées à la main (produits QA) : le bloc « Complétez votre panier » devient prévisible",
+      "etat": "en-stock",
+      "tags": [],
+      "stock": 50,
+      "recommandations": { "complementaires": ["QA17", "QA16", "QA08"], "similaires": ["QA01", "QA13", "QA18"] }
+    },
+    {
+      "id": "QA20",
+      "titre": "QA Numéro Neuf East West - Minimal",
+      "handle": "qa-numero-neuf-east-west-minimal",
+      "copieDe": "numero-neuf-east-west-textured-black",
+      "cas": "Fiche minimale : sans photo au survol, sans vue 3D, sans vidéo ni détails. La page ne doit pas casser",
+      "etat": "en-stock",
+      "tags": [],
+      "stock": 50,
+      "retirerMetafields": ["ss_meta.hover_image", "ss_meta.hover_as_feature_image", "image.hover", "powerxyz.enable_3d", "video.streaming_reference", "video.position", "ss_meta.product_details_list", "ss_meta.additional_product_details", "ss_meta.specific_craftsmanship_teaser"]
+    },
+    {
+      "id": "QA21",
+      "titre": "QA Numéro Un - Very Long Edition Name To Check Line Wrapping",
+      "handle": "qa-numero-un-long-title",
+      "copieDe": "numero-un-textured-black",
+      "cas": "Titre long : retour à la ligne sur carte, fiche, panier, checkout",
+      "etat": "en-stock",
+      "tags": [],
+      "stock": 50
+    },
+    {
+      "id": "QA22",
+      "titre": "QA Numéro Un - Searchable",
+      "handle": "qa-numero-un-searchable",
+      "copieDe": "numero-un-textured-black",
+      "cas": "Le seul produit QA visible dans la recherche : chercher « Searchable » doit le trouver, lui seul",
+      "etat": "en-stock",
+      "tags": [],
+      "stock": 50,
+      "visibleRecherche": true
+    }
+  ],
+  "remplissage": {
+    "nombre": 38,
+    "titre": "QA Filler {n}",
+    "handle": "qa-filler-{n}",
+    "copieDe": "qa-numero-un-in-stock",
+    "cas": "Remplissage pour dépasser 48 produits (défilement infini, « Voir plus »)",
+    "etat": "en-stock",
+    "tags": ["qa-filler"],
+    "sansTagQa": true,
+    "stock": 100
+  },
+  "collections": [
+    {
+      "id": "C1",
+      "titre": "QA Collection",
+      "handle": "qa-collection",
+      "cas": "Grille de référence, tous les états de carte, tri, filtres",
+      "entete": "carrousel",
+      "defilementInfini": false,
+      "tri": "ALPHA_ASC",
+      "contenu": { "tags": ["qa-fixture"] },
+      "menu": true
+    },
+    {
+      "id": "C2",
+      "titre": "QA Collection Infinite Scroll",
+      "handle": "qa-collection-infinite-scroll",
+      "cas": "Chargement de la suite au défilement, nombre total (60 produits)",
+      "entete": "carrousel",
+      "defilementInfini": true,
+      "tri": "ALPHA_ASC",
+      "contenu": { "tags": ["qa-fixture", "qa-filler"] },
+      "menu": true
+    },
+    {
+      "id": "C3",
+      "titre": "QA Collection Load More",
+      "handle": "qa-collection-load-more",
+      "cas": "Bouton « Voir plus » (60 produits, sans défilement infini)",
+      "entete": "carrousel",
+      "defilementInfini": false,
+      "tri": "ALPHA_ASC",
+      "contenu": { "tags": ["qa-fixture", "qa-filler"] },
+      "menu": true
+    },
+    {
+      "id": "C5",
+      "titre": "QA Collection Title",
+      "handle": "qa-collection-title",
+      "cas": "En-tête titre seul (comme « Nouveautés »)",
+      "entete": "titre",
+      "defilementInfini": false,
+      "tri": "ALPHA_ASC",
+      "contenu": { "produits": ["QA01", "QA02", "QA03", "QA04", "QA05", "QA08", "QA09", "QA13", "QA17", "QA18"] },
+      "menu": true
+    },
+    {
+      "id": "C6",
+      "titre": "QA Collection Empty",
+      "handle": "qa-collection-empty",
+      "cas": "Message de collection vide",
+      "entete": "titre",
+      "defilementInfini": false,
+      "tri": "ALPHA_ASC",
+      "contenu": { "produits": [] },
+      "menu": true
+    },
+    {
+      "id": "C7",
+      "titre": "QA Collection Out of Stock",
+      "handle": "qa-collection-out-of-stock",
+      "cas": "Collection sans aucun produit achetable",
+      "entete": "titre",
+      "defilementInfini": false,
+      "tri": "ALPHA_ASC",
+      "contenu": { "produits": ["QA02", "QA11", "QA14"] },
+      "menu": true
+    },
+    {
+      "id": "F1",
+      "titre": "QA Family Cyme Mini",
+      "handle": "family_qa-cyme-mini",
+      "cas": "Collection de famille des coloris QA13 à QA15 (hors menu)",
+      "entete": "aucun",
+      "defilementInfini": false,
+      "tri": "ALPHA_ASC",
+      "contenu": { "tags": ["family_qa-cyme-mini"] },
+      "menu": false
+    }
+  ]
+}
