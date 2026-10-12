@@ -105,6 +105,8 @@ Le contenu du carrousel est un métaobjet (`plp.carousel`). Pour ne pas en crée
 
 Demande QA du 7 octobre 2026 : les collections QA doivent être accessibles depuis le menu de la préprod.
 
+> **Constat du 9 octobre 2026** : le menu du site n'est **pas** un menu Shopify (Navigation). Il est construit dans l'éditeur de thème, par des blocs du header (`header_menu_zone`, `header_menu_group`). Aucun des 34 menus de la préprod ne correspond à ce qu'affiche le site (`v2-left`, `collection-hierarchy`… sont d'anciennes versions). L'entrée « QA » demande donc de modifier le thème `pp-polene`, partagé avec l'équipe : à faire à la main dans l'éditeur de thème (ou par les devs), pas par le script, qui n'a aucun droit sur le thème. Le droit « navigation » de la CLI ne sert plus. Ce qui suit est à relire en conséquence.
+
 - Une entrée **« QA »** à la fin du menu principal, avec C1 à C7 en sous-liens. C1 en premier.
 - Les tests pourront y passer comme un client (desktop et mobile : « QA » puis « Voir tout »), en plus du parcours par « Sacs ».
 - Le panneau du menu d'une collection se règle aussi par la collection (`menu.type_of_menu` : packshot avec titre, liste de liens avec images, images). Les réglages existants sont réutilisés, sans nouveau métaobjet.
@@ -146,6 +148,52 @@ L'équipe compare l'ancienne et la nouvelle fiche avec la fonction Roll Out : ch
 2. **Pilote** : créer QA02 seul, C1 avec ce seul produit (en-tête carrousel) et l'entrée « QA » du menu. Vérifier la fiche, la carte, le carrousel, le menu, l'absence dans la recherche et dans les autres collections, puis le comportement après un réimport si possible.
 3. **Test de base** : le test de santé passe sur QA02 et C1.
 4. **Extension** : les autres produits et collections, puis les tests qui s'en servent.
+
+## 8 bis. Résultat du pilote (9 octobre 2026)
+
+QA02 et C1 créés par `npm run donnees:qa`, puis vérifiés :
+
+| Vérification | Résultat |
+|---|---|
+| Fiche `products/qa-numero-un-nano-out-of-stock` | ✅ Titre « QA Numéro Un Nano », sous-titre « Edition Out of Stock », 426,95 €, bouton « Out of stock - Notify me », photos reprises, `noindex,nofollow` |
+| Collection `collections/qa-collection` | ✅ Une carte (QA02, état `disabled`), en-tête carrousel. ⚠️ Le carrousel affiche son propre titre, « Bags by collections », et pas « QA Collection » |
+| Absent de la recherche (« QA », « Numéro Un Nano », « Out of Stock ») et des suggestions | ✅ |
+| Absent des vraies collections | ✅ après correction : la copie Shopify avait repris 7 collections manuelles du vrai produit (page d'accueil, Mini bags, Gifts, The Black Editions…) |
+| Canaux | ✅ boutique en ligne seule, après correction : la publication l'avait mis sur tous les canaux |
+| Tags | ✅ `qa-fixture` seul, après correction : une automatisation de la boutique ajoute `LABEL:NEW` à la mise en ligne |
+| Collections techniques automatiques (`api`, `easygift-all-products`, `globofilter-best-selling-products-index`) | Présent, comme prévu (section 6) |
+
+Le script corrige maintenant ces trois écarts dès la création.
+
+**Décisions QA du 9 octobre 2026, après le pilote :**
+- **Carrousel d'en-tête** : on garde le carrousel global de Sacs tel quel, sans entrée « QA Collection » (elle apparaîtrait sur les 14 vraies collections qui le partagent, et le métaobjet peut partir en prod par Matrixify). Conséquence : le carrousel **n'est pas testé** sur les collections QA, seulement sur les vraies.
+- **Entrée de menu** : pas d'entrée « QA » au premier niveau. Une ligne « QA Collection », un peu cachée, dans le menu Shopify `menu-v3-accessories-leather-stationery` (dernière colonne du panneau Accessories), ajoutée à la main par la QA. Les colonnes des panneaux du header sont des menus Shopify `menu-v3-…` : aucune modification du thème. Les autres collections QA (C2 à C7) seront ajoutées au même endroit. Pas encore vérifié : le comportement après un réimport prod → préprod, les coloris de la famille QA (QA13 à QA15).
+
+## 8 ter. Extension (9 octobre 2026)
+
+Tout est décrit dans `data/donnees-qa.json` et créé par `npm run donnees:qa`. Écarts avec la liste ci-dessus :
+
+- **QA12** : le jonc Éole n'existe pas en préprod. Remplacé par la manchette Éole (`eole-cuff-24-carat-gold-gilded`, tailles S, M, L), taille M en précommande (2030-12-31).
+- **QA16 vidéo** : la vidéo d'une fiche n'est pas un média du produit mais deux réglages (`video.streaming_reference` vers un métaobjet existant, `video.position`). La copie les reprend, aucun métaobjet créé.
+- **Stocks** : QA01 1 000 (achats de test), QA03 1, coloris et cas simples 50, remplissage 100. Précommande et coming soon gardent du stock, comme les vrais produits.
+- **Précommandes** : QA05 `preorder.date` 2030-12-31 ; QA06 2030-06-30 retardée au 2031-03-31 (`preorder.delayed_date`) ; QA07 2020-01-01 (expirée). Les dates de précommande reprises du vrai produit sont retirées.
+- **Remplissage** : 38 copies de QA01 (`qa-filler-01` à `38`), tag `qa-filler` **sans** `qa-fixture`, pour que C1 reste sous 48 produits. C2 et C3 prennent `qa-fixture` ou `qa-filler` (60 produits).
+- **C5, C6, C7** : collections manuelles (listes fixes dans le JSON). **F1** `family_qa-cyme-mini` : collection de famille des coloris, hors menu.
+- **C4 (PLP breaks)** : pas créée. Ses breaks sont des métaobjets reliés à de vraies collections et souvent à de vrais produits : à étudier à part.
+- **Menu** : C2, C3, C5, C6, C7 ajoutées par le script sous « QA Collection », dans `menu-v3-accessories-leather-stationery` (copie du menu dans `archives/menus/` avant chaque modification).
+- **Test de santé** (`npm run test:donnees`) : chaque produit QA (état, tailles, tags exacts), le contenu de chaque collection QA, et l'absence de la recherche sauf QA22 « Searchable ».
+
+**Résultat (9 octobre 2026)** : tout créé en 25 min, relance = « Rien à modifier », `npm run test:donnees` 40/40. Vu sur le site en plus du test :
+
+| Cas | Ce qu'affiche le site |
+|---|---|
+| QA13 à QA15, famille QA | La fiche QA13 propose les trois Cyme Mini QA, et rien d'autre |
+| QA18 prix élevé | « €1.287,95 » (1 420 USD convertis), lu correctement par `parsePriceToCents` |
+| QA20 fiche minimale | Pas d'erreur JS, bouton actif |
+| QA06 précommande retardée | « Shipping on juin, 30 » : la **première** date, sans l'année. La date retardée n'apparaît pas (constat 25 du CLAUDE.md). Selon la QA, elle sert seulement à Shipup pour les clients qui ont déjà commandé (à vérifier) |
+| QA19 recommandations | Shopify renvoie bien QA17, QA16, QA08 (complémentaires) et QA01, QA13, QA18 (similaires), mais le site ne les affiche nulle part : pas de bloc sur la fiche, et le bloc du panier montre des produits populaires (constat 26). Décision QA du 12 octobre 2026 : on teste le bloc du panier tel qu'il est, sans panier parallèle |
+
+**Parcours d'achat sur QA01 (12 octobre 2026)** : le parcours préprod achète désormais QA01, toujours après être passé par le menu Sacs. `npm run test:preprod` 44/44, 4 commandes de test. Le stock de QA01 baisse de 4 à chaque série ; `npm run donnees:qa` le remet à 1 000.
 
 ## 9. Questions
 
