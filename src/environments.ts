@@ -17,6 +17,8 @@ export interface QaEnvironment {
   completePurchase: boolean;
   /** Collection utilisée pour trouver un produit en stock. */
   collection: { menuLabel: RegExp; path: string };
+  /** Produit acheté par le parcours (id de produit fixe). Sans lui : le premier produit en stock de la collection. */
+  produitAchat?: string;
   /** Moyens de paiement qui doivent apparaître au checkout. */
   paymentMethods: RegExp[];
 }
@@ -41,6 +43,8 @@ export const environments: Record<EnvName, QaEnvironment> = {
     passwordProtected: true,
     completePurchase: true,
     collection: { menuLabel: /^(Sacs|Bags)$/i, path: '/collections/handbags' },
+    // Copie QA en stock (1 000 pièces), à nous : les achats de test ne vident pas le stock d'un vrai produit.
+    produitAchat: 'QA01',
     paymentMethods: [/Carte de crédit|Credit card/i],
   },
 };

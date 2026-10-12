@@ -6,10 +6,11 @@ import { CartPage } from '../src/pages/cart';
 import { CheckoutPage } from '../src/pages/checkout';
 import { formatCents } from '../src/price';
 import { loadClientTest } from '../src/client-test';
+import { produitFixe } from '../src/produits-fixes';
 
 /**
  * Parcours d'achat nominal : un visiteur arrive sur la home, va dans une collection,
- * ouvre un produit en stock, l'ajoute au panier et arrive au checkout.
+ * ouvre un produit en stock (préprod : toujours QA01), l'ajoute au panier et arrive au checkout.
  * - Prod : arrêt avant le paiement.
  * - Préprod : paiement de test jusqu'à la confirmation de commande.
  */
@@ -36,8 +37,16 @@ test('Parcours d\'achat nominal @smoke @tnr', async ({ page, qaEnv, isMobile }, 
     await collection.expectLoaded();
   });
 
-  await etape(page, testInfo, '3. Ouvrir une fiche produit en stock', async () => {
-    const handle = await collection.openFirstInStockProduct();
+  const produitAchat = qaEnv.produitAchat ? produitFixe(qaEnv.produitAchat) : undefined;
+  const libelleEtape3 = produitAchat ? `3. Ouvrir la fiche du produit ${produitAchat.id} (en stock)` : '3. Ouvrir une fiche produit en stock';
+  await etape(page, testInfo, libelleEtape3, async () => {
+    let handle: string;
+    if (produitAchat) {
+      handle = produitAchat.handle;
+      await page.goto(`products/${handle}`, { waitUntil: 'domcontentloaded' });
+    } else {
+      handle = await collection.openFirstInStockProduct();
+    }
     productData = await product.fetchProductData(handle);
     testInfo.annotations.push({ type: 'Produit testé', description: `${productData.title} (${handle}) – ${formatCents(productData.priceCents)}` });
     await product.expectPurchasable();

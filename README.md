@@ -57,7 +57,7 @@ Pour un essai qui ne doit pas remplacer le dernier lancement d'une série : `SER
 
 1. Ouvrir la page d'accueil (logo visible, panier vide).
 2. Aller dans la collection Sacs depuis le menu (burger + « Voir tout » sur mobile).
-3. Ouvrir la première fiche produit en stock de la collection.
+3. Ouvrir la première fiche produit en stock de la collection (préprod : toujours la fiche du produit QA « QA Numéro Un - In Stock », QA01).
 4. Ajouter au panier (notification affichée, compteur à 1).
 5. Vérifier le panier (1 ligne, sous-total = prix Shopify du produit).
 6. Passer au checkout (produit dans le résumé, total correct, moyens de paiement présents).

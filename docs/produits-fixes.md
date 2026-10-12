@@ -53,7 +53,7 @@ Vérifié le 7 octobre 2026 : 4 passages verts de suite, et deux attentes fauss�
 | 1.4 Script de remise en état avant chaque TNR (stock, champs coming soon et précommande, dates) | Claude Code | Attend l'accès 1.3 |
 | 1.5 Test de santé des données | Claude Code | ✅ Fait (`npm run test:donnees`) |
 
-Une fois les produits validés, les tests préprod pourront s'en servir : aujourd'hui, le parcours d'achat préprod prend encore « le premier produit en stock de la collection Sacs », qui change selon les jours.
+Depuis le 12 octobre 2026, le parcours d'achat préprod achète toujours le produit QA01 « QA Numéro Un - In Stock » (`produitAchat` dans `src/environments.ts`), au lieu du « premier produit en stock de la collection Sacs », qui changeait selon les jours. Il passe toujours par le menu Sacs pour vérifier la navigation.
 
 ## Où chaque état est rangé dans l'admin
 
