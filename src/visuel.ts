@@ -62,7 +62,10 @@ export const PRODUIT = 'numero-un-textured-black';
 
 export interface PageVisuelle {
   nom: string;
+  /** Nom des captures de référence (references/<fichier>/). */
   fichier: string;
+  /** Type de page, en anglais comme chez Polène : étiquette @home, @pdp, @cart… */
+  typePage: 'home' | 'plp' | 'pdp' | 'cart' | 'checkout';
   ouvrir: (page: Page) => Promise<void>;
   /** Zones qui changent sans que ce soit un bug : recouvertes d'un aplat rose dans la capture. */
   zonesIgnorees?: (page: Page) => { libelle: string; zone: Locator }[];
@@ -72,6 +75,7 @@ export const PAGES_VISUELLES: PageVisuelle[] = [
   {
     nom: 'Accueil',
     fichier: 'accueil',
+    typePage: 'home',
     ouvrir: async page => { await page.goto('./', { waitUntil: 'load' }); },
     // Les photos Instagram (derniers posts, changent à chaque publication) sont cachées par src/visuel.css.
   },
@@ -81,11 +85,13 @@ export const PAGES_VISUELLES: PageVisuelle[] = [
   {
     nom: 'Fiche produit Numéro Un',
     fichier: 'fiche-produit',
+    typePage: 'pdp',
     ouvrir: async page => { await page.goto(`products/${PRODUIT}`, { waitUntil: 'load' }); },
   },
   {
     nom: 'Panier avec un produit',
     fichier: 'panier',
+    typePage: 'cart',
     ouvrir: async page => {
       // Ajout direct par l'adresse /cart/add?id=… : plus rapide que l'interface, et le parcours d'achat teste déjà
       // le bouton. Pas par l'API (products/….js, cart/add.js) : Shopify la limite vite (code 429) quand les séries

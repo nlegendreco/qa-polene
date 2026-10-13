@@ -84,7 +84,7 @@ async function chargerToutesLesImages(page: Page) {
 const liste = (elements: string[]) => elements.slice(0, 10).join(', ') + (elements.length > 10 ? `… (${elements.length} en tout)` : '');
 
 for (const collection of COLLECTIONS) {
-  test(`Structure · Collection ${collection.nom} @tnr`, async ({ page, qaEnv, isMobile }, testInfo) => {
+  test(`Structure · Collection ${collection.nom} @tnr @plp`, async ({ page, qaEnv, isMobile }, testInfo) => {
     test.skip(qaEnv.name !== 'prod', 'Prod uniquement pour l\'instant : la préprod n\'a pas les mêmes collections');
     testInfo.annotations.push({ type: 'Environnement', description: `${qaEnv.label} (${qaEnv.baseURL})` });
     let grille!: Awaited<ReturnType<typeof lireGrille>>;

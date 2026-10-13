@@ -14,7 +14,7 @@ import { produitFixe } from '../src/produits-fixes';
  * - Prod : arrêt avant le paiement.
  * - Préprod : paiement de test jusqu'à la confirmation de commande.
  */
-test('Parcours d\'achat nominal @smoke @tnr', async ({ page, qaEnv, isMobile }, testInfo) => {
+test('Parcours d\'achat nominal @smoke @tnr @journey', async ({ page, qaEnv, isMobile }, testInfo) => {
   const header = new Header(page, isMobile);
   const collection = new CollectionPage(page);
   const product = new ProductPage(page);

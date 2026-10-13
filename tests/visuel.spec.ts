@@ -11,7 +11,7 @@ import { PAGES_VISUELLES, verifierPage } from '../src/visuel';
 test.use({ video: 'off', deviceScaleFactor: 1 });
 
 for (const pageVisuelle of PAGES_VISUELLES) {
-  test(`Visuel · ${pageVisuelle.nom} @visuel`, async ({ page, qaEnv }, testInfo) => {
+  test(`Visuel · ${pageVisuelle.nom} @visuel @${pageVisuelle.typePage}`, async ({ page, qaEnv }, testInfo) => {
     test.skip(qaEnv.name !== 'prod', 'Tests visuels en prod uniquement pour l\'instant');
     testInfo.annotations.push({ type: 'Environnement', description: `${qaEnv.label} (${qaEnv.baseURL})` });
     await verifierPage(page, testInfo, pageVisuelle, {
