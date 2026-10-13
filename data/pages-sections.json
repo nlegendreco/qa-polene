@@ -1,0 +1,59 @@
+{
+  "description": "Pages de la préprod qui montrent les sections du thème. Deux sortes. Pages de sections de la QA (liste donnée le 12 octobre 2026, étiquette @sections) : « sections » donne les sections attendues, dans l'ordre (clé de la section dans le modèle Shopify, sans les intitulés « text_… » posés au-dessus de chaque section ni le réglage de couleur de fond) ; si l'équipe modifie une page volontairement, mettre la liste à jour ici. Pages réelles (12 octobre 2026, docs/sections-theme.md) : elles portent les sections du thème qu'on ne peut pas poser sur un article ; l'équipe les modifie, donc pas de liste figée, seulement l'état des sections. « couvre » : sections du thème que la page permet de tester. « produitFixe » : fiche d'un produit QA (data/donnees-qa.json). « statut » : code de réponse attendu (200 par défaut).",
+  "pages": [
+    {
+      "id": "S1",
+      "nom": "Sections 1 (blog)",
+      "chemin": "blogs/editorials/sections",
+      "role": "Sections des articles de blog : listes d'articles, médias, écrans partagés, carte, teaser de collection",
+      "sections": ["main", "article_list_ifNJL4", "blog_double_media_UHPagg", "blog_layer_sections_VHyB3a", "blog_media_98YdEf", "blog_promoted_item_dgncaW", "blog_split_screen_3HwbJN", "blog_splitscreen_map_xFrGGx", "blog_text_exgPnA", "blog_triple_media_VUFxpV", "cta_yNXNAc", "section_collection_teaser_8Cjq9W", "cta_bwqgGt"]
+    },
+    {
+      "id": "S2",
+      "nom": "Sections 2 (blog)",
+      "chemin": "blogs/editorials/sections-2",
+      "role": "Carrousel, compte à rebours, héros, mosaïque, suivi de commande, bannière produit, recommandations, newsletter",
+      "sections": ["main", "carousel_KDRRib", "countdown_teaser_4NjCk4", "article_link_list_dWfgmK", "hero_flowers_y4xXTW", "media_collection_teaser_dh9Uen", "mosaic_py9JVW", "order_tracker_M8p9Ld", "product_banner_JaHfW4", "product_recommendations_xzADyH", "product_recommendations_TnBndb", "split_newsletter_block_kcy6Fq", "cta_4ppUQ7"]
+    },
+    {
+      "id": "S3",
+      "nom": "Sections 3 (blog)",
+      "chemin": "blogs/editorials/sections-3",
+      "role": "Blocs promo, écran partagé, galerie à texte fixe, frises, vidéo",
+      "sections": ["main", "split_promo_block_TxQJEf", "text_FrMiyi", "split_screen_media_QWj7e3", "text_collection_teaser_nhaCwg", "sticky_text_gallery_UbywXn", "featured_media_frieze_HiyNMf", "text_with_frieze_TTtLxX", "video_LzLF6p", "blog_text_bRPnxe", "cta_GTYEUE"]
+    },
+    {
+      "id": "UAT",
+      "nom": "UAT accessibilité",
+      "chemin": "pages/uat-video-toggle",
+      "role": "Accessibilité : bouton pause / lecture des vidéos dans chaque section (SCRUM-1241)",
+      "sections": ["uat_mosaic", "uat_media_collection_teaser", "uat_customizable", "uat_video", "uat_blog_media", "uat_blog_text", "uat_blog_promoted_item", "uat_split_screen_media"]
+    },
+    {
+      "id": "DS",
+      "nom": "Design system",
+      "chemin": "pages/design-system",
+      "role": "Couleurs, typographies, boutons et composants du thème : savoir s'il faut le mettre à jour ou si quelque chose est cassé",
+      "sections": ["page", "design_system_f4yEF4"]
+    },
+    { "id": "R01", "nom": "Accueil", "chemin": "", "etiquette": "@home", "role": "Sections réservées à l'accueil", "couvre": ["hero", "promoted-collections", "instagram", "blog-space"] },
+    { "id": "R02", "nom": "Fiche produit QA01", "produitFixe": "QA01", "etiquette": "@pdp", "role": "Fiche produit et son écran partagé", "couvre": ["product-main", "splitscreen-teaser"] },
+    { "id": "R03", "nom": "Collection QA", "chemin": "collections/qa-collection", "etiquette": "@plp", "role": "Page de collection", "couvre": ["main-collection"] },
+    { "id": "R04", "nom": "Liste des collections", "chemin": "collections", "etiquette": "@plp", "role": "Toutes les collections", "couvre": ["main-list-collections"] },
+    { "id": "R05", "nom": "Panier vide", "chemin": "cart", "etiquette": "@cart", "role": "Panier et favoris du panier (la notification d'ajout est vue par le parcours d'achat)", "couvre": ["main-cart", "wishlist-slider"] },
+    { "id": "R06", "nom": "Recherche", "chemin": "search?q=sac", "etiquette": "@search", "role": "Résultats de recherche", "couvre": ["main-search"] },
+    { "id": "R07", "nom": "Page introuvable", "chemin": "pages/qa-page-inexistante", "statut": 404, "etiquette": "@content", "role": "Page 404", "couvre": ["main-404"] },
+    { "id": "R08", "nom": "Connexion", "chemin": "account/login", "etiquette": "@account", "role": "Ancienne connexion par mot de passe (prod ; la préprod passe par la connexion Shopify par code)", "couvre": ["main-login"] },
+    { "id": "R19", "nom": "Mot de passe oublié", "chemin": "account/login?view=recover", "etiquette": "@account", "role": "Ancienne connexion : demande d'un nouveau mot de passe (écran à part)", "couvre": ["main-recover-password"] },
+    { "id": "R09", "nom": "Création de compte", "chemin": "account/register", "etiquette": "@account", "role": "Création de compte", "couvre": ["main-register"] },
+    { "id": "R10", "nom": "Blog Sacs", "chemin": "blogs/bags", "etiquette": "@content", "role": "Introduction savoir-faire et grille numérotée", "couvre": ["craftsmanship-intro", "numbered-info-grid"] },
+    { "id": "R11", "nom": "Blog Actualités", "chemin": "blogs/news", "etiquette": "@content", "role": "Liste d'articles d'un blog", "couvre": ["main-blog"] },
+    { "id": "R12", "nom": "Blog Boutiques", "chemin": "blogs/stores", "etiquette": "@content", "role": "Liste des boutiques", "couvre": ["stores-blog"] },
+    { "id": "R13", "nom": "Article Confection", "chemin": "blogs/jewellery/confection", "etiquette": "@content", "role": "Article simple", "couvre": ["plain-article"] },
+    { "id": "R14", "nom": "Savoir-faire", "chemin": "pages/craftsmanship", "etiquette": "@content", "role": "Héros de page", "couvre": ["page-hero"] },
+    { "id": "R15", "nom": "La Maison", "chemin": "pages/la-maison", "etiquette": "@content", "role": "Article affiché dans une page", "couvre": ["blog-viewer-article"] },
+    { "id": "R16", "nom": "Friendly faces", "chemin": "pages/eye-cursor", "etiquette": "@content", "role": "Yeux qui suivent le curseur", "couvre": ["eyes-cursor"] },
+    { "id": "R17", "nom": "Favoris", "chemin": "pages/wishlist", "etiquette": "@account", "role": "Page des favoris", "couvre": ["wishlist"] },
+    { "id": "R18", "nom": "Redirection factures SAP", "chemin": "pages/sap-invoices-email-redirection", "etiquette": "@content", "role": "Page technique de redirection des factures", "couvre": ["redirection-sap-documents"] }
+  ]
+}
