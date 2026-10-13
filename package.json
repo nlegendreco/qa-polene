@@ -8,6 +8,7 @@
     "test:preprod": "QA_ENVS=preprod playwright test",
     "test:donnees": "SERIE=donnees QA_ENVS=preprod playwright test --project \"preprod · donnees\"",
     "donnees:qa": "node scripts/donnees-qa.mjs",
+    "connexion:compte": "node scripts/connexion-compte.mjs",
     "test:demo-echec": "DEMO_ECHEC=1 QA_ENVS=prod playwright test --grep @demo-echec --project \"prod · desktop-chrome\" --project \"prod · iphone\"",
     "test:visuel": "VISUEL=1 QA_ENVS=prod playwright test --grep @visuel --workers 2 --retries 1",
     "test:visuel:maj": "node scripts/sauvegarder-references.mjs && VISUEL=1 QA_ENVS=prod playwright test --grep @visuel --workers 2 --update-snapshots",
