@@ -218,17 +218,22 @@ Remplacer votre passe manuelle sur la préprod par la suite automatique, page pa
 #### 2.1 Partir de vos cartographies TNR
 *QA · Claude Code*
 
-Les fichiers issus de `site-mapper` → `site-mapper-to-tnr` servent de spécification. Claude Code les transforme en tests, page par page, avec les agents Playwright (planner, generator).
+Les fiches TNR de la QA (59 fiches Word, faites sur un ancien modèle et pas forcément à jour) servent de **liste des éléments à couvrir et de criticité** (Bloquant, Majeur, Mineur), pas de spécification au mot près : quand une fiche contredit le site, c'est le site qui fait foi, et les fiches peuvent être réécrites librement. Relevé du 13 octobre 2026 dans [docs/couverture-tnr.md](docs/couverture-tnr.md) : ce qui est couvert, en partie, pas du tout. Dans les étapes suivantes, on traite les éléments Bloquants d'abord.
 
 #### 2.2 Couvrir les états produit et les paniers combinés
 *Claude Code*
 
-Chacun des 7 états sur la fiche et dans les listes. Paniers en stock + précommande, codes promo, checkout complet.
+Chacun des 7 états sur la fiche et dans les listes. Paniers en stock + précommande, codes promo, checkout complet. Éléments TNR concernés, par criticité :
+- Bloquant : PDP-07 ajout au panier selon l'état, PDP-06 tailles, PDP-05 coloris, PDP-04 bloc d'infos, PLP-04 carte et ajout rapide, CART-02 et CART-03 lignes du panier (quantité, suppression, précommande, dernière pièce), CART-04 récapitulatif, CHECKOUT-03 à 06 (erreurs du formulaire, cartes refusées, sans commande).
+- Majeur : PDP-08 et PLP-07 « Être prévenu(e) », CHECKOUT-07 récapitulatif et code promo.
 
 #### 2.3 Couvrir le reste du site
 *Claude Code*
 
-Recherche, filtres, compte client, wishlist, newsletter, « Être prévenu(e) », pages boutiques et Savoir-Faire.
+Recherche, filtres, compte client, wishlist, newsletter, « Être prévenu(e) », pages boutiques et Savoir-Faire. Éléments TNR concernés :
+- Bloquant : PLP-03 grille des collections en préprod, CART-01 panier vide, CHECKOUT-02 paiement express (présence en prod), ACCOUNT-07 à 10 profil et préférences marketing (lecture seule).
+- Majeur : PLP-01 menu de collection, PLP-02 filtres et tri, PLP-05 et PDP-08/09 favoris, PLP-06 « Voir plus », PDP-02, 03, 09 et 12 galerie, onglets, 3D, CART-07 carrousels, CHECKOUT-01 résumé fixe mobile, ACCOUNT-01 à 06 et 11 à 23, header et accueil (grille Mandatory).
+- Mineur : PDP-01, 10, 11, CART-05, 06, 08, CHECKOUT-08.
 
 #### 2.4 Ajouter les contrôles automatiques
 *Claude Code*

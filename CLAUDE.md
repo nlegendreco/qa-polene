@@ -11,6 +11,7 @@ Tests automatisés (Playwright, TypeScript) du site Shopify [polene-paris.com](h
 - Sections du thème, celles qui manquent sur les pages de sections et code peut-être mort : [docs/sections-theme.md](docs/sections-theme.md)
 - Plan des données QA de la préprod (produits et collections QA à créer, en attente de validation) : [docs/plan-donnees-qa.md](docs/plan-donnees-qa.md)
 - Reprise de la phase 1 (décisions, ce qu'on a appris, prochaines étapes) : [docs/reprise-phase-1.md](docs/reprise-phase-1.md)
+- Fiches TNR de la QA comparées aux tests (couverture, remarques sur les fiches, premiers tests proposés) : [docs/couverture-tnr.md](docs/couverture-tnr.md)
 
 ## Règles de travail
 
