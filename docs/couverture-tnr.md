@@ -53,10 +53,10 @@
 
 | Fiche | Priorité | Couverture | Où | Manque |
 |---|---|---|---|---|
-| CART-01 Panier vide | Bloquant | Partiel | `pages-sections.spec.ts` (R05) | Titre, 2 boutons et leurs liens |
+| CART-01 Panier vide | Bloquant | Partiel | `pages-sections.spec.ts` (R05), `panier.spec.ts` (titre, « Discover Polène selection » vers `collections/all`, 13 octobre 2026) | Bouton « Login », client connecté |
 | CART-02 Liste | Bloquant | Partiel | `parcours-achat.spec.ts` (1 ligne) | Plusieurs articles, compteur, pluriel |
-| CART-03 Ligne produit | Bloquant | Partiel | `etats-produit.spec.ts` (ligne d'une précommande : mention, date, prix, 13 octobre 2026) | +/−, suppression avec fenêtre, favoris, dernière pièce |
-| CART-04 Résumé & checkout | Bloquant | Partiel | `parcours-achat.spec.ts` (sous-total, passage au checkout) | Sous-total après changement de quantité, bouton fixe mobile |
+| CART-03 Ligne produit | Bloquant | Partiel | `etats-produit.spec.ts` (ligne d'une précommande), `panier.spec.ts` (+/−, fenêtre « Remove item ? » fermée puis confirmée, dernière pièce QA03 bloquée à 1 avec message, 13 octobre 2026) | Favoris depuis le panier, croix de la ligne |
+| CART-04 Résumé & checkout | Bloquant | Partiel | `parcours-achat.spec.ts` (sous-total, passage au checkout), `panier.spec.ts` (sous-total recalculé après +/−) | Bouton fixe mobile |
 | CART-05 Réassurance | Mineur | Partiel | `visuel.spec.ts` (prod, pixel) | Libellés |
 | CART-06 Accordéon assistance | Mineur | Non couvert | | Ouverture, clavier |
 | CART-07 Carrousels | Majeur | Partiel | `pages-sections.spec.ts` (R05) | Quick Add, flèches |
