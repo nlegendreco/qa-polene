@@ -39,9 +39,9 @@ export class ProductPage {
     return this.page.locator('component-cart-notification.is-active');
   }
 
-  /** Prix affiché sous le nom du produit. */
+  /** Prix affiché sous le nom du produit (pas celui de la barre d'achat qui apparaît au défilement, cachée sur mobile). */
   get price() {
-    return this.main.locator('[class*="price"]').first();
+    return this.main.locator('[class*="price"]:not([class*="buy-bar"] *)').first();
   }
 
   /**
