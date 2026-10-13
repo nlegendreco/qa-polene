@@ -25,6 +25,8 @@ export interface ProduitFixe {
   prixMaximumEuros?: number;
   /** Tags exacts attendus (produits QA : `qa-fixture` et ceux du cas, rien d'autre). */
   tags?: string[];
+  /** Produit QA en précommande : date d'expédition prévue (métachamp `preorder.date` de toutes les variantes), « 2030-12-31 ». */
+  datePrecommande?: string;
 }
 
 const racine = join(__dirname, '..', 'data');
@@ -46,6 +48,8 @@ interface ProduitQa {
   stock: number | Record<string, number>;
   sansTagQa?: boolean;
   visibleRecherche?: boolean;
+  /** Métachamps posés sur les variantes : « * » pour toutes, ou par taille. */
+  metafieldsVariantes?: Record<string, { namespace: string; key: string; value: string }[]>;
 }
 
 interface DonneesQa {
@@ -69,6 +73,7 @@ const FILLERS: ProduitQa[] = Array.from({ length: remplissage?.nombre ?? 0 }, (_
 export const PRODUITS_QA: ProduitFixe[] = DONNEES_QA.produits.map(p => ({
   // Les tags exacts couvrent aussi l'étiquette « Nouveauté » (LABEL:NEW) : pas de champ `nouveaute`, sinon double message.
   id: p.id, role: p.cas, handle: p.handle, etat: p.etat, tags: tagsQa(p),
+  datePrecommande: p.metafieldsVariantes?.['*']?.find(m => m.namespace === 'preorder' && m.key === 'date')?.value,
   ...(typeof p.stock === 'object' ? {
     tailles: {
       disponibles: Object.keys(p.stock).filter(t => (p.stock as Record<string, number>)[t] > 0),
