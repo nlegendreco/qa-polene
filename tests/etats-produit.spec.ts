@@ -200,3 +200,130 @@ test.describe('Précommande', () => {
     });
   });
 });
+
+test.describe('Tailles', () => {
+  const LIBELLE_AJOUT = /Add to (cart|bag)|Ajouter au panier/i;
+
+  /**
+   * Le choix de taille est écrit pour l'ancienne fiche (menu « Select size »), seule servie par le Roll Out le
+   * 13 octobre 2026. La nouvelle (fenêtre « Choose your size », data-state="modal") reste à relever.
+   */
+  const passerSiNouvelleFiche = async (fiche: ProductPage) => {
+    const nouvelle = (await fiche.mainButton.getAttribute('data-state')) === 'modal';
+    test.skip(nouvelle, 'Nouvelle fiche produit (fenêtre « Choose your size ») : choix de taille pas encore écrit, à faire quand le Roll Out la remontre');
+  };
+
+  const ouvrirFiche = async (page: import('@playwright/test').Page, fiche: ProductPage, handle: string) => {
+    const donnees = await fiche.fetchProductData(handle);
+    await page.goto(`products/${handle}`, { waitUntil: 'domcontentloaded' });
+    await expect(fiche.title, 'Le nom du produit doit s\'afficher').toBeVisible();
+    await expect(fiche.mainButton, 'Le bouton principal de la fiche doit s\'afficher').toBeVisible();
+    await passerSiNouvelleFiche(fiche);
+    return donnees;
+  };
+
+  test(`Tailles · choisir une taille disponible (${produitFixe('QA10').id}) @tnr @pdp`, async ({ page, qaEnv, isMobile }, testInfo) => {
+    test.skip(qaEnv.name !== 'preprod', 'Produits QA : préprod uniquement');
+    const produit = produitFixe('QA10');
+    const { disponibles, indisponibles } = produit.tailles!;
+    const [epuisee] = indisponibles;
+    const choisie = disponibles[disponibles.length - 1];
+    const header = new Header(page, isMobile);
+    const fiche = new ProductPage(page);
+    testInfo.annotations.push({ type: 'Produit testé', description: `${produit.id} (${produit.handle}) : tailles ${disponibles.join(', ')} en stock, ${indisponibles.join(', ')} épuisées` });
+    let donnees!: Awaited<ReturnType<ProductPage['fetchProductData']>>;
+
+    await etape(page, testInfo, `1. Ouvrir la fiche du produit à tailles ${produit.id} : aucune taille choisie`, async () => {
+      donnees = await ouvrirFiche(page, fiche, produit.handle);
+      await expect(fiche.mainButton, 'Tant qu\'aucune taille n\'est choisie, le bouton doit être inactif').toHaveAttribute('data-state', 'inactive');
+      await expect(fiche.sizeSelector, 'Le menu des tailles doit inviter à choisir une taille').toContainText(/Select size|Choisi\w* (votre|une) taille/i);
+      expect(await fiche.selectedVariantId(), 'Aucune taille ne doit être choisie d\'office').toBe('0');
+    });
+
+    await etape(page, testInfo, '2. Ouvrir le menu des tailles : tailles en stock proposées, tailles épuisées marquées « Notify me »', async () => {
+      await centrer(fiche.sizeSelector);
+      await fiche.sizeSelector.click();
+      for (const taille of disponibles) {
+        await expect(fiche.sizeOption(taille), `La taille ${taille} (en stock) doit être proposée`).toBeVisible();
+        await expect(fiche.sizeOption(taille), `La taille ${taille} (en stock) ne doit pas être grisée`).not.toHaveAttribute('disabled');
+      }
+      for (const taille of indisponibles) {
+        await expect(fiche.sizeOption(taille), `La taille ${taille} (épuisée) doit être grisée`).toHaveAttribute('disabled', 'true');
+        await expect(fiche.sizeOption(taille), `La taille ${taille} (épuisée) doit proposer d'être prévenu`).toContainText(/Notify me|Être prévenu/i);
+      }
+    });
+
+    await etape(page, testInfo, `3. Toucher la taille épuisée ${epuisee} : elle ne se sélectionne pas`, async () => {
+      await fiche.sizeOption(epuisee).click();
+      expect(await fiche.selectedVariantId(), `La taille épuisée ${epuisee} ne doit pas pouvoir être choisie`).toBe('0');
+      await expect(fiche.mainButton, 'Le bouton doit rester inactif').toHaveAttribute('data-state', 'inactive');
+    });
+
+    await etape(page, testInfo, `4. Choisir la taille ${choisie} : le bouton « Add to cart » s'active`, async () => {
+      const variante = donnees.variants.find(v => v.option1 === choisie)!;
+      await fiche.chooseSize(choisie);
+      await expect(fiche.sizeSelector, `Le menu doit afficher la taille choisie (${choisie})`).toContainText(choisie);
+      expect(await fiche.selectedVariantId(), `La variante envoyée au panier doit être celle de la taille ${choisie}`).toBe(String(variante.id));
+      await expect(fiche.mainButton, 'Le bouton ne doit plus être inactif').not.toHaveAttribute('data-state', 'inactive');
+      await expect.poll(() => fiche.mainButton.innerText(), { message: 'Le bouton doit proposer d\'ajouter au panier' }).toMatch(LIBELLE_AJOUT);
+    });
+
+    await etape(page, testInfo, `5. Ajouter au panier : notification avec la taille ${choisie}, compteur à 1`, async () => {
+      await centrer(fiche.mainButton);
+      await fiche.mainButton.click();
+      await expect(fiche.cartNotification, 'La notification « ajouté au panier » doit apparaître').toBeVisible();
+      await expect(fiche.cartNotification, `La notification doit donner la taille choisie (${choisie})`).toContainText(new RegExp(`(Size|Taille)\\s*:?\\s*${choisie}\\b`, 'i'));
+      await expect.poll(() => header.cartCount(), { message: 'Le compteur du panier doit passer à 1' }).toBe(1);
+      const contenu = await (await appelShopify(page, 'La lecture du panier', () => page.request.get('cart.js'))).json() as { items: { variant_id: number; quantity: number }[] };
+      const variante = donnees.variants.find(v => v.option1 === choisie)!;
+      expect(contenu.items.map(i => i.variant_id), `Le panier doit contenir la taille ${choisie}, et elle seule`).toEqual([variante.id]);
+    });
+  });
+
+  test(`Tailles · une taille en précommande (${produitFixe('QA12').id}) @tnr @pdp`, async ({ page, qaEnv }, testInfo) => {
+    test.skip(qaEnv.name !== 'preprod', 'Produits QA : préprod uniquement');
+    const produit = produitFixe('QA12');
+    const [[tailleEnPrecommande, dateExpedition]] = Object.entries(produit.precommandeParTaille!);
+    const tailleEnStock = produit.tailles!.disponibles.find(t => t !== tailleEnPrecommande)!;
+    const fiche = new ProductPage(page);
+    const mention = fiche.main.getByText(/Shipping on|Expédition/i).filter({ visible: true });
+    testInfo.annotations.push({ type: 'Produit testé', description: `${produit.id} (${produit.handle}) : taille ${tailleEnPrecommande} en précommande (expédition le ${dateExpedition})` });
+
+    await etape(page, testInfo, `1. Ouvrir la fiche ${produit.id} et le menu des tailles : ${tailleEnPrecommande} marquée « Pre-order »`, async () => {
+      await ouvrirFiche(page, fiche, produit.handle);
+      await centrer(fiche.sizeSelector);
+      await fiche.sizeSelector.click();
+      await expect(fiche.sizeOption(tailleEnPrecommande), `La taille ${tailleEnPrecommande} doit être marquée en précommande`).toContainText(MENTION_PRECOMMANDE);
+      await expect(fiche.sizeOption(tailleEnStock), `La taille ${tailleEnStock} (en stock) ne doit pas être marquée en précommande`).not.toContainText(MENTION_PRECOMMANDE);
+    });
+
+    await etape(page, testInfo, `2. Choisir ${tailleEnPrecommande} : bouton « Preorder now » et date d'expédition`, async () => {
+      await fiche.chooseSize(tailleEnPrecommande);
+      await expect.poll(() => fiche.mainButton.innerText(), { message: 'Le bouton doit proposer de précommander' }).toMatch(MENTION_PRECOMMANDE);
+      await expect(fiche.mainButton, 'Le bouton doit être dans l\'état « précommande »').toHaveAttribute('data-state', 'preorder');
+      await expect(mention.first(), `La date d'expédition prévue (${dateExpedition}) doit s'afficher`).toContainText(dateAffichee(dateExpedition));
+    });
+
+    await etape(page, testInfo, `3. Choisir ${tailleEnStock} : retour à « Add to cart », sans date d'expédition`, async () => {
+      await fiche.chooseSize(tailleEnStock);
+      await expect.poll(() => fiche.mainButton.innerText(), { message: 'Le bouton doit de nouveau proposer d\'ajouter au panier' }).toMatch(LIBELLE_AJOUT);
+      await expect(fiche.mainButton, 'Le bouton ne doit plus être en précommande').not.toHaveAttribute('data-state', 'preorder');
+      await expect(mention, 'La date d\'expédition de la précommande ne doit plus s\'afficher').toHaveCount(0);
+    });
+  });
+
+  test(`Tailles · toutes les tailles épuisées (${produitFixe('QA11').id}) @tnr @pdp`, async ({ page, qaEnv }, testInfo) => {
+    test.skip(qaEnv.name !== 'preprod', 'Produits QA : préprod uniquement');
+    const produit = produitFixe('QA11');
+    const fiche = new ProductPage(page);
+    testInfo.annotations.push({ type: 'Produit testé', description: `${produit.id} (${produit.handle}) : toutes les tailles à 0` });
+
+    await etape(page, testInfo, `1. Ouvrir la fiche ${produit.id} : « Notify me » à la place de l'ajout au panier`, async () => {
+      await page.goto(`products/${produit.handle}`, { waitUntil: 'domcontentloaded' });
+      await expect(fiche.title, 'Le nom du produit doit s\'afficher').toBeVisible();
+      await expect.poll(() => fiche.mainButton.innerText(), { message: 'Le bouton principal doit proposer d\'être prévenu du retour en stock' }).toMatch(/Notify me|Être prévenu/i);
+      await expect(fiche.mainButton, 'Le bouton doit être dans l\'état « rupture » (data-state="disabled")').toHaveAttribute('data-state', 'disabled');
+      await expect(fiche.addToCartButton, 'Aucun bouton « Ajouter au panier » ne doit être proposé').toHaveCount(0);
+    });
+  });
+});

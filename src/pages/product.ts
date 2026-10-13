@@ -6,6 +6,8 @@ export interface ProductData {
   title: string;
   /** Prix de la première variante disponible, en centimes. */
   priceCents: number;
+  /** Variantes du catalogue : identifiant Shopify, valeur de la première option (taille), disponibilité. */
+  variants: { id: number; option1: string; available: boolean; price: number }[];
 }
 
 export class ProductPage {
@@ -50,10 +52,39 @@ export class ProductPage {
    */
   async fetchProductData(handle: string, { rupture = false } = {}): Promise<ProductData> {
     const response = await appelShopify(this.page, `La lecture du JSON du produit ${handle}`, () => this.page.request.get(`products/${handle}.js`));
-    const json = await response.json() as { title: string; variants: { available: boolean; price: number }[] };
+    const json = await response.json() as { title: string; variants: ProductData['variants'] };
     const variant = rupture ? json.variants[0] : json.variants.find(v => v.available);
     if (!variant) throw new Error(`Le produit ${handle} n'a aucune variante disponible`);
-    return { handle, title: json.title, priceCents: variant.price };
+    return { handle, title: json.title, priceCents: variant.price, variants: json.variants };
+  }
+
+  /**
+   * Menu « Select size » de l'ancienne fiche : un select natif caché (la taille envoyée au panier) et une liste
+   * maison, sans rôle ARIA, qui s'ouvre au clic. La nouvelle fiche ouvre à la place une fenêtre « Choose your size ».
+   */
+  get sizeSelector() {
+    return this.main.locator('[data-ref="custom-select"]').filter({ visible: true }).first();
+  }
+
+  /** Une taille dans la liste du menu (ouverte ou non). Une taille épuisée porte disabled="true" et « Notify me ». */
+  sizeOption(size: string) {
+    return this.sizeSelector.locator('span.option').filter({ hasText: new RegExp(`^\\s*${size}\\s*$`) }).locator('xpath=..');
+  }
+
+  /** Valeur du select caché : identifiant de la variante choisie, « 0 » tant qu'aucune taille n'est choisie. */
+  async selectedVariantId(): Promise<string> {
+    return this.sizeSelector.locator('select').inputValue();
+  }
+
+  /** Ouvre le menu des tailles s'il est fermé (il se referme après chaque choix), puis touche la taille. */
+  async chooseSize(size: string) {
+    const option = this.sizeOption(size);
+    if (!(await option.isVisible())) {
+      await this.sizeSelector.evaluate(e => e.scrollIntoView({ block: 'center', behavior: 'instant' }));
+      await this.sizeSelector.click();
+      await expect(option, `La taille ${size} doit apparaître dans le menu des tailles`).toBeVisible();
+    }
+    await option.click();
   }
 
   async expectPurchasable() {

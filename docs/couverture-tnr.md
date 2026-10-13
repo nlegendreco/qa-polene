@@ -28,7 +28,7 @@
 | PDP-03 Modale packshot | Majeur | Non couvert | | Ouverture, navigation, fermeture, clavier |
 | PDP-04 Info panel | Bloquant | Partiel | `etats-produit.spec.ts` (titre, prix = JSON, QA02) | Ordre, débordement, prix selon la taille |
 | PDP-05 Coloris | Bloquant | Partiel | `sante-donnees.spec.ts` (nombre de coloris de P08) | Clic, coloris actif, coloris en rupture |
-| PDP-06 Tailles | Bloquant | Partiel | `sante-donnees.spec.ts` (état du bouton) | Sélection d'une taille, bouton qui s'active, guide |
+| PDP-06 Tailles | Bloquant | Partiel | `etats-produit.spec.ts` (13 octobre 2026, ancienne fiche : QA10 tailles partielles, QA12 taille en précommande, QA11 tout épuisé) | Nouvelle fiche (fenêtre « Choose your size »), guide des tailles, clavier (constat 34) |
 | PDP-07 Ajout au panier | Bloquant | Partiel | `parcours-achat.spec.ts` (en stock), `etats-produit.spec.ts` (rupture ; précommande QA05 avec la date dans la notification, 13 octobre 2026) | Double clic, bouton fixe mobile, coming soon |
 | PDP-08 BIS | Majeur | Partiel | `etats-produit.spec.ts` (ouverture, fermeture, sans envoi) | Email invalide, envoi vide |
 | PDP-08/09 Wishlist | Majeur | Non couvert | | Cœur, snackbars, non connecté |

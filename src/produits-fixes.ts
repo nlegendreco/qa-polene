@@ -27,6 +27,8 @@ export interface ProduitFixe {
   tags?: string[];
   /** Produit QA en précommande : date d'expédition prévue (métachamp `preorder.date` de toutes les variantes), « 2030-12-31 ». */
   datePrecommande?: string;
+  /** Produit QA à tailles dont certaines seulement sont en précommande : date par taille, { "M": "2030-12-31" }. */
+  precommandeParTaille?: Record<string, string>;
 }
 
 const racine = join(__dirname, '..', 'data');
@@ -70,10 +72,18 @@ const FILLERS: ProduitQa[] = Array.from({ length: remplissage?.nombre ?? 0 }, (_
   return { ...remplissage!, id: `F${n}`, titre: remplissage!.titre.replace('{n}', n), handle: remplissage!.handle.replace('{n}', n) };
 });
 
-export const PRODUITS_QA: ProduitFixe[] = DONNEES_QA.produits.map(p => ({
+const datePreorder = (champs?: { namespace: string; key: string; value: string }[]) =>
+  champs?.find(m => m.namespace === 'preorder' && m.key === 'date')?.value;
+
+export const PRODUITS_QA: ProduitFixe[] =DONNEES_QA.produits.map(p => ({
   // Les tags exacts couvrent aussi l'étiquette « Nouveauté » (LABEL:NEW) : pas de champ `nouveaute`, sinon double message.
   id: p.id, role: p.cas, handle: p.handle, etat: p.etat, tags: tagsQa(p),
-  datePrecommande: p.metafieldsVariantes?.['*']?.find(m => m.namespace === 'preorder' && m.key === 'date')?.value,
+  datePrecommande: datePreorder(p.metafieldsVariantes?.['*']),
+  ...(p.metafieldsVariantes && Object.keys(p.metafieldsVariantes).some(t => t !== '*') ? {
+    precommandeParTaille: Object.fromEntries(Object.entries(p.metafieldsVariantes)
+      .filter(([taille, champs]) => taille !== '*' && datePreorder(champs))
+      .map(([taille, champs]) => [taille, datePreorder(champs)!])),
+  } : {}),
   ...(typeof p.stock === 'object' ? {
     tailles: {
       disponibles: Object.keys(p.stock).filter(t => (p.stock as Record<string, number>)[t] > 0),
