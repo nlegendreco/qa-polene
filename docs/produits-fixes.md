@@ -48,7 +48,7 @@ Vérifié le 7 octobre 2026 : 4 passages verts de suite, et deux attentes fauss�
 | Étape roadmap | Qui | Statut |
 |---|---|---|
 | 1.1 Valider la liste | QA | ✅ Validée le 7 octobre 2026 (9 produits, pas de P10) |
-| 1.2 Convention d'équipe : tag `qa-fixture` sur ces produits (choisi par la QA le 7 octobre 2026), personne d'autre ne les modifie ; date de précommande lointaine ; collection automatique « QA · Produits de test » (tag = `qa-fixture`, tri manuel, hors menu) ; jamais d'export Matrixify depuis la QA | Équipe | En cours. Le relevé du 7 octobre montre que la préprod bouge : des centaines de produits mis à jour à 10 h 26, et une nouvelle fiche produit déployée dans la matinée |
+| 1.2 Convention d'équipe : tag `qa-fixture` sur ces produits (choisi par la QA le 7 octobre 2026), personne d'autre ne les modifie ; date de précommande lointaine ; collection automatique « QA · Produits de test » (tag = `qa-fixture`, tri manuel, hors menu) ; jamais d'export Matrixify depuis la QA | Équipe | En cours. Le relevé du 7 octobre montre que la préprod bouge : des centaines de produits mis à jour à 10 h 26, et une seconde version de la fiche produit apparue dans la matinée (Roll Out : l'ancienne fiche, revenue à côté de la nouvelle, d'après la QA le 13 octobre) |
 | 1.3 Accès API d'administration à `asia-polene` (produits, stock, champs personnalisés) | QA · Claude Code | 🟡 Lecture ✅ le 7 octobre 2026 par la CLI Shopify (`shopify store auth` avec le compte de la QA, sans app à créer). Écriture à demander au moment de modifier |
 | 1.4 Script de remise en état avant chaque TNR (stock, champs coming soon et précommande, dates) | Claude Code | Attend l'accès 1.3 |
 | 1.5 Test de santé des données | Claude Code | ✅ Fait (`npm run test:donnees`) |

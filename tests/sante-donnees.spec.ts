@@ -15,9 +15,9 @@ import { appelShopify } from '../src/shopify';
 
 /**
  * Ce que le bouton principal de la fiche doit montrer pour chaque état : valeurs de data-state posées par le thème
- * et libellé (FR ou EN). Deux versions de la fiche coexistent depuis le 7 octobre 2026 : l'ancienne (submit, modal
- * « Choose your size ») et la nouvelle déployée ce jour-là en préprod (active, inactive avec menu « Select size »,
- * preorder). Retirer les anciennes valeurs quand la nouvelle fiche sera en prod.
+ * et libellé (FR ou EN). Deux versions de la fiche alternent en préprod (Roll Out Shopify) : la nouvelle (submit, modal
+ * « Choose your size ») et l'ancienne (active, inactive avec menu « Select size », preorder). Retirer les valeurs de
+ * l'ancienne quand la nouvelle fiche sera en prod.
  */
 const BOUTON_ATTENDU: Record<EtatProduit, { states: string[]; libelle: RegExp; enClair: string }> = {
   'en-stock': { states: ['active', 'submit'], libelle: /Add to (cart|bag)|Ajouter au panier/i, enClair: 'en stock (« Ajouter au panier »)' },
@@ -137,7 +137,7 @@ for (const produit of PRODUITS_FIXES) {
       }
 
       if (produit.colorisMinimum !== undefined) {
-        // Nouvelle fiche : carrousel de vignettes « Cyme Mini - Textured Camel, 1 of 24 ». Ancienne : bouton « Explore all (24) ».
+        // Ancienne fiche : carrousel de vignettes « Cyme Mini - Textured Camel, 1 of 24 ». Nouvelle : bouton « Explore all (24) ».
         // Seules les vignettes à l'écran sont accessibles : on lit le total annoncé par la première.
         const vignette = page.getByRole('main').getByRole('link', { name: /,\s*\d+\s+(of|sur)\s+\d+$/i }).first();
         const nomVignette = await vignette.getAttribute('aria-label', { timeout: 5_000 }).catch(() => null) ?? '';

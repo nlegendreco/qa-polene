@@ -45,7 +45,7 @@ Les POC sont validés. On a démarré la phase 1 de la roadmap : avoir en prépr
 
 ## Ce qu'on a appris sur la préprod
 
-- **Nouvelle fiche produit** déployée le 7 octobre (menu « Select size », coloris en carrousel de vignettes, onglet « Size & fit »). L'équipe utilise la fonction **Roll Out** pour comparer l'ancienne et la nouvelle : chaque navigateur de test tombe sur l'une ou l'autre. Il faudra que les tests choisissent la version.
+- **Deux fiches produit** depuis le 7 octobre : l'ancienne (menu « Select size », coloris en carrousel de vignettes, onglet « Size & fit ») est revenue ce jour-là pour une partie des navigateurs, à côté de la nouvelle (« Explore all », fenêtre « Choose your size »). Nommage corrigé par la QA le 13 octobre : on appelait « nouvelle » la fiche à vignettes. L'équipe utilise la fonction **Roll Out** pour comparer l'ancienne et la nouvelle : chaque navigateur de test tombe sur l'une ou l'autre. Il faudra que les tests choisissent la version.
 - **Où sont rangés les états** : le stock qui compte est celui de l'entrepôt **« Online »** (les boutiques ne comptent pas pour le site) ; coming soon = `coming_soon.enabled` sur le produit ; précommande = `preorder.date` sur la **variante**, plus une **précommande retardée** (`preorder.delayed_date`) ; nouveauté = tag `LABEL:NEW`.
 - **Collections** : 175 collections se remplissent seules, presque toutes par tag. Le **défilement infini** est un réglage de chaque collection ; sans lui, un bouton « Voir plus » apparaît. Les **coloris** d'une fiche viennent de la collection de famille (`family_…`), à confirmer au pilote. Les **PLP breaks** et le **carrousel d'en-tête** sont des métaobjets reliés à la collection.
 - **La boutique** : « Polène PREPROD », formule Enterprise, en **dollars** (convertis en euros pour la France). Ce n'est pas une boutique de développement : on ne sait pas encore si la CLI acceptera d'y faire des modifications.
@@ -58,7 +58,7 @@ Les POC sont validés. On a démarré la phase 1 de la roadmap : avoir en prépr
 |---|---|
 | Valider le plan complet [plan-donnees-qa.md](plan-donnees-qa.md) | Toi |
 | Les réimports prod → préprod : quel outil, suppriment-ils les produits absents de la prod, remplacent-ils le menu ? | Toi, auprès de l'équipe |
-| Relancer le parcours d'achat préprod sur la nouvelle fiche produit (4 commandes de test) | Ton accord |
+| Relancer le parcours d'achat préprod sur la fiche à vignettes, l'ancienne (4 commandes de test) | Ton accord |
 | L'artefact « Cartographie QA Polène » n'est plus accessible : supprimé exprès ou à repartager ? CLAUDE.md y renvoie encore | Toi |
 | Commiter les changements en cours (CLI, docs, plan) | Ton accord |
 
