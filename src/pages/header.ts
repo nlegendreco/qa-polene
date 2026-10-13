@@ -12,13 +12,14 @@ export class Header {
   }
 
   get cartLink() {
-    return this.banner.getByRole('link', { name: /Shopping cart with \d+ items?/i });
+    return this.banner.getByRole('link', { name: /Shopping cart(,| with) .*\d|Panier.*\d/i });
   }
 
   async cartCount(): Promise<number> {
-    // Le nombre est dans un texte masqué : "Shopping cart with 1 items".
+    // Le nombre est dans un texte masqué : « Shopping cart with 1 items » (prod), « Shopping cart, items: 1 »
+    // (préprod depuis le 12 octobre 2026).
     const text = (await this.cartLink.first().textContent()) ?? '';
-    return Number(text.match(/with (\d+) items?/i)?.[1] ?? NaN);
+    return Number(text.match(/with (\d+) items?|items?\s*:\s*(\d+)|articles?\s*:\s*(\d+)/i)?.slice(1).find(Boolean) ?? NaN);
   }
 
   /** Ouvre une catégorie depuis le menu principal (burger sur mobile, barre de navigation sur desktop). */
