@@ -68,7 +68,13 @@ export const test = base.extend<Fixtures>({
     // (theme-geo-suggestion, puis theme-store-redirect-modal depuis le 7 octobre 2026). On la ferme.
     await page.addLocatorHandler(
       page.locator('theme-geo-suggestion component-modal.active [role=dialog], component-modal.active[data-ref="theme-store-redirect-modal"] [role=dialog]'),
-      fenetre => fenetre.getByRole('button', { name: /Close modal|Fermer/i }).click(),
+      // Pendant son animation d'ouverture, la fenêtre est déjà « active » mais encore sous la photo du produit, qui
+      // reçoit le clic : on déclenche alors directement le bouton de fermeture, sans viser l'écran. Elle peut aussi se
+      // refermer seule : on n'insiste pas, sinon le test échouerait sur cette fenêtre et non sur la page testée.
+      async fenetre => {
+        const fermer = fenetre.getByRole('button', { name: /Close modal|Fermer/i });
+        await fermer.click({ timeout: 3_000 }).catch(() => fermer.dispatchEvent('click', undefined, { timeout: 2_000 })).catch(() => {});
+      },
       { noWaitAfter: true },
     );
 
