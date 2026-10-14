@@ -1,10 +1,13 @@
-import { expect, type Page } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+import { formatCents } from '../price';
 import { appelShopify } from '../shopify';
 
 export interface ProductData {
   handle: string;
   title: string;
-  /** Prix de la première variante disponible, en centimes. */
+  /** Variante de référence : la première disponible (ou la première, pour un produit en rupture). */
+  variantId: number;
+  /** Prix de la variante de référence, en centimes. */
   priceCents: number;
   /** Variantes du catalogue : identifiant Shopify, valeur de la première option (taille), disponibilité. */
   variants: { id: number; option1: string; available: boolean; price: number }[];
@@ -55,7 +58,25 @@ export class ProductPage {
     const json = await response.json() as { title: string; variants: ProductData['variants'] };
     const variant = rupture ? json.variants[0] : json.variants.find(v => v.available);
     if (!variant) throw new Error(`Le produit ${handle} n'a aucune variante disponible`);
-    return { handle, title: json.title, priceCents: variant.price, variants: json.variants };
+    return { handle, title: json.title, variantId: variant.id, priceCents: variant.price, variants: json.variants };
+  }
+
+  /**
+   * Vérifie qu'un prix lu (fiche, panier…) est celui du produit. En préprod, les prix en euros sont des dollars convertis
+   * au taux du jour, que Shopify change plusieurs fois par jour (un euro d'écart). Si le prix lu diffère, on relit le
+   * JSON du produit une fois : s'il donne le prix lu, c'est le taux qui a changé pendant le test. On le note et on garde
+   * le nouveau prix pour la suite (`donnees` est mis à jour). Sinon, échec.
+   */
+  async expectPrice(lu: number | null, donnees: ProductData, message: string) {
+    if (lu !== null && lu !== donnees.priceCents) {
+      const relu = await this.fetchProductData(donnees.handle, { rupture: true });
+      if (relu.variants.find(v => v.id === donnees.variantId)?.price === lu) {
+        test.info().annotations.push({ type: 'Taux de change', description: `Prix passé de ${formatCents(donnees.priceCents)} à ${formatCents(lu)} pendant le test : Shopify a changé son taux de conversion des dollars en euros` });
+        donnees.priceCents = lu;
+        donnees.variants = relu.variants;
+      }
+    }
+    expect(lu, `${message} (${formatCents(donnees.priceCents)})`).toBe(donnees.priceCents);
   }
 
   /**

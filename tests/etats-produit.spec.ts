@@ -4,7 +4,7 @@ import { ProductPage } from '../src/pages/product';
 import { CartPage } from '../src/pages/cart';
 import { CheckoutPage } from '../src/pages/checkout';
 import { produitFixe } from '../src/produits-fixes';
-import { formatCents, parsePriceToCents } from '../src/price';
+import { parsePriceToCents } from '../src/price';
 import { appelShopify } from '../src/shopify';
 
 /**
@@ -30,7 +30,7 @@ test.describe('Rupture', () => {
       await page.goto(`products/${produit.handle}`, { waitUntil: 'domcontentloaded' });
       await expect(fiche.title, 'Le nom du produit doit s\'afficher').toBeVisible();
       await expect(fiche.price, 'Le prix doit rester affiché sur un produit en rupture').toBeVisible();
-      expect(parsePriceToCents(await fiche.price.innerText()), `Le prix affiché doit être ${formatCents(donnees.priceCents)}`).toBe(donnees.priceCents);
+      await fiche.expectPrice(parsePriceToCents(await fiche.price.innerText()), donnees, 'Le prix affiché doit être celui du produit');
     });
 
     await etape(page, testInfo, '2. Vérifier le bouton « Être prévenu(e) » à la place de « Ajouter au panier »', async () => {
@@ -127,7 +127,7 @@ test.describe('Précommande', () => {
       donnees = await fiche.fetchProductData(produit.handle);
       await page.goto(`products/${produit.handle}`, { waitUntil: 'domcontentloaded' });
       await expect(fiche.title, 'Le nom du produit doit s\'afficher').toBeVisible();
-      expect(parsePriceToCents(await fiche.price.innerText()), `Le prix affiché doit être ${formatCents(donnees.priceCents)}`).toBe(donnees.priceCents);
+      await fiche.expectPrice(parsePriceToCents(await fiche.price.innerText()), donnees, 'Le prix affiché doit être celui du produit');
     });
 
     await etape(page, testInfo, '2. Vérifier le bouton « Précommander » et la date d\'expédition', async () => {
@@ -165,7 +165,7 @@ test.describe('Précommande', () => {
       const ligne = panier.line(produit.handle);
       await expect(ligne, 'La ligne doit dire qu\'il s\'agit d\'une précommande').toContainText(MENTION_PRECOMMANDE);
       await expect(ligne, `La ligne doit donner la date d'expédition (${dateExpedition})`).toContainText(date);
-      expect(await panier.subtotalCents(), 'Le sous-total doit être égal au prix du produit').toBe(donnees.priceCents);
+      await fiche.expectPrice(await panier.subtotalCents(), donnees, 'Le sous-total doit être égal au prix du produit');
       // Ce que le panier transmettra à la commande : propriétés cachées lues par l'équipe et par Shipup.
       const contenu = await (await appelShopify(page, 'La lecture du panier', () => page.request.get('cart.js'))).json() as { items: { handle: string; properties: Record<string, string> | null }[] };
       const proprietes = contenu.items.find(i => i.handle === produit.handle)?.properties ?? {};

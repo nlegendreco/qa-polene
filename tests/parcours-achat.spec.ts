@@ -63,7 +63,7 @@ test('Parcours d\'achat nominal @smoke @tnr @journey', async ({ page, qaEnv, isM
     await cart.expectLoaded();
     await expect(cart.lines).toHaveCount(1);
     await expect(cart.line(productData.handle)).toBeVisible();
-    expect(await cart.subtotalCents(), 'Le sous-total doit être égal au prix du produit').toBe(productData.priceCents);
+    await product.expectPrice(await cart.subtotalCents(), productData, 'Le sous-total doit être égal au prix du produit');
   });
 
   await etape(page, testInfo, '6. Passer au checkout', async () => {
