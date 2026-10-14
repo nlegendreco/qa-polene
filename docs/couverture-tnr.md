@@ -54,7 +54,7 @@
 | Fiche | Priorité | Couverture | Où | Manque |
 |---|---|---|---|---|
 | CART-01 Panier vide | Bloquant | Partiel | `pages-sections.spec.ts` (R05), `panier.spec.ts` (titre, « Discover Polène selection » vers `collections/all`, 13 octobre 2026) | Bouton « Login », client connecté |
-| CART-02 Liste | Bloquant | Partiel | `parcours-achat.spec.ts` (1 ligne) | Plusieurs articles, compteur, pluriel |
+| CART-02 Liste | Bloquant | Partiel | `parcours-achat.spec.ts` (1 ligne) ; `panier.spec.ts` (14 octobre 2026, QA01 + QA05) : deux lignes, compteur « 1 product » / « 2 products » (singulier et pluriel), précommande et date sur la seule ligne concernée, sous-total = somme des lignes, propriétés de précommande sur le seul article en précommande, arrivée au checkout avec les deux produits et le même total, retrait par la croix (fenêtre « Remove item ? ») | Panier de 10 articles et plus (défilement) |
 | CART-03 Ligne produit | Bloquant | Partiel | `etats-produit.spec.ts` (ligne d'une précommande), `panier.spec.ts` (+/−, fenêtre « Remove item ? » fermée puis confirmée, dernière pièce QA03 bloquée à 1 avec message, 13 octobre 2026) | Favoris depuis le panier, croix de la ligne |
 | CART-04 Résumé & checkout | Bloquant | Partiel | `parcours-achat.spec.ts` (sous-total, passage au checkout), `panier.spec.ts` (sous-total recalculé après +/−) | Bouton fixe mobile |
 | CART-05 Réassurance | Mineur | Partiel | `visuel.spec.ts` (prod, pixel) | Libellés |
