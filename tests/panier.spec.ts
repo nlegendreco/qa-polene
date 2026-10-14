@@ -82,6 +82,28 @@ test(`Panier · quantité, suppression et panier vide (${produitFixe('QA01').id}
   });
 });
 
+test(`Panier · récapitulatif et bouton « Continue » visible sans défiler (${produitFixe('QA01').id}) @tnr @cart`, async ({ page, qaEnv, isMobile }, testInfo) => {
+  test.skip(qaEnv.name !== 'preprod', 'Produits QA : préprod uniquement');
+  const produit = produitFixe('QA01');
+  const panier = new CartPage(page);
+  testInfo.annotations.push({ type: 'Produit testé', description: `${produit.id} (${produit.handle})` });
+
+  await etape(page, testInfo, `1. Mettre ${produit.id} au panier : récapitulatif avec sous-total, livraison calculée au checkout, « Continue »`, async () => {
+    await panier.addByUrl(produit.handle);
+    await expect(panier.summary, 'Le récapitulatif doit s\'afficher').toBeVisible();
+    await expect(panier.summary, 'Le récapitulatif doit donner le sous-total').toContainText(/Sous.?total|Subtotal/i);
+    await expect(panier.summary, 'Le récapitulatif doit dire que la livraison est calculée au checkout').toContainText(/calcul\w* (at|au) (checkout|paiement)/i);
+    const prix = await panier.linePriceCents(produit.handle);
+    expect(await panier.subtotalCents(), `Le sous-total doit être égal au prix de la ligne (${formatCents(prix!)})`).toBe(prix);
+    await expect(panier.checkoutButton, 'Le bouton « Continue » doit être visible sans faire défiler la page').toBeInViewport();
+    if (isMobile) {
+      // Sur mobile, le récapitulatif est collé au bas de l'écran (position sticky) tant qu'on est dans le panier.
+      const zone = (await panier.summary.boundingBox())!;
+      expect(Math.abs(zone.y + zone.height - page.viewportSize()!.height), 'Sur mobile, le récapitulatif doit être collé au bas de l\'écran').toBeLessThanOrEqual(2);
+    }
+  });
+});
+
 test(`Panier · dernière pièce, quantité bloquée à 1 (${produitFixe('QA03').id}) @tnr @cart`, async ({ page, qaEnv, isMobile }, testInfo) => {
   test.skip(qaEnv.name !== 'preprod', 'Produits QA : préprod uniquement');
   const produit = produitFixe('QA03');

@@ -12,6 +12,11 @@ export class CartPage {
     return this.main.getByRole('listitem').filter({ has: this.page.getByRole('spinbutton') });
   }
 
+  /** Récapitulatif (sous-total, livraison, « Continue ») : colonne de droite sur ordinateur, collée au bas de l'écran sur mobile. */
+  get summary() {
+    return this.main.locator('.cart__inner--summary');
+  }
+
   get checkoutButton() {
     return this.main.getByRole('button', { name: /^(Continuer|Checkout|Continue)$/i });
   }
