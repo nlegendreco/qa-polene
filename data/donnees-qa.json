@@ -3,6 +3,8 @@
   "boutique": "asia-polene.myshopify.com",
   "emplacementEnLigne": "Online",
   "tagQa": "qa-fixture",
+  "tagsToleresNote": "Tags qu'une automatisation de la préprod remet chaque nuit (bestsellers-resort sur QA01, produit des commandes de test, 14 octobre 2026). Ni retirés par le script ni comptés comme écart par test:donnees. Conséquence acceptée : QA01 apparaît dans la vraie collection Bestsellers de la préprod.",
+  "tagsToleres": ["bestsellers-resort"],
   "modeleCarrousel": "handbags",
   "menu": "menu-v3-accessories-leather-stationery",
   "produits": [
@@ -13,9 +15,9 @@
       "copieDe": "numero-un-textured-black",
       "cas": "Sac en stock : fiche complète, ajout au panier, achat préprod",
       "etat": "en-stock",
+      "prix": "580.00",
       "tags": [],
       "stock": 1000
-      "prix": "580.00",
     },
     {
       "id": "QA02",
@@ -24,9 +26,9 @@
       "copieDe": "numero-un-nano-textured-black",
       "cas": "Rupture : « Être prévenu(e) », fenêtre d'alerte (sans envoi)",
       "etat": "rupture",
+      "prix": "470.00",
       "tags": [],
       "stock": 0
-      "prix": "470.00",
     },
     {
       "id": "QA03",
@@ -35,9 +37,9 @@
       "copieDe": "numero-un-textured-black",
       "cas": "Dernière pièce : quantité bloquée à 1 au panier",
       "etat": "en-stock",
+      "prix": "580.00",
       "tags": [],
       "stock": 1
-      "prix": "580.00",
     },
     {
       "id": "QA04",
@@ -46,9 +48,9 @@
       "copieDe": "numero-neuf-mini-textured-taupe",
       "cas": "Coming soon : bouton, fenêtre d'inscription (sans envoi), carte",
       "etat": "coming-soon",
+      "prix": "540.00",
       "tags": [],
       "stock": 50,
-      "prix": "540.00",
       "metafields": [{ "namespace": "coming_soon", "key": "enabled", "type": "boolean", "value": "true" }]
     },
     {
@@ -58,9 +60,9 @@
       "copieDe": "sole-tan",
       "cas": "Précommande : date affichée, ajout au panier, panier et checkout en précommande",
       "etat": "precommande",
+      "prix": "500.00",
       "tags": [],
       "stock": 50,
-      "prix": "500.00",
       "metafieldsVariantes": { "*": [{ "namespace": "preorder", "key": "date", "type": "date", "value": "2030-12-31" }] }
     },
     {
@@ -70,9 +72,9 @@
       "copieDe": "cyme-tote-nano-textured-taupe",
       "cas": "Précommande retardée : ce qu'affiche la fiche",
       "etat": "precommande",
+      "prix": "480.00",
       "tags": [],
       "stock": 50,
-      "prix": "480.00",
       "metafieldsVariantes": { "*": [
         { "namespace": "preorder", "key": "date", "type": "date", "value": "2030-06-30" },
         { "namespace": "preorder", "key": "delayed_date", "type": "date", "value": "2031-03-31" }
@@ -85,9 +87,9 @@
       "copieDe": "numero-un-textured-black",
       "cas": "Précommande expirée : le produit redevient normal tout seul",
       "etat": "en-stock",
+      "prix": "580.00",
       "tags": [],
       "stock": 50,
-      "prix": "580.00",
       "metafieldsVariantes": { "*": [{ "namespace": "preorder", "key": "date", "type": "date", "value": "2020-01-01" }] }
     },
     {
@@ -97,9 +99,9 @@
       "copieDe": "tsubi-raffia",
       "cas": "Étiquette « New » sur la carte",
       "etat": "en-stock",
+      "prix": "470.00",
       "tags": ["LABEL:NEW"],
       "stock": 50
-      "prix": "470.00",
     },
     {
       "id": "QA09",
@@ -108,9 +110,9 @@
       "copieDe": "eroz-ring-24-carat-gold-gilded",
       "cas": "Toutes les tailles disponibles, guide des tailles",
       "etat": "tailles",
+      "prix": "230.00",
       "tags": [],
       "stock": { "50": 20, "52": 20, "54": 20, "56": 20 }
-      "prix": "230.00",
     },
     {
       "id": "QA10",
@@ -119,9 +121,9 @@
       "copieDe": "eole-draped-ring-24-carat-gold-gilded",
       "cas": "Seules les tailles en stock sont proposées",
       "etat": "tailles",
+      "prix": "230.00",
       "tags": [],
       "stock": { "50": 20, "52": 0, "54": 20, "56": 0 }
-      "prix": "230.00",
     },
     {
       "id": "QA11",
@@ -130,9 +132,9 @@
       "copieDe": "eroz-cuff-24-carat-gold-gilded",
       "cas": "Produit à tailles entièrement épuisé",
       "etat": "rupture",
+      "prix": "320.00",
       "tags": [],
       "stock": { "S": 0, "M": 0, "L": 0 }
-      "prix": "320.00",
     },
     {
       "id": "QA12",
@@ -141,9 +143,9 @@
       "copieDe": "eole-cuff-24-carat-gold-gilded",
       "cas": "Une taille (M) en précommande, les autres en stock. Le jonc Éole du plan n'existe pas en préprod : manchette Éole à la place",
       "etat": "tailles",
+      "prix": "300.00",
       "tags": [],
       "stock": { "S": 20, "M": 20, "L": 20 },
-      "prix": "300.00",
       "metafieldsVariantes": { "M": [{ "namespace": "preorder", "key": "date", "type": "date", "value": "2030-12-31" }] }
     },
     {
@@ -153,9 +155,9 @@
       "copieDe": "cyme-mini-textured-camel",
       "cas": "Coloris en stock, famille QA",
       "etat": "en-stock",
+      "prix": "550.00",
       "tags": ["family_qa-cyme-mini"],
       "stock": 50,
-      "prix": "550.00",
       "metafields": [{ "namespace": "filter", "key": "families", "type": "list.single_line_text_field", "value": "[\"qa-cyme-mini\"]" }]
     },
     {
@@ -165,9 +167,9 @@
       "copieDe": "cyme-mini-textured-black",
       "cas": "Coloris en rupture, dans la même famille",
       "etat": "rupture",
+      "prix": "550.00",
       "tags": ["family_qa-cyme-mini"],
       "stock": 0,
-      "prix": "550.00",
       "metafields": [{ "namespace": "filter", "key": "families", "type": "list.single_line_text_field", "value": "[\"qa-cyme-mini\"]" }]
     },
     {
@@ -177,9 +179,9 @@
       "copieDe": "cyme-mini-merino-ebony",
       "cas": "Coloris d'une autre matière (le sélecteur regroupe par matière)",
       "etat": "en-stock",
+      "prix": "810.00",
       "tags": ["family_qa-cyme-mini"],
       "stock": 50,
-      "prix": "810.00",
       "metafields": [{ "namespace": "filter", "key": "families", "type": "list.single_line_text_field", "value": "[\"qa-cyme-mini\"]" }]
     },
     {
@@ -189,9 +191,9 @@
       "copieDe": "numero-dix-textured-camel",
       "cas": "Vidéo dans la galerie (réglages video.* repris du vrai produit)",
       "etat": "en-stock",
+      "prix": "620.00",
       "tags": [],
       "stock": 50
-      "prix": "620.00",
     },
     {
       "id": "QA17",
@@ -200,9 +202,9 @@
       "copieDe": "atla-mirror-black",
       "cas": "Fiche d'accessoire, petit prix (< 100 €)",
       "etat": "en-stock",
+      "prix": "90.00",
       "tags": [],
       "stock": 50
-      "prix": "90.00",
     },
     {
       "id": "QA18",
@@ -222,9 +224,9 @@
       "copieDe": "airpods-case-black",
       "cas": "Recommandations fixées à la main (produits QA) : le bloc « Complétez votre panier » devient prévisible",
       "etat": "en-stock",
+      "prix": "100.00",
       "tags": [],
       "stock": 50,
-      "prix": "100.00",
       "recommandations": { "complementaires": ["QA17", "QA16", "QA08"], "similaires": ["QA01", "QA13", "QA18"] }
     },
     {
@@ -234,9 +236,9 @@
       "copieDe": "numero-neuf-east-west-textured-black",
       "cas": "Fiche minimale : sans photo au survol, sans vue 3D, sans vidéo ni détails. La page ne doit pas casser",
       "etat": "en-stock",
+      "prix": "610.00",
       "tags": [],
       "stock": 50,
-      "prix": "610.00",
       "retirerMetafields": ["ss_meta.hover_image", "ss_meta.hover_as_feature_image", "image.hover", "powerxyz.enable_3d", "video.streaming_reference", "video.position", "ss_meta.product_details_list", "ss_meta.additional_product_details", "ss_meta.specific_craftsmanship_teaser"]
     },
     {
@@ -246,9 +248,9 @@
       "copieDe": "numero-un-textured-black",
       "cas": "Titre long : retour à la ligne sur carte, fiche, panier, checkout",
       "etat": "en-stock",
+      "prix": "580.00",
       "tags": [],
       "stock": 50
-      "prix": "580.00",
     },
     {
       "id": "QA22",
@@ -257,9 +259,9 @@
       "copieDe": "numero-un-textured-black",
       "cas": "Le seul produit QA visible dans la recherche : chercher « Searchable » doit le trouver, lui seul",
       "etat": "en-stock",
+      "prix": "580.00",
       "tags": [],
       "stock": 50,
-      "prix": "580.00",
       "visibleRecherche": true
     }
   ],
@@ -270,9 +272,9 @@
     "copieDe": "qa-numero-un-in-stock",
     "cas": "Remplissage pour dépasser 48 produits (défilement infini, « Voir plus »)",
     "etat": "en-stock",
+    "prix": "580.00",
     "tags": ["qa-filler"],
     "sansTagQa": true,
-    "prix": "580.00",
     "stock": 100
   },
   "collections": [

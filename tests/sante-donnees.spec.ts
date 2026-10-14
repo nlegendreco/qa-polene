@@ -108,7 +108,10 @@ for (const produit of PRODUITS_FIXES) {
         expect.soft(json.tags.includes('LABEL:NEW'), `${nom} : le tag LABEL:NEW (étiquette « Nouveauté ») ${produit.nouveaute ? 'a été retiré' : 'a été ajouté'}`).toBe(produit.nouveaute);
       }
       if (produit.tags) {
-        const enTrop = json.tags.filter(t => !produit.tags!.includes(t));
+        // Tags remis chaque nuit par une automatisation de la préprod (data/donnees-qa.json) : notés, pas en échec.
+        const toleres = json.tags.filter(t => !produit.tags!.includes(t) && DONNEES_QA.tagsToleres?.includes(t));
+        if (toleres.length) testInfo.annotations.push({ type: 'Tag automatique toléré', description: toleres.join(', ') });
+        const enTrop = json.tags.filter(t => !produit.tags!.includes(t) && !toleres.includes(t));
         const manquants = produit.tags.filter(t => !json.tags.includes(t));
         expect.soft(enTrop, `${nom} : tag(s) en trop, ajouté(s) par quelqu'un ou par une automatisation : ${enTrop.join(', ')}. Il peut entrer dans de vraies collections. Remise en état : npm run donnees:qa`).toEqual([]);
         expect.soft(manquants, `${nom} : tag(s) retiré(s) : ${manquants.join(', ')}. Remise en état : npm run donnees:qa`).toEqual([]);
@@ -116,9 +119,6 @@ for (const produit of PRODUITS_FIXES) {
       if (produit.prixMaximumEuros !== undefined) {
         expect.soft(prixMinimum, `${nom} : le prix (${formatCents(prixMinimum)}) dépasse ${produit.prixMaximumEuros} €`).toBeLessThanOrEqual(produit.prixMaximumEuros * 100);
       }
-    });
-
-    await etape(page, testInfo, '3. Vérifier l\'état affiché sur la fiche', async () => {
       if (produit.prixDollars !== undefined) {
         // Le prix en euros de /fr-fr/ suit le taux de change du jour : on contrôle le prix de la boutique, en dollars,
         // lu sans le préfixe /fr-fr/ (marché US, aucune conversion).
@@ -129,6 +129,9 @@ for (const produit of PRODUITS_FIXES) {
         const differents = prix.filter(p => p !== produit.prixDollars);
         expect.soft(differents, `${nom} : le prix devrait être ${dollars(produit.prixDollars)}, il est de ${differents.map(dollars).join(', ')}. Quelqu'un a modifié le prix ? Remise en état : npm run donnees:qa`).toEqual([]);
       }
+    });
+
+    await etape(page, testInfo, '3. Vérifier l\'état affiché sur la fiche', async () => {
       const attendu = BOUTON_ATTENDU[produit.etat];
       const bouton = await lireBouton(page);
       const conforme = attendu.states.includes(bouton.state) && attendu.libelle.test(bouton.libelle);

@@ -63,6 +63,8 @@ interface ProduitQa {
 
 interface DonneesQa {
   tagQa: string;
+  /** Tags remis par une automatisation de la préprod : acceptés en plus des tags attendus. */
+  tagsToleres?: string[];
   produits: ProduitQa[];
   remplissage?: Omit<ProduitQa, 'id'> & { nombre: number };
   collections: { id: string; titre: string; handle: string; cas: string; contenu: { tags?: string[]; produits?: string[] } }[];
@@ -86,9 +88,9 @@ export const PRODUITS_QA: ProduitFixe[] =DONNEES_QA.produits.map(p => ({
   // Les tags exacts couvrent aussi l'étiquette « Nouveauté » (LABEL:NEW) : pas de champ `nouveaute`, sinon double message.
   id: p.id, role: p.cas, handle: p.handle, etat: p.etat, tags: tagsQa(p),
   datePrecommande: datePreorder(p.metafieldsVariantes?.['*']),
+  ...(p.prix ? { prixDollars: Math.round(Number(p.prix) * 100) } : {}),
   ...(p.metafieldsVariantes && Object.keys(p.metafieldsVariantes).some(t => t !== '*') ? {
     precommandeParTaille: Object.fromEntries(Object.entries(p.metafieldsVariantes)
-  ...(p.prix ? { prixDollars: Math.round(Number(p.prix) * 100) } : {}),
       .filter(([taille, champs]) => taille !== '*' && datePreorder(champs))
       .map(([taille, champs]) => [taille, datePreorder(champs)!])),
   } : {}),

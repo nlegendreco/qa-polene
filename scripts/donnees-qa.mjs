@@ -87,6 +87,11 @@ const PRODUITS = [
 const parId = new Map(PRODUITS.map((p) => [p.id, p]));
 
 const tagsVoulus = (attendu) => (attendu.sansTagQa ? [...attendu.tags] : [donnees.tagQa, ...attendu.tags]);
+// Tags posés par une automatisation de la boutique qu'on ne maîtrise pas (data/donnees-qa.json, tagsToleres) :
+// ni comptés comme écart, ni retirés, puisqu'ils reviennent.
+const toleres = new Set(donnees.tagsToleres ?? []);
+const sansToleres = (tags) => tags.filter((t) => !toleres.has(t));
+const tagsAEcrire = (attendu, produit) => [...tagsVoulus(attendu), ...produit.tags.filter((t) => toleres.has(t))];
 
 /** Collections QA manuelles : handle → produits attendus (ids). */
 const manuellesQa = new Map(donnees.collections.filter((c) => c.contenu.produits).map((c) => [c.handle, c.contenu.produits]));
@@ -202,7 +207,7 @@ function ecartsProduit(attendu, produit) {
   const tags = tagsVoulus(attendu);
   if (produit.handle !== attendu.handle) ecarts.push(`adresse products/${attendu.handle} (aujourd'hui ${produit.handle}, copie interrompue)`);
   if (produit.title !== attendu.titre) ecarts.push(`titre « ${attendu.titre} »`);
-  if (!memes(produit.tags, tags)) ecarts.push(`tags : ${tags.join(', ')} seulement (aujourd'hui ${produit.tags.join(', ') || 'aucun'})`);
+  if (!memes(sansToleres(produit.tags), tags)) ecarts.push(`tags : ${tags.join(', ')} seulement (aujourd'hui ${produit.tags.join(', ') || 'aucun'})`);
   // Titre de référencement vide = Shopify reprend le titre du produit.
   if ((produit.seo.title ?? produit.title) !== attendu.titre) ecarts.push(`titre de référencement : « ${attendu.titre} »`);
   for (const m of metasVoulues(attendu)) {
@@ -247,7 +252,7 @@ function corrigerProduit(attendu, produit) {
   modifier(`${attendu.id} : adresse, titre, tags, réglages`, `mutation($p: ProductUpdateInput!) {
     productUpdate(product: $p) { product { id } userErrors { field message } } }`, {
     p: {
-      id, handle: attendu.handle, title: attendu.titre, tags: tagsVoulus(attendu),
+      id, handle: attendu.handle, title: attendu.titre, tags: tagsAEcrire(attendu, produit),
       seo: { title: attendu.titre, description: produit.seo.description },
       metafields: metasVoulues(attendu),
     },
@@ -540,7 +545,7 @@ try {
     attendre(15);
     for (const attendu of aRevoir) {
       const produit = lireProduit(attendu.handle);
-      const tags = tagsVoulus(attendu);
+      const tags = tagsAEcrire(attendu, produit);
       if (!memes(produit.tags, tags)) {
         const ajoutes = produit.tags.filter((t) => !tags.includes(t));
         modifier(`${attendu.id} : tag(s) ${ajoutes.join(', ') || 'manquant(s)'} remis en ordre (automatisation de la boutique)`, `mutation($p: ProductUpdateInput!) {
