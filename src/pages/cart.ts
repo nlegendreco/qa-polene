@@ -78,7 +78,10 @@ export class CartPage {
     await this.page.goto(`products/${productHandle}`, { waitUntil: 'domcontentloaded' });
     const variante = await this.page.locator('form[action*="/cart/add"] [name="id"]').first().inputValue();
     expect(variante, `La fiche ${productHandle} doit contenir le formulaire d'ajout au panier`).toMatch(/^\d+$/);
-    await this.page.goto(`cart/add?id=${variante}&quantity=1`, { waitUntil: 'load' });
+    const reponse = await this.page.goto(`cart/add?id=${variante}&quantity=1`, { waitUntil: 'load' });
+    // Après beaucoup de lancements rapprochés, Shopify répond par une page « Too many attempts » au lieu du panier.
+    const bloque = reponse?.status() === 429 || await this.page.getByText(/Too many attempts/i).isVisible();
+    expect(bloque, `L'ajout de ${productHandle} au panier : Shopify refuse temporairement les appels (code 429, « Too many attempts », trop de lancements rapprochés). Relancer dans une dizaine de minutes. Ce n'est pas un bug du site.`).toBe(false);
     await this.expectLoaded();
   }
 
