@@ -29,6 +29,11 @@ export interface ProduitFixe {
   datePrecommande?: string;
   /** Produit QA à tailles dont certaines seulement sont en précommande : date par taille, { "M": "2030-12-31" }. */
   precommandeParTaille?: Record<string, string>;
+  /**
+   * Produit QA : prix de base en centimes de dollar, devise de la boutique préprod. Fixe, contrairement au prix en euros
+   * de /fr-fr/, que Shopify convertit au taux du jour.
+   */
+  prixDollars?: number;
 }
 
 const racine = join(__dirname, '..', 'data');
@@ -48,6 +53,8 @@ interface ProduitQa {
   tags: string[];
   /** Stock en ligne : un nombre, ou un stock par taille ({ "50": 20, "52": 0 }). */
   stock: number | Record<string, number>;
+  /** Prix de toutes les variantes, en dollars : « 580.00 ». */
+  prix?: string;
   sansTagQa?: boolean;
   visibleRecherche?: boolean;
   /** Métachamps posés sur les variantes : « * » pour toutes, ou par taille. */
@@ -81,6 +88,7 @@ export const PRODUITS_QA: ProduitFixe[] =DONNEES_QA.produits.map(p => ({
   datePrecommande: datePreorder(p.metafieldsVariantes?.['*']),
   ...(p.metafieldsVariantes && Object.keys(p.metafieldsVariantes).some(t => t !== '*') ? {
     precommandeParTaille: Object.fromEntries(Object.entries(p.metafieldsVariantes)
+  ...(p.prix ? { prixDollars: Math.round(Number(p.prix) * 100) } : {}),
       .filter(([taille, champs]) => taille !== '*' && datePreorder(champs))
       .map(([taille, champs]) => [taille, datePreorder(champs)!])),
   } : {}),

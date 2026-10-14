@@ -15,6 +15,7 @@
       "etat": "en-stock",
       "tags": [],
       "stock": 1000
+      "prix": "580.00",
     },
     {
       "id": "QA02",
@@ -25,6 +26,7 @@
       "etat": "rupture",
       "tags": [],
       "stock": 0
+      "prix": "470.00",
     },
     {
       "id": "QA03",
@@ -35,6 +37,7 @@
       "etat": "en-stock",
       "tags": [],
       "stock": 1
+      "prix": "580.00",
     },
     {
       "id": "QA04",
@@ -45,6 +48,7 @@
       "etat": "coming-soon",
       "tags": [],
       "stock": 50,
+      "prix": "540.00",
       "metafields": [{ "namespace": "coming_soon", "key": "enabled", "type": "boolean", "value": "true" }]
     },
     {
@@ -56,6 +60,7 @@
       "etat": "precommande",
       "tags": [],
       "stock": 50,
+      "prix": "500.00",
       "metafieldsVariantes": { "*": [{ "namespace": "preorder", "key": "date", "type": "date", "value": "2030-12-31" }] }
     },
     {
@@ -67,6 +72,7 @@
       "etat": "precommande",
       "tags": [],
       "stock": 50,
+      "prix": "480.00",
       "metafieldsVariantes": { "*": [
         { "namespace": "preorder", "key": "date", "type": "date", "value": "2030-06-30" },
         { "namespace": "preorder", "key": "delayed_date", "type": "date", "value": "2031-03-31" }
@@ -81,6 +87,7 @@
       "etat": "en-stock",
       "tags": [],
       "stock": 50,
+      "prix": "580.00",
       "metafieldsVariantes": { "*": [{ "namespace": "preorder", "key": "date", "type": "date", "value": "2020-01-01" }] }
     },
     {
@@ -92,6 +99,7 @@
       "etat": "en-stock",
       "tags": ["LABEL:NEW"],
       "stock": 50
+      "prix": "470.00",
     },
     {
       "id": "QA09",
@@ -102,6 +110,7 @@
       "etat": "tailles",
       "tags": [],
       "stock": { "50": 20, "52": 20, "54": 20, "56": 20 }
+      "prix": "230.00",
     },
     {
       "id": "QA10",
@@ -112,6 +121,7 @@
       "etat": "tailles",
       "tags": [],
       "stock": { "50": 20, "52": 0, "54": 20, "56": 0 }
+      "prix": "230.00",
     },
     {
       "id": "QA11",
@@ -122,6 +132,7 @@
       "etat": "rupture",
       "tags": [],
       "stock": { "S": 0, "M": 0, "L": 0 }
+      "prix": "320.00",
     },
     {
       "id": "QA12",
@@ -132,6 +143,7 @@
       "etat": "tailles",
       "tags": [],
       "stock": { "S": 20, "M": 20, "L": 20 },
+      "prix": "300.00",
       "metafieldsVariantes": { "M": [{ "namespace": "preorder", "key": "date", "type": "date", "value": "2030-12-31" }] }
     },
     {
@@ -143,6 +155,7 @@
       "etat": "en-stock",
       "tags": ["family_qa-cyme-mini"],
       "stock": 50,
+      "prix": "550.00",
       "metafields": [{ "namespace": "filter", "key": "families", "type": "list.single_line_text_field", "value": "[\"qa-cyme-mini\"]" }]
     },
     {
@@ -154,6 +167,7 @@
       "etat": "rupture",
       "tags": ["family_qa-cyme-mini"],
       "stock": 0,
+      "prix": "550.00",
       "metafields": [{ "namespace": "filter", "key": "families", "type": "list.single_line_text_field", "value": "[\"qa-cyme-mini\"]" }]
     },
     {
@@ -165,6 +179,7 @@
       "etat": "en-stock",
       "tags": ["family_qa-cyme-mini"],
       "stock": 50,
+      "prix": "810.00",
       "metafields": [{ "namespace": "filter", "key": "families", "type": "list.single_line_text_field", "value": "[\"qa-cyme-mini\"]" }]
     },
     {
@@ -176,6 +191,7 @@
       "etat": "en-stock",
       "tags": [],
       "stock": 50
+      "prix": "620.00",
     },
     {
       "id": "QA17",
@@ -186,6 +202,7 @@
       "etat": "en-stock",
       "tags": [],
       "stock": 50
+      "prix": "90.00",
     },
     {
       "id": "QA18",
@@ -207,6 +224,7 @@
       "etat": "en-stock",
       "tags": [],
       "stock": 50,
+      "prix": "100.00",
       "recommandations": { "complementaires": ["QA17", "QA16", "QA08"], "similaires": ["QA01", "QA13", "QA18"] }
     },
     {
@@ -218,6 +236,7 @@
       "etat": "en-stock",
       "tags": [],
       "stock": 50,
+      "prix": "610.00",
       "retirerMetafields": ["ss_meta.hover_image", "ss_meta.hover_as_feature_image", "image.hover", "powerxyz.enable_3d", "video.streaming_reference", "video.position", "ss_meta.product_details_list", "ss_meta.additional_product_details", "ss_meta.specific_craftsmanship_teaser"]
     },
     {
@@ -229,6 +248,7 @@
       "etat": "en-stock",
       "tags": [],
       "stock": 50
+      "prix": "580.00",
     },
     {
       "id": "QA22",
@@ -239,6 +259,7 @@
       "etat": "en-stock",
       "tags": [],
       "stock": 50,
+      "prix": "580.00",
       "visibleRecherche": true
     }
   ],
@@ -251,6 +272,7 @@
     "etat": "en-stock",
     "tags": ["qa-filler"],
     "sansTagQa": true,
+    "prix": "580.00",
     "stock": 100
   },
   "collections": [

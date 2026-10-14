@@ -47,6 +47,8 @@ function lireDateExpedition(texte: string): Date | null {
   return date;
 }
 
+const dollars = (centimes: number) => `${(centimes / 100).toFixed(2)} $`;
+
 interface ProduitJson {
   title: string;
   tags: string[];
@@ -117,6 +119,16 @@ for (const produit of PRODUITS_FIXES) {
     });
 
     await etape(page, testInfo, '3. Vérifier l\'état affiché sur la fiche', async () => {
+      if (produit.prixDollars !== undefined) {
+        // Le prix en euros de /fr-fr/ suit le taux de change du jour : on contrôle le prix de la boutique, en dollars,
+        // lu sans le préfixe /fr-fr/ (marché US, aucune conversion).
+        const enDollars = await appelShopify(page, `La lecture du prix en dollars de ${produit.handle}`,
+          () => page.request.get(new URL(`/products/${produit.handle}.js`, page.url()).href));
+        const prix = [...new Set(((await enDollars.json()) as ProduitJson).variants.map(v => v.price))];
+        testInfo.annotations.push({ type: 'Prix en dollars', description: prix.map(dollars).join(', ') });
+        const differents = prix.filter(p => p !== produit.prixDollars);
+        expect.soft(differents, `${nom} : le prix devrait être ${dollars(produit.prixDollars)}, il est de ${differents.map(dollars).join(', ')}. Quelqu'un a modifié le prix ? Remise en état : npm run donnees:qa`).toEqual([]);
+      }
       const attendu = BOUTON_ATTENDU[produit.etat];
       const bouton = await lireBouton(page);
       const conforme = attendu.states.includes(bouton.state) && attendu.libelle.test(bouton.libelle);
