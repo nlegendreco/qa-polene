@@ -108,6 +108,47 @@ export class ProductPage {
     await option.click();
   }
 
+  /**
+   * Onglets d'information de l'ancienne fiche (Description, Size & fit, Materials, Shipping and returns) : rangée
+   * d'onglets sur ordinateur, accordéon sur mobile. Éléments `li[role=button]` avec aria-expanded ; seuls ceux affichés.
+   */
+  get infoTabs() {
+    return this.main.locator('ul.product-detail-list > li[role="button"]').filter({ visible: true });
+  }
+
+  /** Un onglet par sa clé (data-item : description, details pour « Size & fit », materials, shipping). */
+  infoTab(cle: string) {
+    return this.main.locator(`ul.product-detail-list > li[role="button"][data-item="${cle}"]`).filter({ visible: true }).first();
+  }
+
+  /** Clé du contenu de chaque onglet affiché (data-item : description, details pour « Size & fit »…), dans l'ordre. */
+  async infoTabKeys(): Promise<{ titre: string; cle: string }[]> {
+    return this.infoTabs.evaluateAll(lis => lis.map(li => ({
+      titre: li.querySelector('.product-detail-list__toggle-title')?.textContent?.trim() ?? '',
+      cle: li.getAttribute('data-item') ?? '',
+    })));
+  }
+
+  /**
+   * Contenus d'onglet réellement affichés (hauteur non nulle, opaques), par clé. Sur ordinateur, le contenu prend
+   * la place de la photo du produit (clé « img ») dans un bloc à part, où les contenus inactifs sont transparents.
+   */
+  async displayedInfoContents(): Promise<string[]> {
+    return this.main.locator('[data-item-content]').evaluateAll(els => [...new Set(els.filter(e => {
+      const r = e.getBoundingClientRect();
+      const s = getComputedStyle(e);
+      return r.height > 0 && s.visibility !== 'hidden' && Number(s.opacity) > 0.5;
+    }).map(e => e.getAttribute('data-item-content') ?? ''))]);
+  }
+
+  /** Texte affiché d'un onglet (le contenu visible portant sa clé). */
+  async infoContentText(cle: string): Promise<string> {
+    const textes = await this.main.locator(`[data-item-content="${cle}"]`).evaluateAll(els => els
+      .filter(e => e.getBoundingClientRect().height > 0 && Number(getComputedStyle(e).opacity) > 0.5)
+      .map(e => (e as HTMLElement).innerText));
+    return (textes[0] ?? '').replace(/\s+/g, ' ').trim();
+  }
+
   async expectPurchasable() {
     await expect(this.title).toBeVisible();
     await expect(this.addToCartButton).toBeVisible();
