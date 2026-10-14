@@ -25,6 +25,14 @@ export class CartPage {
     return this.lines.filter({ has: this.page.locator(`a[href*="/products/${productHandle}"]`) });
   }
 
+  /**
+   * Prix d'une ligne, lu dans son bloc prix : le texte entier de la ligne ne suffit pas, « Shipping on décembre, 31
+   * €453,95 » se lirait « 31 € » (la ligne contient aussi la fenêtre de suppression, cachée, qui répète le prix).
+   */
+  async linePriceCents(productHandle: string): Promise<number | null> {
+    return parsePriceToCents(await this.line(productHandle).locator('.cart-item__price').first().innerText());
+  }
+
   quantity(productHandle: string) {
     return this.line(productHandle).getByRole('spinbutton');
   }
@@ -39,6 +47,16 @@ export class CartPage {
    */
   decreaseButton(productHandle: string) {
     return this.line(productHandle).locator('.input-counter__button--decrement');
+  }
+
+  /** Croix en haut à droite de la ligne, qui retire l'article quelle que soit sa quantité. */
+  removeButton(productHandle: string) {
+    return this.line(productHandle).locator('.cart-item__remove');
+  }
+
+  /** Compteur en face du titre : « 2 products », « 1 product ». */
+  get itemCountLabel() {
+    return this.main.getByText(/^\s*\d+\s+(products?|produits?|articles?|items?)\s*$/i).first();
   }
 
   /** Fenêtre « Remove item ? » qui demande de confirmer la suppression d'un article. */
