@@ -28,11 +28,11 @@
 | PDP-03 Modale packshot | Majeur | Non couvert | | Ouverture, navigation, fermeture, clavier |
 | PDP-04 Info panel | Bloquant | Partiel | `etats-produit.spec.ts` (titre, prix = JSON, QA02) | Ordre, débordement, prix selon la taille |
 | PDP-05 Coloris | Bloquant | Partiel | `sante-donnees.spec.ts` (nombre de coloris de P08) | Clic, coloris actif, coloris en rupture |
-| PDP-06 Tailles | Bloquant | Partiel | `etats-produit.spec.ts` (13 octobre 2026, ancienne fiche : QA10 tailles partielles, QA12 taille en précommande, QA11 tout épuisé) | Nouvelle fiche (fenêtre « Choose your size »), guide des tailles, clavier (constat 34) |
+| PDP-06 Tailles | Bloquant | Partiel | `etats-produit.spec.ts` (13 octobre 2026, ancienne fiche : QA10 tailles partielles, QA12 taille en précommande, QA11 tout épuisé) ; `fiche-produit.spec.ts` (14 octobre 2026, QA09 : diamètre de chaque taille dans l'onglet « Size & fit », qui tient lieu de guide sur l'ancienne fiche) | Nouvelle fiche (fenêtre « Choose your size », avec le tableau « Guide des tailles & Conseils » en mm et en pouces, vu en prod), clavier (constat 34) |
 | PDP-07 Ajout au panier | Bloquant | Partiel | `parcours-achat.spec.ts` (en stock), `etats-produit.spec.ts` (rupture ; précommande QA05 avec la date dans la notification, 13 octobre 2026) | Double clic, bouton fixe mobile, coming soon |
 | PDP-08 BIS | Majeur | Partiel | `etats-produit.spec.ts` (ouverture, fermeture, sans envoi) | Email invalide, envoi vide |
 | PDP-08/09 Wishlist | Majeur | Non couvert | | Cœur, snackbars, non connecté |
-| PDP-09 Onglets | Majeur | Non couvert | | Onglet par défaut, contenu |
+| PDP-09 Onglets | Majeur | Partiel | `fiche-produit.spec.ts` (14 octobre 2026, QA09, ancienne fiche) : Description, Size & fit, Materials, Shipping and returns dans l'ordre, aucun ouvert au chargement (fonctionnement normal de l'ancienne fiche d'après la QA, 14 octobre 2026 : sur ordinateur la photo est affichée ; la fiche TNR, qui attend Description ouverte, décrit la nouvelle), un seul contenu affiché à la fois et non vide, Entrée au clavier | Onglet « Details » absent sur ordinateur (constat 36), sac (QA01), nouvelle fiche (Description ouverte par défaut) |
 | PDP-10 Accordéons | Mineur | Non couvert | | Fermés au départ, ouverture |
 | PDP-11 Split screen | Mineur | Partiel | `pages-sections.spec.ts` (R02) | Contenu sac / bijou |
 | PDP-12 Vue 3D | Majeur | Non couvert | | Bouton et fenêtre (la rotation WebGL reste manuelle) |
