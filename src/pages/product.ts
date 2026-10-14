@@ -40,8 +40,38 @@ export class ProductPage {
     return this.page.locator('component-modal.active[data-ref="bis-modal"]');
   }
 
+  /** Fenêtre « Coming soon » d'un produit à venir (inscription au lancement), ouverte depuis la fiche ou la carte. */
+  get comingSoonModal() {
+    return this.page.locator('component-modal.active[data-ref="coming-soon-modal"]');
+  }
+
   get cartNotification() {
     return this.page.locator('component-cart-notification.is-active');
+  }
+
+  /**
+   * Vignettes de coloris de l'ancienne fiche : un lien par fiche de la même famille (métachamp filter.families), celle
+   * du produit affiché porte la classe is-active. La nouvelle fiche les range derrière « Explore all ».
+   */
+  get colorOptions() {
+    return this.main.locator('.js-color-option').filter({ visible: true });
+  }
+
+  colorOption(handle: string) {
+    return this.main.locator(`.js-color-option[href*="/products/${handle}"]`).filter({ visible: true }).first();
+  }
+
+  /** Handles des vignettes de coloris affichées, dans l'ordre, et celui de la vignette active. */
+  async colorHandles(): Promise<{ tous: string[]; actif: string[] }> {
+    return this.colorOptions.evaluateAll(liens => {
+      const handle = (a: Element) => a.getAttribute('href')?.split('/products/')[1]?.split(/[?#]/)[0] ?? '';
+      return { tous: liens.map(handle), actif: liens.filter(a => a.classList.contains('is-active')).map(handle) };
+    });
+  }
+
+  /** Barre d'achat fixée en bas de l'écran sur mobile (titre, prix, bouton). Sur mobile, le bouton principal est le sien. */
+  get stickyBuyBar() {
+    return this.page.locator('.sticky-buy-bar');
   }
 
   /** Prix affiché sous le nom du produit (pas celui de la barre d'achat qui apparaît au défilement, cachée sur mobile). */

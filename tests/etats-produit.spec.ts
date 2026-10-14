@@ -1,11 +1,14 @@
+import type { Locator, Page } from '@playwright/test';
 import { test, expect, etape } from '../src/fixtures';
 import { Header } from '../src/pages/header';
 import { ProductPage } from '../src/pages/product';
 import { CartPage } from '../src/pages/cart';
 import { CheckoutPage } from '../src/pages/checkout';
-import { produitFixe } from '../src/produits-fixes';
-import { parsePriceToCents } from '../src/price';
+import { CollectionPage } from '../src/pages/collection';
+import { DONNEES_QA, produitFixe } from '../src/produits-fixes';
+import { formatCents, parsePriceToCents } from '../src/price';
 import { appelShopify } from '../src/shopify';
+import { verifierLargeur } from '../src/controles';
 
 /**
  * États produit (roadmap phase 2.2), sur les produits QA de la préprod (data/donnees-qa.json).
@@ -14,7 +17,29 @@ import { appelShopify } from '../src/shopify';
  */
 
 /** Sur mobile, le header fixe recouvre un bouton amené en haut d'écran : on le centre avant de toucher. */
-const centrer = (element: import('@playwright/test').Locator) => element.evaluate(e => e.scrollIntoView({ block: 'center', behavior: 'instant' }));
+const centrer = (element: Locator) => element.evaluate(e => e.scrollIntoView({ block: 'center', behavior: 'instant' }));
+
+/**
+ * Fenêtres d'inscription (« Être prévenu(e) », « Coming soon ») : un envoi sans email puis avec « test@ » doit afficher
+ * « Please type a valid e-mail » et ne rien envoyer. La fenêtre reste ouverte, sans message de réussite.
+ */
+async function verifierEmailRefuse(page: Page, fenetre: Locator, envoyer: Locator) {
+  const envois: string[] = [];
+  const noter = (r: import('@playwright/test').Request) => { if (r.method() === 'POST' && /klaviyo|subscri|back.?in.?stock|notify|coming/i.test(r.url())) envois.push(r.url().split('?')[0]); };
+  page.on('request', noter);
+  const erreur = fenetre.getByText(/type a valid e-?mail|adresse e-?mail valide/i).filter({ visible: true });
+  const email = fenetre.getByRole('textbox', { name: /email/i });
+  await expect(email, 'Le champ email doit être vide à l\'ouverture').toHaveValue('');
+  await envoyer.click();
+  await expect(erreur, 'Sans email, la fenêtre doit demander une adresse valide').toBeVisible();
+  await email.fill('test@');
+  await envoyer.click();
+  await expect(erreur, 'Avec « test@ », la fenêtre doit demander une adresse valide').toBeVisible();
+  await expect(fenetre, 'La fenêtre doit rester ouverte').toBeVisible();
+  await expect(fenetre, 'Aucun message de réussite ne doit s\'afficher').not.toContainText(/we will (let you know|notify)|nous vous tiendrons|thank you|merci/i);
+  page.off('request', noter);
+  expect(envois, 'Aucune inscription ne doit partir avec une adresse invalide').toEqual([]);
+}
 
 test.describe('Rupture', () => {
   const produit = produitFixe('QA02');
@@ -82,10 +107,20 @@ test.describe('Rupture', () => {
       await expect(carte.getByRole('button', { name: /Ajouter au panier$|Add to (cart|bag)$/i }), 'La carte ne doit pas proposer d\'ajout au panier').toHaveCount(0);
     });
 
-    await etape(page, testInfo, '3. Ouvrir la fenêtre « Être prévenu(e) » depuis la carte, puis la fermer', async () => {
+    await etape(page, testInfo, '3. Ouvrir la fenêtre « Être prévenu(e) » depuis la carte', async () => {
       await centrer(boutonCarte);
       await boutonCarte.click();
       await expect(fiche.backInStockModal, 'La fenêtre d\'alerte de retour en stock doit s\'ouvrir depuis la carte').toBeVisible();
+    });
+
+    // Fiches TNR PLP-07 et PDP-08 : message d'adresse invalide. Rien ne part : le thème refuse avant tout envoi, et
+    // Klaviyo, qui recevrait l'inscription, est bloqué pendant les tests.
+    await etape(page, testInfo, '4. Envoyer sans email, puis avec « test@ » : « Please type a valid e-mail », rien n\'est envoyé', async () => {
+      const fenetre = fiche.backInStockModal;
+      await verifierEmailRefuse(page, fenetre, fenetre.getByRole('button', { name: /Notify me|Être prévenu|M'avertir/i }));
+    });
+
+    await etape(page, testInfo, '5. Fermer la fenêtre', async () => {
       await fiche.backInStockModal.getByRole('button', { name: /Close modal|Fermer/i }).click();
       await expect(fiche.backInStockModal, 'La fenêtre doit se fermer').toBeHidden();
     });
@@ -108,6 +143,8 @@ function dateAffichee(dateIso: string): RegExp {
 }
 
 const MENTION_PRECOMMANDE = /Pre-?order|Précommand/i;
+const MENTION_EXPEDITION = /Shipping on|Expédition/i;
+const LIBELLE_AJOUT = /Add to (cart|bag)|Ajouter au panier/i;
 
 test.describe('Précommande', () => {
   const produit = produitFixe('QA05');
@@ -202,8 +239,6 @@ test.describe('Précommande', () => {
 });
 
 test.describe('Tailles', () => {
-  const LIBELLE_AJOUT = /Add to (cart|bag)|Ajouter au panier/i;
-
   /**
    * Le choix de taille est écrit pour l'ancienne fiche (menu « Select size »), seule servie par le Roll Out le
    * 13 octobre 2026. La nouvelle (fenêtre « Choose your size », data-state="modal") reste à relever.
@@ -325,5 +360,318 @@ test.describe('Tailles', () => {
       await expect(fiche.mainButton, 'Le bouton doit être dans l\'état « rupture » (data-state="disabled")').toHaveAttribute('data-state', 'disabled');
       await expect(fiche.addToCartButton, 'Aucun bouton « Ajouter au panier » ne doit être proposé').toHaveCount(0);
     });
+  });
+});
+
+
+test.describe('Coming soon', () => {
+  const produit = produitFixe('QA04');
+  const LIBELLE_COMING_SOON = /Coming soon|Bientôt disponible/i;
+  const boutonEnvoi = (fenetre: Locator) => fenetre.getByRole('button', { name: /Sign up|S'inscrire|Inscri/i });
+
+  test(`Coming soon · fiche produit (${produit.id}) @tnr @pdp`, async ({ page, qaEnv, isMobile }, testInfo) => {
+    test.skip(qaEnv.name !== 'preprod', 'Produits QA : préprod uniquement');
+    const header = new Header(page, isMobile);
+    const fiche = new ProductPage(page);
+    testInfo.annotations.push({ type: 'Produit testé', description: `${produit.id} (${produit.handle}), métachamp coming_soon.enabled` });
+
+    await etape(page, testInfo, `1. Ouvrir la fiche du produit à venir ${produit.id}`, async () => {
+      const donnees = await fiche.fetchProductData(produit.handle);
+      await page.goto(`products/${produit.handle}`, { waitUntil: 'domcontentloaded' });
+      await expect(fiche.title, 'Le nom du produit doit s\'afficher').toBeVisible();
+      await fiche.expectPrice(parsePriceToCents(await fiche.price.innerText()), donnees, 'Le prix affiché doit être celui du produit');
+    });
+
+    await etape(page, testInfo, '2. Vérifier le bouton « Coming soon — Sign up » à la place de « Ajouter au panier »', async () => {
+      await expect.poll(() => fiche.mainButton.innerText(), { message: 'Le bouton principal doit annoncer le lancement à venir' }).toMatch(LIBELLE_COMING_SOON);
+      await expect(fiche.mainButton, 'Le bouton doit être dans l\'état « coming soon »').toHaveAttribute('data-state', 'coming-soon');
+      await expect(fiche.addToCartButton, 'Aucun bouton « Ajouter au panier » ne doit être proposé').toHaveCount(0);
+    });
+
+    await etape(page, testInfo, '3. Ouvrir la fenêtre d\'inscription au lancement', async () => {
+      await centrer(fiche.mainButton);
+      await fiche.mainButton.click();
+      const fenetre = fiche.comingSoonModal;
+      await expect(fenetre, 'La fenêtre « Coming soon » doit s\'ouvrir').toBeVisible();
+      await expect(fenetre, 'La fenêtre doit proposer d\'être prévenu du lancement').toContainText(/first to know|launch|lancement/i);
+      await expect(boutonEnvoi(fenetre), 'Le bouton d\'inscription doit être là').toBeVisible();
+      // Constat 37 : case newsletter cochée par défaut, comme dans la fenêtre « Être prévenu(e) » (constat 13).
+      if (await fenetre.getByRole('checkbox').first().isChecked()) {
+        testInfo.annotations.push({ type: 'Constat 37', description: 'Case newsletter de la fenêtre « Coming soon » cochée par défaut' });
+      }
+    });
+
+    await etape(page, testInfo, '4. Envoyer sans email, puis avec « test@ » : « Please type a valid e-mail », rien n\'est envoyé', async () => {
+      await verifierEmailRefuse(page, fiche.comingSoonModal, boutonEnvoi(fiche.comingSoonModal));
+    });
+
+    await etape(page, testInfo, '5. Fermer la fenêtre : rien dans le panier', async () => {
+      await fiche.comingSoonModal.getByRole('button', { name: /Close modal|Fermer/i }).click();
+      await expect(fiche.comingSoonModal, 'La fenêtre doit se fermer').toBeHidden();
+      expect(await header.cartCount(), 'Le panier doit rester vide').toBe(0);
+    });
+  });
+
+  test(`Coming soon · carte de collection (${produit.id}) @tnr @plp`, async ({ page, qaEnv, isMobile }, testInfo) => {
+    test.skip(qaEnv.name !== 'preprod', 'Produits QA : préprod uniquement');
+    const fiche = new ProductPage(page);
+    const carte = new CollectionPage(page).card(produit.handle);
+    const bouton = carte.locator('.coming-soon-modal-trigger').filter({ visible: true }).first();
+
+    await etape(page, testInfo, '1. Ouvrir la collection QA « titre seul » (C5)', async () => {
+      await page.goto('collections/qa-collection-title', { waitUntil: 'domcontentloaded' });
+      await expect(carte, `La carte de ${produit.id} doit être dans la collection`).toBeVisible();
+    });
+
+    await etape(page, testInfo, '2. Vérifier la carte : « Coming soon », pas d\'ajout au panier', async () => {
+      await expect(carte.locator('[data-tracking-state]').first(), 'La carte doit être dans l\'état « coming soon »').toHaveAttribute('data-tracking-state', 'coming-soon');
+      await centrer(carte);
+      if (!isMobile) await carte.hover();
+      await expect(bouton, 'La carte doit proposer de s\'inscrire au lancement').toBeVisible();
+      await expect(bouton, 'Le bouton de la carte doit annoncer le lancement (« Coming soon — Sign up », « Sign up » sur mobile)').toContainText(/Coming soon|Sign up|S'inscrire/i);
+      await expect(carte.getByRole('button', { name: /Ajouter au panier$|Add to (cart|bag)$/i }), 'La carte ne doit pas proposer d\'ajout au panier').toHaveCount(0);
+    });
+
+    await etape(page, testInfo, '3. Ouvrir la fenêtre « Coming soon » depuis la carte, puis la fermer', async () => {
+      await bouton.click();
+      await expect(fiche.comingSoonModal, 'La fenêtre « Coming soon » doit s\'ouvrir depuis la carte').toBeVisible();
+      await fiche.comingSoonModal.getByRole('button', { name: /Close modal|Fermer/i }).click();
+      await expect(fiche.comingSoonModal, 'La fenêtre doit se fermer').toBeHidden();
+    });
+  });
+});
+
+test(`Nouveauté · étiquette « New in » sur la carte (${produitFixe('QA08').id}) @tnr @plp`, async ({ page, qaEnv }, testInfo) => {
+  test.skip(qaEnv.name !== 'preprod', 'Produits QA : préprod uniquement');
+  const nouveau = produitFixe('QA08');
+  const ancien = produitFixe('QA01');
+  const collection = new CollectionPage(page);
+  const etiquette = (handle: string) => collection.card(handle).locator('.component-product-card__tags').first();
+  testInfo.annotations.push({ type: 'Produits testés', description: `${nouveau.id} (tag LABEL:NEW), ${ancien.id} (sans le tag)` });
+
+  await etape(page, testInfo, '1. Ouvrir la collection QA « titre seul » (C5)', async () => {
+    await page.goto('collections/qa-collection-title', { waitUntil: 'domcontentloaded' });
+    await expect(collection.card(nouveau.handle), `La carte de ${nouveau.id} doit être dans la collection`).toBeVisible();
+  });
+
+  await etape(page, testInfo, `2. « New in » sur la carte de ${nouveau.id}, pas sur celle de ${ancien.id}`, async () => {
+    // textContent (toContainText) et non innerText : WebKit renvoie un innerText vide pour une carte hors écran.
+    await expect(etiquette(nouveau.handle), `La carte de ${nouveau.id} doit porter l'étiquette « New in »`).toContainText(/New in|Nouveau/i);
+    await expect(etiquette(ancien.handle), `La carte de ${ancien.id} ne doit pas porter l'étiquette « New in »`).not.toContainText(/New in|Nouveau/i);
+  });
+});
+
+test.describe('Précommande expirée et retardée', () => {
+  test(`Précommande expirée · le produit redevient normal (${produitFixe('QA07').id}) @tnr @pdp`, async ({ page, qaEnv, isMobile }, testInfo) => {
+    test.skip(qaEnv.name !== 'preprod', 'Produits QA : préprod uniquement');
+    const produit = produitFixe('QA07');
+    const header = new Header(page, isMobile);
+    const fiche = new ProductPage(page);
+    testInfo.annotations.push({ type: 'Produit testé', description: `${produit.id} (${produit.handle}), date de précommande passée (${produit.datePrecommande})` });
+
+    await etape(page, testInfo, `1. Ouvrir la fiche ${produit.id} : « Add to cart », sans date d'expédition`, async () => {
+      const donnees = await fiche.fetchProductData(produit.handle);
+      await page.goto(`products/${produit.handle}`, { waitUntil: 'domcontentloaded' });
+      await expect(fiche.title, 'Le nom du produit doit s\'afficher').toBeVisible();
+      await fiche.expectPrice(parsePriceToCents(await fiche.price.innerText()), donnees, 'Le prix affiché doit être celui du produit');
+      await expect.poll(() => fiche.mainButton.innerText(), { message: 'Une précommande expirée doit redevenir un ajout au panier normal' }).toMatch(LIBELLE_AJOUT);
+      await expect(fiche.mainButton, 'Le bouton ne doit plus être en précommande').not.toHaveAttribute('data-state', 'preorder');
+      await expect(fiche.main.getByText(MENTION_EXPEDITION).filter({ visible: true }), 'Aucune date d\'expédition de précommande ne doit s\'afficher').toHaveCount(0);
+    });
+
+    await etape(page, testInfo, '2. Ajouter au panier : notification sans précommande, article sans propriété de précommande', async () => {
+      await centrer(fiche.mainButton);
+      await fiche.mainButton.click();
+      await expect(fiche.cartNotification, 'La notification « ajouté au panier » doit apparaître').toBeVisible();
+      // Texte affiché (innerText), lu tout de suite : la notification contient aussi les libellés cachés de la
+      // précommande, et se ferme seule après quelques secondes. Sans le nom d'édition du produit QA, « Expired Preorder ».
+      const texte = (await fiche.cartNotification.innerText()).replace(/Expired Preorder/gi, '');
+      expect(texte, 'La notification ne doit pas parler de précommande').not.toMatch(MENTION_PRECOMMANDE);
+      expect(texte, 'La notification ne doit pas donner de date d\'expédition').not.toMatch(MENTION_EXPEDITION);
+      await expect.poll(() => header.cartCount(), { message: 'Le compteur du panier doit passer à 1' }).toBe(1);
+      const contenu = await (await appelShopify(page, 'La lecture du panier', () => page.request.get('cart.js'))).json() as { items: { handle: string; properties: Record<string, string> | null }[] };
+      const proprietes = contenu.items.find(i => i.handle === produit.handle)?.properties ?? {};
+      expect(proprietes._is_preorder, 'L\'article ne doit pas être marqué comme précommande (_is_preorder)').not.toBe('true');
+      expect(proprietes._preorder_date, 'L\'article ne doit pas porter de date de précommande').toBeUndefined();
+    });
+  });
+
+  test(`Précommande retardée · date affichée sur la fiche (${produitFixe('QA06').id}) @tnr @pdp`, async ({ page, qaEnv }, testInfo) => {
+    test.skip(qaEnv.name !== 'preprod', 'Produits QA : préprod uniquement');
+    const produit = produitFixe('QA06');
+    const date = produit.datePrecommande!;
+    const dateRetardee = DONNEES_QA.produits.find(p => p.id === produit.id)!.metafieldsVariantes!['*'].find(m => m.key === 'delayed_date')!.value;
+    const fiche = new ProductPage(page);
+    testInfo.annotations.push({ type: 'Produit testé', description: `${produit.id} (${produit.handle}) : preorder.date ${date}, preorder.delayed_date ${dateRetardee}` });
+
+    await etape(page, testInfo, `1. Ouvrir la fiche ${produit.id} : bouton « Preorder now »`, async () => {
+      await page.goto(`products/${produit.handle}`, { waitUntil: 'domcontentloaded' });
+      await expect(fiche.title, 'Le nom du produit doit s\'afficher').toBeVisible();
+      await expect.poll(() => fiche.mainButton.innerText(), { message: 'Le bouton principal doit proposer de précommander' }).toMatch(MENTION_PRECOMMANDE);
+    });
+
+    // Constat 25 : la date retardée servirait seulement à Shipup, pour les clients qui ont déjà commandé (QA, 12 octobre
+    // 2026, à confirmer). La fiche affiche donc la première date.
+    await etape(page, testInfo, `2. La fiche annonce l'expédition au ${date} (preorder.date), pas au ${dateRetardee} (date retardée)`, async () => {
+      const mention = fiche.main.getByText(MENTION_EXPEDITION).filter({ visible: true }).first();
+      await expect(mention, 'La date d\'expédition de la précommande doit être affichée').toBeVisible();
+      await expect(mention, `La date affichée doit être preorder.date (${date})`).toContainText(dateAffichee(date));
+      await expect(mention, `La date retardée (${dateRetardee}) ne doit pas être affichée sur la fiche`).not.toContainText(dateAffichee(dateRetardee));
+      testInfo.annotations.push({ type: 'Date affichée', description: ((await mention.innerText()) ?? '').trim() });
+    });
+  });
+});
+
+test(`Coloris · passer d'un coloris à l'autre (${['QA13', 'QA14', 'QA15'].join(', ')}) @tnr @pdp`, async ({ page, qaEnv, isMobile }, testInfo) => {
+  test.skip(qaEnv.name !== 'preprod', 'Produits QA : préprod uniquement');
+  const [camel, noir, ebene] = ['QA13', 'QA14', 'QA15'].map(produitFixe);
+  const famille = [camel, noir, ebene].map(p => p.handle);
+  const fiche = new ProductPage(page);
+  testInfo.annotations.push({ type: 'Produits testés', description: `${camel.id} camel (en stock), ${noir.id} noir (rupture), ${ebene.id} ébène (autre matière) : famille qa-cyme-mini` });
+
+  const allerAuColoris = async (produit: typeof camel) => {
+    const vignette = fiche.colorOption(produit.handle);
+    await centrer(vignette);
+    await vignette.click();
+    await page.waitForURL(new RegExp(`/products/${produit.handle}`));
+    await expect.poll(async () => (await fiche.colorHandles()).actif, { message: `La vignette de ${produit.id} doit devenir la vignette active` }).toEqual([produit.handle]);
+  };
+
+  await etape(page, testInfo, `1. Ouvrir la fiche ${camel.id} : les 3 coloris de la famille, celui de la fiche actif`, async () => {
+    await page.goto(`products/${camel.handle}`, { waitUntil: 'domcontentloaded' });
+    await expect(fiche.title, 'Le nom du produit doit s\'afficher').toBeVisible();
+    const nouvelle = await fiche.main.getByRole('button', { name: /Explore all|Découvrir tout/i }).isVisible();
+    test.skip(nouvelle, 'Nouvelle fiche produit (« Explore all ») : sélecteur de coloris pas encore écrit, à faire quand le Roll Out la remontre');
+    await expect(fiche.colorOptions.first(), 'Les vignettes de coloris doivent s\'afficher').toBeVisible();
+    const { tous, actif } = await fiche.colorHandles();
+    expect([...tous].sort(), 'Les vignettes doivent proposer les 3 coloris de la famille, et eux seuls').toEqual([...famille].sort());
+    expect(actif, `La vignette active doit être celle de ${camel.id}`).toEqual([camel.handle]);
+    // Fiche TNR PDP-04 : nom, prix, coloris, bouton, onglets, de haut en bas (le bouton est en bas d'écran sur mobile).
+    const haut = async (l: Locator) => (await l.boundingBox())?.y ?? NaN;
+    const ordre = [['nom', fiche.title], ['prix', fiche.price], ['coloris', fiche.colorOptions.first()], ...(isMobile ? [] : [['bouton', fiche.mainButton]]), ['onglets', fiche.infoTabs.first()]] as [string, Locator][];
+    const positions = await Promise.all(ordre.map(async ([nom, l]) => [nom, await haut(l)] as const));
+    const rangs = [...positions].sort((a, b) => a[1] - b[1]).map(([nom]) => nom);
+    expect(rangs, 'Ordre des éléments de la fiche, de haut en bas').toEqual(ordre.map(([nom]) => nom));
+    // Constat 38 : avec peu de coloris, les vignettes ne sont pas atteignables au clavier (tabindex="-1") et leur nom
+    // lu par les lecteurs d'écran est incomplet (« …, of »). Sur un vrai produit à 24 coloris : tabindex="0", « 1 of 24 ».
+    const accessibilite = await fiche.colorOptions.evaluateAll(liens => liens.map(a => ({ tab: a.getAttribute('tabindex'), nom: a.getAttribute('aria-label') ?? '' })));
+    if (accessibilite.some(a => a.tab === '-1' || /,\s*of\s*$/.test(a.nom))) {
+      testInfo.annotations.push({ type: 'Constat 38', description: `Vignettes de coloris : ${accessibilite.map(a => `« ${a.nom.trim()} » tabindex=${a.tab}`).join(' ; ')}` });
+    }
+  });
+
+  await etape(page, testInfo, `2. Toucher le coloris noir (${noir.id}) : sa fiche, en rupture`, async () => {
+    await allerAuColoris(noir);
+    await expect.poll(() => fiche.mainButton.innerText(), { message: `La fiche de ${noir.id} doit proposer d'être prévenu (rupture)` }).toMatch(/Notify me|Être prévenu/i);
+  });
+
+  await etape(page, testInfo, `3. Toucher le coloris ébène (${ebene.id}, autre matière) : sa fiche, achetable, à son prix`, async () => {
+    const donnees = await fiche.fetchProductData(ebene.handle);
+    await allerAuColoris(ebene);
+    await expect.poll(() => fiche.mainButton.innerText(), { message: `La fiche de ${ebene.id} doit proposer l'ajout au panier` }).toMatch(LIBELLE_AJOUT);
+    await expect.poll(async () => parsePriceToCents(await fiche.price.innerText()), { message: `Le prix doit être celui de ${ebene.id} (${formatCents(donnees.priceCents)})` }).toBe(donnees.priceCents);
+  });
+});
+
+/**
+ * Textes d'un bloc qui en sortent (ou sortent de l'écran), et textes coupés (« … », sans retour à la ligne). Seuls les
+ * éléments qui portent eux-mêmes du texte et sont affichés.
+ */
+async function textesQuiDebordent(bloc: Locator): Promise<{ dehors: string[]; coupes: string[] }> {
+  return bloc.evaluate(b => {
+    const cadre = b.getBoundingClientRect();
+    const droite = Math.min(cadre.right, document.documentElement.clientWidth) + 1;
+    // Sans les fenêtres fermées que le bloc contient (« Remove item ? » dans une ligne du panier).
+    const textes = [...b.querySelectorAll('*')].filter(e => !e.closest('component-modal, [role="dialog"]')
+      && e.checkVisibility({ opacityProperty: true, visibilityProperty: true })
+      && [...e.childNodes].some(n => n.nodeType === Node.TEXT_NODE && n.textContent!.trim()));
+    const nom = (e: Element) => (e.textContent ?? '').replace(/\s+/g, ' ').trim().slice(0, 60);
+    return {
+      dehors: textes.filter(e => { const r = e.getBoundingClientRect(); return r.right > droite || r.left < cadre.left - 1; }).map(nom),
+      // Sans les textes réservés aux lecteurs d'écran (1 px de large), « coupés » exprès.
+      coupes: textes.filter(e => getComputedStyle(e).display !== 'inline' && e.clientWidth > 1 && e.scrollWidth > e.clientWidth + 1).map(nom),
+    };
+  });
+}
+
+test(`Titre long · fiche, carte, panier et checkout sans débordement (${produitFixe('QA21').id}) @tnr @journey`, async ({ page, qaEnv }, testInfo) => {
+  test.skip(qaEnv.name !== 'preprod', 'Produits QA : préprod uniquement');
+  const produit = produitFixe('QA21');
+  const fiche = new ProductPage(page);
+  const panier = new CartPage(page);
+  const checkout = new CheckoutPage(page);
+  const TITRE_LONG = /Very Long Edition Name/i;
+  testInfo.annotations.push({ type: 'Produit testé', description: `${produit.id} (${produit.handle})` });
+  const verifierBloc = async (bloc: Locator, ou: string) => {
+    const { dehors, coupes } = await textesQuiDebordent(bloc);
+    expect(dehors, `${ou} : aucun texte ne doit sortir du bloc ni de l'écran`).toEqual([]);
+    if (coupes.length) testInfo.annotations.push({ type: `Texte coupé (${ou})`, description: coupes.join(' ; ') });
+  };
+
+  await etape(page, testInfo, `1. Fiche ${produit.id} : le nom et l'édition passent à la ligne, rien ne dépasse`, async () => {
+    await page.goto(`products/${produit.handle}`, { waitUntil: 'domcontentloaded' });
+    await expect(fiche.title, 'Le nom du produit doit s\'afficher').toBeVisible();
+    await expect(fiche.main.getByText(TITRE_LONG).filter({ visible: true }).first(), 'Le nom d\'édition long doit s\'afficher').toBeVisible();
+    await verifierBloc(fiche.title.locator('xpath=..'), 'Fiche');
+    await verifierLargeur(page, testInfo);
+  });
+
+  await etape(page, testInfo, '2. Carte de la collection QA de référence (C1) : rien ne dépasse', async () => {
+    await page.goto('collections/qa-collection', { waitUntil: 'domcontentloaded' });
+    const carte = new CollectionPage(page).card(produit.handle);
+    await expect(carte, `La carte de ${produit.id} doit être dans la collection`).toBeVisible();
+    await centrer(carte);
+    await verifierBloc(carte, 'Carte');
+    await verifierLargeur(page, testInfo);
+  });
+
+  await etape(page, testInfo, '3. Ligne du panier : rien ne dépasse', async () => {
+    await panier.addByUrl(produit.handle);
+    await expect(panier.line(produit.handle), 'La ligne doit donner le nom d\'édition long').toContainText(TITRE_LONG);
+    await verifierBloc(panier.line(produit.handle), 'Panier');
+    await verifierLargeur(page, testInfo);
+  });
+
+  await etape(page, testInfo, '4. Résumé du checkout : rien ne dépasse', async () => {
+    await panier.goToCheckout();
+    await checkout.expectLoaded();
+    await checkout.openOrderSummaryIfCollapsed();
+    const ligne = page.getByRole('row').filter({ hasText: TITRE_LONG }).filter({ visible: true }).first();
+    await expect(ligne, 'Le résumé de commande doit donner le nom complet du produit').toBeVisible();
+    await verifierBloc(ligne, 'Checkout');
+    await verifierLargeur(page, testInfo);
+  });
+});
+
+test(`Prix · petit prix et prix au-dessus de 1 000 € (${produitFixe('QA17').id}, ${produitFixe('QA18').id}) @tnr @pdp`, async ({ page, qaEnv }, testInfo) => {
+  test.skip(qaEnv.name !== 'preprod', 'Produits QA : préprod uniquement');
+  const petit = produitFixe('QA17');
+  const grand = produitFixe('QA18');
+  const fiche = new ProductPage(page);
+  const collection = new CollectionPage(page);
+  const donnees: Record<string, Awaited<ReturnType<ProductPage['fetchProductData']>>> = {};
+
+  for (const [i, [produit, cas]] of ([[petit, 'moins de 100 €'], [grand, 'plus de 1 000 €']] as const).entries()) {
+    await etape(page, testInfo, `${i + 1}. Fiche ${produit.id} (${cas}) : prix affiché = prix du produit`, async () => {
+      donnees[produit.id] = await fiche.fetchProductData(produit.handle);
+      await page.goto(`products/${produit.handle}`, { waitUntil: 'domcontentloaded' });
+      await expect(fiche.price, 'Le prix doit s\'afficher').toBeVisible();
+      const texte = (await fiche.price.innerText()).replace(/\s+/g, ' ').trim();
+      testInfo.annotations.push({ type: `Prix affiché (${produit.id})`, description: texte });
+      await fiche.expectPrice(parsePriceToCents(texte), donnees[produit.id], `Le prix de ${produit.id} doit être celui du produit`);
+      if (produit === petit) expect(donnees[produit.id].priceCents, `${produit.id} doit rester sous 100 €`).toBeLessThan(10_000);
+      else expect(texte, 'Au-dessus de 1 000 €, les milliers doivent être séparés (1 287,95 ou 1.287,95)').toMatch(/\b1[\s.  ]\d{3},\d{2}\b/);
+    });
+  }
+
+  await etape(page, testInfo, '3. Cartes de la collection C5 : les mêmes prix', async () => {
+    await page.goto('collections/qa-collection-title', { waitUntil: 'domcontentloaded' });
+    for (const produit of [petit, grand]) {
+      const carte = collection.card(produit.handle);
+      await expect(carte, `La carte de ${produit.id} doit être dans la collection`).toBeVisible();
+      // textContent : WebKit renvoie un innerText vide pour une carte hors écran.
+      const prix = parsePriceToCents((await carte.locator('[class*="price"]').first().textContent()) ?? '');
+      await fiche.expectPrice(prix, donnees[produit.id], `La carte de ${produit.id} doit afficher le prix du produit`);
+    }
   });
 });
