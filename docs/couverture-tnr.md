@@ -26,11 +26,11 @@
 | PDP-01 Breadcrumb | Mineur | Non couvert | | Format, liens |
 | PDP-02 Galerie | Majeur | Partiel | `visuel.spec.ts`, `regressions-injectees.spec.ts` (prod, pixel) | Zoom, vidéo, carrousel mobile, flèches |
 | PDP-03 Modale packshot | Majeur | Non couvert | | Ouverture, navigation, fermeture, clavier |
-| PDP-04 Info panel | Bloquant | Partiel | `etats-produit.spec.ts` (titre, prix = JSON, QA02) | Ordre, débordement, prix selon la taille |
-| PDP-05 Coloris | Bloquant | Partiel | `sante-donnees.spec.ts` (nombre de coloris de P08) | Clic, coloris actif, coloris en rupture |
+| PDP-04 Info panel | Bloquant | Partiel | `etats-produit.spec.ts` (titre, prix = JSON) ; 14 octobre 2026 : ordre nom, prix, coloris, bouton, onglets (QA13), titre long QA21 sans débordement sur la fiche, la carte, le panier et le checkout, prix sous 100 € (QA17) et au-dessus de 1 000 € (QA18, milliers séparés) sur la fiche et la carte | Prix selon la taille, nouvelle fiche |
+| PDP-05 Coloris | Bloquant | Partiel | `sante-donnees.spec.ts` (nombre de coloris de P08) ; `etats-produit.spec.ts` (14 octobre 2026, ancienne fiche) : famille QA13 à QA15, les 3 vignettes et elles seules, vignette active, passage au noir en rupture (QA14) puis à l'ébène d'une autre matière (QA15, à son prix) | Groupes de matières et « Découvrir tout » (nouvelle fiche), clavier (constat 38) |
 | PDP-06 Tailles | Bloquant | Partiel | `etats-produit.spec.ts` (13 octobre 2026, ancienne fiche : QA10 tailles partielles, QA12 taille en précommande, QA11 tout épuisé) ; `fiche-produit.spec.ts` (14 octobre 2026, QA09 : diamètre de chaque taille dans l'onglet « Size & fit », qui tient lieu de guide sur l'ancienne fiche) | Nouvelle fiche (fenêtre « Choose your size », avec le tableau « Guide des tailles & Conseils » en mm et en pouces, vu en prod), clavier (constat 34) |
-| PDP-07 Ajout au panier | Bloquant | Partiel | `parcours-achat.spec.ts` (en stock), `etats-produit.spec.ts` (rupture ; précommande QA05 avec la date dans la notification, 13 octobre 2026) | Double clic, bouton fixe mobile, coming soon |
-| PDP-08 BIS | Majeur | Partiel | `etats-produit.spec.ts` (ouverture, fermeture, sans envoi) | Email invalide, envoi vide |
+| PDP-07 Ajout au panier | Bloquant | Partiel | `parcours-achat.spec.ts` (en stock), `etats-produit.spec.ts` (rupture ; précommande QA05 avec la date dans la notification, 13 octobre 2026 ; 14 octobre 2026 : coming soon QA04 avec sa fenêtre, précommande expirée QA07 redevenue normale, précommande retardée QA06), `fiche-produit.spec.ts` (14 octobre 2026 : double clic = un seul article, barre d'achat fixe en bas de l'écran sur mobile) | Nouvelle fiche, produit épuisé depuis le cache |
+| PDP-08 BIS | Majeur | Partiel | `etats-produit.spec.ts` (ouverture, fermeture ; 14 octobre 2026 : envoi vide et « test@ » refusés avec « Please type a valid e-mail », rien n'est envoyé, depuis la carte car le bouton de la fiche n'ouvre plus la fenêtre, constat 33) | Envoi réel et message de réussite (exclu volontairement) |
 | PDP-08/09 Wishlist | Majeur | Non couvert | | Cœur, snackbars, non connecté |
 | PDP-09 Onglets | Majeur | Partiel | `fiche-produit.spec.ts` (14 octobre 2026, QA09, ancienne fiche) : Description, Size & fit, Materials, Shipping and returns dans l'ordre, aucun ouvert au chargement (fonctionnement normal de l'ancienne fiche d'après la QA, 14 octobre 2026 : sur ordinateur la photo est affichée ; la fiche TNR, qui attend Description ouverte, décrit la nouvelle), un seul contenu affiché à la fois et non vide, Entrée au clavier | Onglet « Details » absent sur ordinateur (constat 36), sac (QA01), nouvelle fiche (Description ouverte par défaut) |
 | PDP-10 Accordéons | Mineur | Non couvert | | Fermés au départ, ouverture |
@@ -44,10 +44,10 @@
 | PLP-01 Collection Menu | Majeur | Non couvert | | Items, flèches, « Voir tout » |
 | PLP-02 Filtres & tri | Majeur | Partiel | `structure-collections.spec.ts` (bouton visible) | Panneau, facettes, tri, 0 résultat |
 | PLP-03 Grille | Bloquant | Couvert (prod) | `structure-collections.spec.ts` (4 appareils) | Préprod (test en `skip` alors que les collections QA existent), clic vers la fiche |
-| PLP-04 Carte & Quick Add | Bloquant | Partiel | `etats-produit.spec.ts` (carte QA02 sur C7) | Quick Add en stock, tailles, badges |
+| PLP-04 Carte & Quick Add | Bloquant | Partiel | `etats-produit.spec.ts` (cartes en rupture, précommande, coming soon, étiquette « New in » de QA08) ; `cartes-collection.spec.ts` (14 octobre 2026, C5) : ajout rapide de QA01 sans quitter la collection, ajout rapide d'une taille de QA09 (tailles au survol sur ordinateur, fenêtre « Select size » sur mobile) | Tailles épuisées sur la carte, nouvelle carte |
 | PLP-05 Wishlist | Majeur | Non couvert | | Cœur de la carte |
 | PLP-06 Load More | Majeur | Non couvert | `sante-donnees.spec.ts` compte seulement 48 / 60 | Clic sur « Voir plus » (C3) |
-| PLP-07 Modale BIS | Majeur | Partiel | `etats-produit.spec.ts` | Saisie, envoi (exclu volontairement) |
+| PLP-07 Modale BIS | Majeur | Partiel | `etats-produit.spec.ts` (ouverture depuis la carte QA02, envoi vide et « test@ » refusés, fermeture, 14 octobre 2026) | Envoi réel (exclu volontairement) |
 
 ### Panier
 
@@ -56,7 +56,7 @@
 | CART-01 Panier vide | Bloquant | Partiel | `pages-sections.spec.ts` (R05), `panier.spec.ts` (titre, « Discover Polène selection » vers `collections/all`, 13 octobre 2026) | Bouton « Login », client connecté |
 | CART-02 Liste | Bloquant | Partiel | `parcours-achat.spec.ts` (1 ligne) ; `panier.spec.ts` (14 octobre 2026, QA01 + QA05) : deux lignes, compteur « 1 product » / « 2 products » (singulier et pluriel), précommande et date sur la seule ligne concernée, sous-total = somme des lignes, propriétés de précommande sur le seul article en précommande, arrivée au checkout avec les deux produits et le même total, retrait par la croix (fenêtre « Remove item ? ») | Panier de 10 articles et plus (défilement) |
 | CART-03 Ligne produit | Bloquant | Partiel | `etats-produit.spec.ts` (ligne d'une précommande), `panier.spec.ts` (+/−, fenêtre « Remove item ? » fermée puis confirmée, dernière pièce QA03 bloquée à 1 avec message, 13 octobre 2026) | Favoris depuis le panier, croix de la ligne |
-| CART-04 Résumé & checkout | Bloquant | Partiel | `parcours-achat.spec.ts` (sous-total, passage au checkout), `panier.spec.ts` (sous-total recalculé après +/−) | Bouton fixe mobile |
+| CART-04 Résumé & checkout | Bloquant | Partiel | `parcours-achat.spec.ts` (sous-total, passage au checkout), `panier.spec.ts` (sous-total recalculé après +/− ; 14 octobre 2026 : récapitulatif avec sous-total et livraison « calculated at checkout », « Continue » visible sans défiler, collé au bas de l'écran sur mobile) | Boutons Shop Pay et PayPal (absents de la préprod) |
 | CART-05 Réassurance | Mineur | Partiel | `visuel.spec.ts` (prod, pixel) | Libellés |
 | CART-06 Accordéon assistance | Mineur | Non couvert | | Ouverture, clavier |
 | CART-07 Carrousels | Majeur | Partiel | `pages-sections.spec.ts` (R05) | Quick Add, flèches |
@@ -68,11 +68,11 @@
 |---|---|---|---|---|
 | CHECKOUT-01 Résumé fixe mobile | Majeur | Partiel | `checkout.ts` l'ouvre | Visible sur mobile seulement, prix |
 | CHECKOUT-02 Paiement express | Bloquant | **Non couvert** | | Présence des boutons en prod (la préprod n'a que la carte) |
-| CHECKOUT-03 Contact | Bloquant | Partiel | `checkout.ts` remplit le bloc | Messages d'erreur, cases pré-cochées (constat 1) |
-| CHECKOUT-04 Livraison | Bloquant | Partiel | `parcours-achat.spec.ts`, `compte-client.spec.ts` | Adresse incomplète, code postal invalide |
-| CHECKOUT-05 Paiement | Bloquant | Partiel | Carte en préprod, présence de PayPal et Klarna en prod | Carte refusée, expirée, CVV faux |
-| CHECKOUT-06 Payer + CGV | Bloquant | Partiel | `parcours-achat.spec.ts` (confirmation) | Formulaire incomplet, lien CGV |
-| CHECKOUT-07 Récap + code promo | Majeur | Partiel | Produit et total | Code promo, taille, plusieurs articles |
+| CHECKOUT-03 Contact | Bloquant | Partiel | `checkout.ts` remplit le bloc ; `checkout-erreurs.spec.ts` (14 octobre 2026, préprod, 4 appareils) : message sous chaque champ vide (email, civilité, prénom, nom), « test@ » refusé | Cases pré-cochées (constat 1, noté seulement), clavier numérique du téléphone |
+| CHECKOUT-04 Livraison | Bloquant | Partiel | `parcours-achat.spec.ts`, `compte-client.spec.ts` ; `checkout-erreurs.spec.ts` (14 octobre 2026) : messages sous adresse, code postal, ville, téléphone vides, code postal « ABCDE » refusé pour la France | Changement de pays |
+| CHECKOUT-05 Paiement | Bloquant | Partiel | Carte en préprod, présence de PayPal et Klarna en prod ; `checkout-erreurs.spec.ts` (14 octobre 2026, Chrome ordinateur, accord QA) : carte refusée, expirée et au code de sécurité faux, chacune avec son message, sans commande ; messages sous les champs de carte vides | PayPal et Klarna (prod seulement, sans payer) |
+| CHECKOUT-06 Payer + CGV | Bloquant | Partiel | `parcours-achat.spec.ts` (confirmation) ; `checkout-erreurs.spec.ts` (14 octobre 2026) : formulaire vide ou faux sans commande, mention « En cliquant sur Payer, j'accepte les Conditions Générales de Vente », lien et page des CGV non vide, en prod (sans rien saisir) et en préprod (constat 39) | Double clic sur « Payer » (créerait une commande) |
+| CHECKOUT-07 Récap + code promo | Majeur | Partiel | Produit et total ; titre long QA21 sans débordement (14 octobre 2026) | Code promo (pas testé pour l'instant, décision QA du 14 octobre 2026), taille |
 | CHECKOUT-08 Blocs d'infos | Mineur | Non couvert | | Blocs, lien email |
 
 Grille Mandatory sans fiche : emails de confirmation et d'expédition (piste « tests d'emails »), reçu POS (hors web), logo du checkout. Le questionnaire d'acquisition est testé mais absent de la grille.
@@ -138,6 +138,6 @@ Aucun ne va jusqu'au paiement.
 
 ## Questions pour la QA
 
-- Quick Add et « Variant Picker » depuis une carte : où les voit-on aujourd'hui (ils n'ont pas été rencontrés pendant nos tests) ?
+- ~~Quick Add et « Variant Picker » depuis une carte : où les voit-on aujourd'hui ?~~ Trouvés le 14 octobre 2026 sur les cartes de la préprod (ancienne carte) : « Add to cart » au survol sur ordinateur, icône sur mobile ; pour un bijou à tailles, les tailles remplacent le bouton au survol sur ordinateur et une fenêtre « Select size » s'ouvre sur mobile. Testés dans `tests/cartes-collection.spec.ts`.
 - Favoris d'un visiteur non connecté : fenêtre de connexion ou sauvegarde dans le navigateur (question ouverte dans CART-03 et PDP-08) ?
 - Peut-on remplir les favoris et poser une alerte BIS sur le compte de test `+qacompte` ?
