@@ -100,16 +100,41 @@ export class CheckoutPage {
     await expect(methods.getByText(/\d.*[€$£]|[€$£].*\d|Gratuit|Free/i).first()).toBeVisible();
   }
 
-  async payWithCard(card: TestCard) {
+  /** Bouton « Payer maintenant », suivi du total depuis le 14 octobre 2026 (« Payer maintenant 526,95 € »). */
+  get payButton() {
+    return this.page.getByRole('button', { name: /^(Payer maintenant|Pay now|Complete order)\b/i }).filter({ visible: true }).first();
+  }
+
+  get emailField() {
+    return this.page.getByRole('textbox', { name: /Adresse e-mail|^E-mail|^Email/i }).first();
+  }
+
+  get postalCodeField() {
+    return this.page.getByRole('textbox', { name: /Code postal|Postal code|ZIP/i }).first();
+  }
+
+  /**
+   * Messages d'erreur affichés sous les champs (« Entrez un code postal », « Saisissez un numéro de carte »…). Shopify
+   * les range dans des blocs `error-for-<champ>`, reliés au champ par aria-describedby, y compris pour la carte, dont
+   * les champs sont dans des iframes.
+   */
+  async errorMessages(): Promise<string[]> {
+    return this.page.locator('[id^="error-for-"]').filter({ visible: true }).evaluateAll(els => els.map(e => (e as HTMLElement).innerText.replace(/\s+/g, ' ').trim()).filter(Boolean));
+  }
+
+  async fillCard(card: TestCard) {
     const cardRadio = this.page.getByRole('radio', { name: /Carte de crédit|Credit card/i });
     if (await cardRadio.count()) await cardRadio.first().check();
     // Les champs de carte sont dans des iframes sécurisées Shopify.
     await this.page.frameLocator('iframe[name^="card-fields-number"]').getByRole('textbox').fill(card.number);
     await this.page.frameLocator('iframe[name^="card-fields-expiry"]').getByRole('textbox').fill(card.expiry);
     await this.page.frameLocator('iframe[name^="card-fields-verification_value"]').getByRole('textbox').fill(card.cvv);
-    const nameFrame = this.page.frameLocator('iframe[name^="card-fields-name"]');
-    await nameFrame.getByRole('textbox').fill(card.name);
-    await this.page.getByRole('button', { name: /^(Payer maintenant|Pay now|Complete order)$/i }).click();
+    await this.page.frameLocator('iframe[name^="card-fields-name"]').getByRole('textbox').fill(card.name);
+  }
+
+  async payWithCard(card: TestCard) {
+    await this.fillCard(card);
+    await this.payButton.click();
   }
 
   /** Version visible du questionnaire (la page en contient deux : desktop et mobile). */
