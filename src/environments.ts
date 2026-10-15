@@ -31,7 +31,8 @@ export const environments: Record<EnvName, QaEnvironment> = {
     cookieDomain: 'www.polene-paris.com',
     passwordProtected: false,
     completePurchase: false,
-    collection: { menuLabel: /^(Sacs|Bags)$/i, path: '/collections/handbags' },
+    // Depuis le 15 octobre 2026, « Sacs » mène à collections/bags ; collections/handbags y redirige (301).
+    collection: { menuLabel: /^(Sacs|Bags)$/i, path: '/collections/bags' },
     paymentMethods: [/Carte de crédit|Credit card/i, /PayPal/i, /Klarna/i],
   },
   preprod: {
