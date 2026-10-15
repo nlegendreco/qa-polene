@@ -26,7 +26,7 @@ Sans `PREPROD_PASSWORD`, seuls les tests de prod sont lancés (un avertissement 
 | `npm run rapport:polene -- visuel` | Ouvre directement le Rapport Polène d'une série (`tnr`, `visuel`, `regressions`, `demo-echec`) |
 | `npm run rapport` | Ouvre le rapport Playwright d'origine du parcours (détail technique) |
 | `npm run test:demo-echec` | Démo d'un échec volontaire (bouton « Ajouter au panier » masqué) |
-| `npm run test:visuel` | Tests visuels (prod) : compare 3 pages × 4 appareils à la référence |
+| `npm run test:visuel` | Tests visuels (prod) : compare 4 pages (accueil, fiche produit nouvelle et ancienne, panier) × 4 appareils à la référence |
 | `npm run test:visuel:maj` | Sauvegarde la référence actuelle dans `archives/references/<date>/`, puis la reprend (après une MEP validée, avec l'accord de tout le monde) |
 | `npm run test:regressions` | Démo : 4 régressions injectées (desktop Chrome + iPhone), chacune **doit** échouer |
 | `npm run archiver -- <nom>` | Conserve les rapports de toutes les séries dans `archives/<date>-<nom>/` (hors Git), voir [docs/demo-poc.md](docs/demo-poc.md) |

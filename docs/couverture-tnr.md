@@ -176,9 +176,9 @@ Le Roll Out sert l'ancienne ou la nouvelle fiche au hasard, en prod (50/50) comm
 |---|---|---|
 | PDP-04 Coloris | Vignettes, vignette active, ordre nom / prix / coloris / bouton / onglets | Carrousel de vignettes, fiche affichée marquée (`aria-current`), « Explore all (3) » et sa fenêtre, même ordre |
 | PDP-05, PDP-06 Tailles et guide | Menu « Select size » (taille épuisée grisée, ouvre « Être prévenu(e) »), guide dans « Size & fit » | Fenêtre « Choose your size » : « Please select a size », taille épuisée → « Notify me », précommande d'une taille avec sa date, ajout de la bonne taille ; diamètres de « Details » = colonne mm du guide (constat 53 : autres colonnes fausses en préprod) |
-| PDP-07 Ajout au panier | Double clic = 1 article, barre d'achat fixe sur mobile | Double clic = 1 article ; pas de barre d'achat fixe (question à la QA) |
+| PDP-07 Ajout au panier | Double clic = 1 article, barre d'achat fixe sur mobile | Double clic = 1 article, barre d'achat fixe sur mobile (bouton seul, sans nom ni prix) |
 | PDP-09 Onglets | 4 onglets, aucun ouvert, un seul contenu à la fois, Entrée | Description ouvert au chargement, Details, Composition, Shipping & Return, un seul contenu à la fois, Entrée (« Golden data test » noté, constat 50) |
 | États produit | Rupture, précommande, coming soon, précommande expirée et retardée, titre long, prix : mêmes vérifications sur les deux fiches | |
 | PDP-01 à 03, 10 à 12 | Fil d'Ariane, zoom, carrousel mobile (glissé), 3D absente (constat 43) | Fil d'Ariane, zoom, fenêtre des photos, 3D, accordéons (constat 50 en préprod) |
 
-Parcours d'achat, panier mixte et favoris du visiteur : une fiche par appareil (ancienne sur Chrome ordinateur et iPhone, nouvelle sur Safari et Android). Tests visuels de la fiche : nouvelle fiche, la seule qui a une référence.
+Parcours d'achat, panier mixte et favoris du visiteur : une fiche par appareil (ancienne sur Chrome ordinateur et iPhone, nouvelle sur Safari et Android). Tests visuels de la fiche : une référence par fiche (ancienne prise le 15 octobre 2026).
