@@ -121,4 +121,30 @@ export class Wishlist {
     expect(affiches, 'La page des favoris doit montrer exactement les produits mis en favori').toEqual([...attendus].sort());
     return rubriques;
   }
+
+  /**
+   * Mise en page des rubriques : les produits sont en grille, plusieurs par ligne (préprod, 15 octobre 2026 : 4 colonnes
+   * sur un ordinateur de 1 440 px, 2 sur téléphone). Bug de la prod (constat 51) : un produit par ligne, les uns sous
+   * les autres. Vérifié sur chaque rubrique d'au moins 2 produits ; renvoie le nombre de produits sur la première ligne.
+   */
+  async expectGrid(isMobile: boolean): Promise<{ titre: string; parLigne: number; produits: number }[]> {
+    const rubriques = this.page.getByRole('main').locator('component-accordion').filter({ has: this.page.locator('[role=region]') });
+    const lignes = await rubriques.evaluateAll(els => els.filter(el => el.checkVisibility()).map(el => {
+      const tops = [...el.querySelectorAll('[role=region] .component-product-card')].filter(c => c.checkVisibility())
+        .map(c => Math.round(c.getBoundingClientRect().top));
+      return {
+        titre: (el.querySelector('button')?.textContent ?? '').replace(/\s+/g, ' ').trim(),
+        parLigne: tops.filter(t => Math.abs(t - tops[0]) < 5).length,
+        produits: tops.length,
+      };
+    }));
+    const minimum = isMobile ? 2 : 3;
+    const aJuger = lignes.filter(l => l.produits >= 2);
+    expect(aJuger.length, 'Il faut au moins 2 produits dans une même rubrique pour juger la grille').toBeGreaterThan(0);
+    for (const l of aJuger) {
+      expect.soft(l.parLigne, `« ${l.titre} » : ${l.produits} produits, ${l.parLigne} par ligne ; ils doivent être côte à côte (au moins ${Math.min(minimum, l.produits)} par ligne${isMobile ? ' sur téléphone' : ''}), pas les uns sous les autres`)
+        .toBeGreaterThanOrEqual(Math.min(minimum, l.produits));
+    }
+    return lignes;
+  }
 }
