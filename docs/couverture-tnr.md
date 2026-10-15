@@ -153,7 +153,7 @@ Fiches jouées en plus de 2.2, sans commande. Le site fait foi ; un écart avec 
 |---|---|---|
 | PDP-01 Breadcrumb | `fiche-galerie.spec.ts` | Catégorie puis modèle (sac) ou type (bijou), liens vers des collections qui répondent (constat 42 en préprod) |
 | PDP-02 Galerie, PDP-03 Modale packshot | `fiche-galerie.spec.ts` | Ordinateur : zoom plein écran, photo chargée, Échap. Mobile : carrousel (glissé sous Android), points, flèche au clavier, fenêtre des photos et vignettes (nouvelle fiche) |
-| PDP-08/09, PLP-05 Favoris | `favoris.spec.ts` | Cœur de la fiche et de la carte, compteur, page des favoris (rubriques, nombres, produits côte à côte), retrait ; compte connecté en préprod et en prod (compte de prod à créer par la QA). Deux bugs de la prod détectés : rubriques (constat 48) et produits les uns sous les autres (constat 51) |
+| PDP-08/09, PLP-05 Favoris | `favoris.spec.ts` | Cœur de la fiche et de la carte, compteur, page des favoris (rubriques, nombres, produits côte à côte), retrait ; compte connecté en préprod et en prod (compte de prod créé le 15 octobre 2026). Deux bugs de la prod détectés : rubriques (constat 48) et produits les uns sous les autres (constat 51), corrigés en prod le 15 octobre 2026 vers 15 h 50 |
 | PDP-10, PDP-11 Savoir-faire | `fiche-galerie.spec.ts` | Accordéons (nouvelle fiche ; constat 50 : un des deux manque en préprod), bloc « Le savoir-faire d'Ubrique » avec sa photo |
 | PDP-12 Vue 3D | `fiche-galerie.spec.ts` | Bouton, modèle téléchargé, lecteur affiché, interrupteur ouvert / fermé, fermeture ; ignoré sur l'ancienne fiche de la préprod, où la 3D a été remplacée par une « 360 View » ou retirée (essai de l'équipe, constat 43) |
 | PLP-01 Menu de collection | `collections.spec.ts` | Titre, entrées, flèches (ordinateur), clic : URL, titre, entrée active |
@@ -166,4 +166,19 @@ Fiches jouées en plus de 2.2, sans commande. Le site fait foi ; un écart avec 
 | ACCOUNT-01 à 04, 07 à 11, 19 à 23 | `compte-client.spec.ts` | Chaque entrée du menu et l'entrée active, « Log out » présent (jamais cliqué), accueil (prénom, dernière commande, détail, assistance), profil en lecture seule (civilité, nom, téléphone, naissance, newsletter), suppression du compte jusqu'à la confirmation puis « Cancel » (jamais confirmée), adresse par défaut, assistance (formulaire, email, FAQ, chat, réseaux) ; constat 47 |
 | Header et accueil (grille Mandatory) | `en-tete.spec.ts` | Logo, panneau du menu au survol, menu mobile, tous les liens internes de l'en-tête et du pied de page, newsletter (saisies invalides), vidéo de l'accueil, défilement jusqu'au pied de page |
 
-Pas joués : la suppression réelle du compte (ACCOUNT-10 s'arrête à la confirmation), envoi réel des formulaires (profil, newsletter, « Être prévenu(e) »), CART-08 (bannière : aucune aujourd'hui), code promo (décision QA du 14 octobre 2026), nouvelle fiche en préprod (le Roll Out sert l'ancienne).
+Pas joués : la suppression réelle du compte (ACCOUNT-10 s'arrête à la confirmation), envoi réel des formulaires (profil, newsletter, « Être prévenu(e) »), CART-08 (bannière : aucune aujourd'hui), code promo (décision QA du 14 octobre 2026).
+
+### Les deux fiches produit (15 octobre 2026)
+
+Le Roll Out sert l'ancienne ou la nouvelle fiche au hasard, en prod (50/50) comme en préprod. Les tests choisissent maintenant leur fiche (`src/fiches.ts`) : chaque fiche TNR « PDP » est jouée sur les deux à chaque lancement.
+
+| Fiche | Ancienne fiche | Nouvelle fiche |
+|---|---|---|
+| PDP-04 Coloris | Vignettes, vignette active, ordre nom / prix / coloris / bouton / onglets | Carrousel de vignettes, fiche affichée marquée (`aria-current`), « Explore all (3) » et sa fenêtre, même ordre |
+| PDP-05, PDP-06 Tailles et guide | Menu « Select size » (taille épuisée grisée, ouvre « Être prévenu(e) »), guide dans « Size & fit » | Fenêtre « Choose your size » : « Please select a size », taille épuisée → « Notify me », précommande d'une taille avec sa date, ajout de la bonne taille ; diamètres de « Details » = colonne mm du guide (constat 53 : autres colonnes fausses en préprod) |
+| PDP-07 Ajout au panier | Double clic = 1 article, barre d'achat fixe sur mobile | Double clic = 1 article ; pas de barre d'achat fixe (question à la QA) |
+| PDP-09 Onglets | 4 onglets, aucun ouvert, un seul contenu à la fois, Entrée | Description ouvert au chargement, Details, Composition, Shipping & Return, un seul contenu à la fois, Entrée (« Golden data test » noté, constat 50) |
+| États produit | Rupture, précommande, coming soon, précommande expirée et retardée, titre long, prix : mêmes vérifications sur les deux fiches | |
+| PDP-01 à 03, 10 à 12 | Fil d'Ariane, zoom, carrousel mobile (glissé), 3D absente (constat 43) | Fil d'Ariane, zoom, fenêtre des photos, 3D, accordéons (constat 50 en préprod) |
+
+Parcours d'achat, panier mixte et favoris du visiteur : une fiche par appareil (ancienne sur Chrome ordinateur et iPhone, nouvelle sur Safari et Android). Tests visuels de la fiche : nouvelle fiche, la seule qui a une référence.
