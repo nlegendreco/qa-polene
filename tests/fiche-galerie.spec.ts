@@ -186,8 +186,15 @@ test(`Fiche produit · vue 3D (${SAC.id}) @tnr @pdp`, async ({ page }, testInfo)
 
   await etape(page, testInfo, `1. Ouvrir la fiche ${SAC.handle} : bouton « Vue 3D »`, async () => {
     await ouvrirFiche(page, SAC.handle);
-    await expect(page.getByRole('main').getByRole('button', { name: /^(3D View|Vue 3D)$/i }).filter({ visible: true }).first(),
-      'Le bouton « Vue 3D » doit s\'afficher (absent de l\'ancienne fiche de la préprod depuis le 15 octobre 2026 : constat 43)').toBeVisible();
+    const bouton3d = page.getByRole('main').getByRole('button', { name: /^(3D View|Vue 3D)$/i }).filter({ visible: true }).first();
+    if (await estAncienneFiche(page) && !(await bouton3d.isVisible({ timeout: 5_000 }).catch(() => false))) {
+      // QA, 15 octobre 2026 : sur l'ancienne fiche, la 3D a été remplacée par une « 360 View » ou retirée ; c'est un
+      // essai de l'équipe, pas un bug (constat 43). La vue 3D se teste sur la nouvelle fiche et en prod.
+      const vue360 = await page.getByRole('main').getByRole('button', { name: /360/ }).filter({ visible: true }).count();
+      testInfo.annotations.push({ type: 'Constat 43', description: `Ancienne fiche sans vue 3D${vue360 ? ', bouton « 360 View » présent' : ''}` });
+      test.skip(true, 'Ancienne fiche sans vue 3D (essai de l\'équipe, constat 43)');
+    }
+    await expect(bouton3d, 'Le bouton « Vue 3D » doit s\'afficher').toBeVisible();
   });
 
   // Une seule étape pour ouvrir, manipuler et fermer la 3D : la capture de fin d'étape est prise 3D fermée. 3D ouverte,
