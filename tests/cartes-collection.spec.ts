@@ -96,3 +96,55 @@ test(`Carte · ajout rapide d'une taille (${produitFixe('QA09').id}) @tnr @plp`,
     expect(lignes.map(l => l.variant_id), `Le panier doit contenir la taille ${taille}, et elle seule`).toEqual([varianteAttendue]);
   });
 });
+
+test(`Carte · tailles épuisées : « Out of stock », ouvrent « Être prévenu(e) » sans rien ajouter (${produitFixe('QA10').id}) @tnr @plp`, async ({ page, qaEnv, isMobile }, testInfo) => {
+  test.skip(qaEnv.name !== 'preprod', 'Produits QA : préprod uniquement');
+  const produit = produitFixe('QA10');
+  const { disponibles, indisponibles } = produit.tailles!;
+  const epuisee = indisponibles[0];
+  const header = new Header(page, isMobile);
+  const collection = new CollectionPage(page);
+  const fiche = new ProductPage(page);
+  testInfo.annotations.push({ type: 'Produit testé', description: `${produit.id} (${produit.handle}), en stock : ${disponibles.join(', ')}, épuisées : ${indisponibles.join(', ')}` });
+
+  await etape(page, testInfo, `1. Ouvrir la collection QA (C1) : carte de ${produit.id}, panier vide`, async () => {
+    // C1 regroupe tous les produits QA : c'est la seule collection QA où figure ce bijou à tailles partielles.
+    await page.goto('collections/qa-collection', { waitUntil: 'domcontentloaded' });
+    await expect(collection.card(produit.handle), `La carte de ${produit.id} doit être dans la collection`).toBeVisible();
+    expect(await header.cartCount(), 'Le panier doit être vide au départ').toBe(0);
+  });
+
+  await etape(page, testInfo, `2. ${isMobile ? 'Toucher l\'icône d\'ajout : fenêtre « Select size »' : 'Survoler la carte'} : tailles en stock à ajouter, tailles épuisées marquées « Out of stock »`, async () => {
+    const carte = collection.card(produit.handle);
+    await carte.evaluate(e => e.scrollIntoView({ block: 'center', behavior: 'instant' }));
+    if (isMobile) {
+      await collection.quickAddButton(produit.handle).click();
+      await expect(collection.quickAddSizeModal, 'L\'ajout rapide doit ouvrir la fenêtre « Select size »').toBeVisible();
+    } else {
+      await carte.hover();
+    }
+    for (const t of disponibles) {
+      await expect(collection.quickAddSize(produit.handle, t, isMobile), `La taille ${t} (en stock) doit proposer « Add to cart »`).toBeVisible();
+    }
+    for (const t of indisponibles) {
+      const bouton = collection.quickAddSize(produit.handle, t, isMobile, true);
+      await expect(bouton, `La taille ${t} (épuisée) doit être marquée « Out of stock »`).toBeVisible();
+      await expect(bouton, `La taille ${t} doit être signalée épuisée au thème (data-state)`).toHaveAttribute('data-state', 'disabled');
+    }
+  });
+
+  await etape(page, testInfo, `3. Choisir la taille épuisée ${epuisee} : fenêtre « Être prévenu(e) », rien au panier`, async () => {
+    await collection.quickAddChooseSize(produit.handle, epuisee, isMobile, true);
+    await expect(fiche.backInStockModal, `La taille ${epuisee} doit ouvrir la fenêtre « Être prévenu(e) »`).toBeVisible();
+    await expect(fiche.backInStockModal.getByRole('textbox').first(), 'La fenêtre doit demander une adresse email').toBeVisible();
+    const lignes = await lirePanier(page);
+    expect(lignes, 'Une taille épuisée ne doit rien ajouter au panier').toEqual([]);
+  });
+
+  await etape(page, testInfo, '4. Fermer la fenêtre sans rien envoyer : toujours sur la collection', async () => {
+    await fiche.backInStockModal.getByRole('button', { name: /Close modal|Fermer/i }).first().click();
+    await expect(fiche.backInStockModal, 'La fenêtre doit se fermer').toBeHidden();
+    await expect(page, 'On doit rester sur la collection').toHaveURL(/\/collections\/qa-collection/);
+    expect(await header.cartCount(), 'Le panier doit rester vide').toBe(0);
+  });
+});

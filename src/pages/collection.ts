@@ -33,28 +33,32 @@ export class CollectionPage {
     return this.page.locator('component-modal.active').filter({ hasText: /Select size|Choisi\w* (votre|une) taille/i }).first();
   }
 
-  /** Bouton d'une taille dans l'ajout rapide (« 52 - Add to cart »), sur la carte ou dans la fenêtre mobile. */
-  quickAddSize(handle: string, size: string, isMobile: boolean) {
-    const nom = { name: new RegExp(`^${size} - (Add to (cart|bag)|Ajouter au panier)$`, 'i') };
+  /**
+   * Bouton d'une taille dans l'ajout rapide, sur la carte ou dans la fenêtre mobile : « 52 - Add to cart », ou
+   * « 52 - Out of stock » pour une taille épuisée (`epuisee`), qui ouvre « Être prévenu(e) ».
+   */
+  quickAddSize(handle: string, size: string, isMobile: boolean, epuisee = false) {
+    const libelle = epuisee ? 'Out of stock|Épuisée?|En rupture( de stock)?' : 'Add to (cart|bag)|Ajouter au panier';
+    const nom = { name: new RegExp(`^${size} - (${libelle})$`, 'i') };
     return isMobile ? this.quickAddSizeModal.getByRole('button', nom) : this.card(handle).getByRole('button', nom);
   }
 
   /**
-   * Ajoute une taille au panier depuis la carte. Sur ordinateur, les tailles n'apparaissent qu'au survol, avec une
+   * Ajoute une taille au panier depuis la carte (une taille épuisée ouvre « Être prévenu(e) »). Sur ordinateur, les tailles n'apparaissent qu'au survol, avec une
    * transition : tant qu'elle n'est pas finie, le libellé « Add to cart » est encore au-dessus et le clic de Playwright
    * est refusé. On amène donc la souris sur la taille comme un client, on attend qu'elle soit au premier plan, puis on clique.
    */
-  async quickAddChooseSize(handle: string, size: string, isMobile: boolean) {
+  async quickAddChooseSize(handle: string, size: string, isMobile: boolean, epuisee = false) {
     const carte = this.card(handle);
     await carte.evaluate(e => e.scrollIntoView({ block: 'center', behavior: 'instant' }));
     if (isMobile) {
       if (!(await this.quickAddSizeModal.isVisible())) await this.quickAddButton(handle).click();
       await expect(this.quickAddSizeModal, 'L\'ajout rapide doit ouvrir la fenêtre « Select size »').toBeVisible();
-      await this.quickAddSize(handle, size, true).click();
+      await this.quickAddSize(handle, size, true, epuisee).click();
       return;
     }
     await carte.hover();
-    const taille = this.quickAddSize(handle, size, false);
+    const taille = this.quickAddSize(handle, size, false, epuisee);
     const zone = await taille.boundingBox();
     if (!zone) throw new Error(`La taille ${size} n'a pas de place sur la carte ${handle}`);
     const x = zone.x + zone.width / 2;
