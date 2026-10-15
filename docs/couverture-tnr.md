@@ -141,19 +141,21 @@ Aucun ne va jusqu'au paiement.
 - ~~Quick Add et « Variant Picker » depuis une carte : où les voit-on aujourd'hui ?~~ Trouvés le 14 octobre 2026 sur les cartes de la préprod (ancienne carte) : « Add to cart » au survol sur ordinateur, icône sur mobile ; pour un bijou à tailles, les tailles remplacent le bouton au survol sur ordinateur et une fenêtre « Select size » s'ouvre sur mobile. Testés dans `tests/cartes-collection.spec.ts`.
 - ~~Favoris d'un visiteur non connecté : fenêtre de connexion ou sauvegarde dans le navigateur (question ouverte dans CART-03 et PDP-08) ?~~ Vu le 15 octobre 2026 : sauvegarde dans le navigateur, page `pages/wishlist` avec un lien « Sign in ». Testé dans `tests/favoris.spec.ts`.
 - Peut-on remplir les favoris et poser une alerte BIS sur le compte de test `+qacompte` ? Favoris : oui, le test les remplit puis les vide (15 octobre 2026). Alerte BIS : toujours ouvert (l'envoi réel de « Être prévenu(e) » n'est pas testé).
-- Nouvelles (15 octobre 2026) : un compte de prod pour tester les favoris du compte en prod (le bug des rubriques, constat 48, est vu sur la page des favoris d'un visiteur) ; un compte dédié pour ACCOUNT-10 (suppression du compte, jamais jouée sur `+qacompte`) ; le résumé du checkout mobile défile avec la page, la fiche CHECKOUT-01 le dit fixé en haut de l'écran : laquelle a raison ?
+- ~~Compte de prod pour les favoris du compte~~ : `+qacompte` en prod, fourni par la QA le 15 octobre 2026 (identifiants dans `.env`), à créer par elle.
+- ~~Compte dédié pour ACCOUNT-10~~ : un compte supprimé à chaque passage ne tiendrait pas (QA, 15 octobre 2026). Le test va jusqu'à la confirmation et annule.
+- ~~Résumé du checkout mobile fixé ?~~ Non : il défile avec la page, la fiche CHECKOUT-01 se trompait (QA, 15 octobre 2026).
 
 ## Phase 2.3 (15 octobre 2026)
 
-Fiches jouées en plus de 2.2, sans commande. Le site fait foi ; un écart avec la prod est noté comme constat (CLAUDE.md, constats 40 à 49).
+Fiches jouées en plus de 2.2, sans commande. Le site fait foi ; un écart avec la prod est noté comme constat (CLAUDE.md, constats 40 à 51).
 
 | Fiche | Où | Ce qui est vérifié |
 |---|---|---|
 | PDP-01 Breadcrumb | `fiche-galerie.spec.ts` | Catégorie puis modèle (sac) ou type (bijou), liens vers des collections qui répondent (constat 42 en préprod) |
 | PDP-02 Galerie, PDP-03 Modale packshot | `fiche-galerie.spec.ts` | Ordinateur : zoom plein écran, photo chargée, Échap. Mobile : carrousel (glissé sous Android), points, flèche au clavier, fenêtre des photos et vignettes (nouvelle fiche) |
-| PDP-08/09, PLP-05 Favoris | `favoris.spec.ts` | Cœur de la fiche et de la carte, compteur, page des favoris (rubriques, nombres), retrait ; compte connecté en préprod. Bug de la prod détecté (constat 48) |
+| PDP-08/09, PLP-05 Favoris | `favoris.spec.ts` | Cœur de la fiche et de la carte, compteur, page des favoris (rubriques, nombres, produits côte à côte), retrait ; compte connecté en préprod et en prod (compte de prod à créer par la QA). Deux bugs de la prod détectés : rubriques (constat 48) et produits les uns sous les autres (constat 51) |
 | PDP-10, PDP-11 Savoir-faire | `fiche-galerie.spec.ts` | Accordéons (nouvelle fiche ; constat 50 : un des deux manque en préprod), bloc « Le savoir-faire d'Ubrique » avec sa photo |
-| PDP-12 Vue 3D | `fiche-galerie.spec.ts` | Bouton, modèle téléchargé, lecteur affiché, interrupteur ouvert / fermé, fermeture (constat 43 : absente de l'ancienne fiche de la préprod) |
+| PDP-12 Vue 3D | `fiche-galerie.spec.ts` | Bouton, modèle téléchargé, lecteur affiché, interrupteur ouvert / fermé, fermeture ; ignoré sur l'ancienne fiche de la préprod, où la 3D a été remplacée par une « 360 View » ou retirée (essai de l'équipe, constat 43) |
 | PLP-01 Menu de collection | `collections.spec.ts` | Titre, entrées, flèches (ordinateur), clic : URL, titre, entrée active |
 | PLP-02 Filtres et tri | `collections.spec.ts` | Fenêtre, tris par prix, en stock, facette Rings, « Clear », « Close » |
 | PLP-03 Grille préprod | `structure-collections.spec.ts` | C1, C5, C7 : produits exacts, cartes complètes, colonnes, clic vers la fiche |
@@ -161,7 +163,7 @@ Fiches jouées en plus de 2.2, sans commande. Le site fait foi ; un écart avec 
 | Recherche (grille Mandatory) | `recherche.spec.ts` | Champ de l'en-tête, titre et nombre, cartes, bons produits en tête (QA22 seul produit QA), clic vers la fiche |
 | CART-01, 05, 06, 07 Panier vide | `panier.spec.ts` | Connexion, sélection, réassurance, logos, accordéon Assistance (clic et clavier), suggestions (flèches au clavier, ajout rapide) ; constats 44 et 45 |
 | CHECKOUT-01, 02, 08 | `checkout.spec.ts` | Résumé mobile replié avec le total (ouvrir, refermer), paiement express, blocs d'information une fois chacun (constat 46) |
-| ACCOUNT-01 à 04, 07 à 09, 11, 19 à 23 | `compte-client.spec.ts` | Chaque entrée du menu et l'entrée active, « Log out » présent (jamais cliqué), accueil (prénom, dernière commande, détail, assistance), profil en lecture seule (civilité, nom, téléphone, naissance, newsletter), adresse par défaut, assistance (formulaire, email, FAQ, chat, réseaux) ; constat 47 |
+| ACCOUNT-01 à 04, 07 à 11, 19 à 23 | `compte-client.spec.ts` | Chaque entrée du menu et l'entrée active, « Log out » présent (jamais cliqué), accueil (prénom, dernière commande, détail, assistance), profil en lecture seule (civilité, nom, téléphone, naissance, newsletter), suppression du compte jusqu'à la confirmation puis « Cancel » (jamais confirmée), adresse par défaut, assistance (formulaire, email, FAQ, chat, réseaux) ; constat 47 |
 | Header et accueil (grille Mandatory) | `en-tete.spec.ts` | Logo, panneau du menu au survol, menu mobile, tous les liens internes de l'en-tête et du pied de page, newsletter (saisies invalides), vidéo de l'accueil, défilement jusqu'au pied de page |
 
-Pas joués : ACCOUNT-10 (suppression du compte), envoi réel des formulaires (profil, newsletter, « Être prévenu(e) »), CART-08 (bannière : aucune aujourd'hui), code promo (décision QA du 14 octobre 2026), nouvelle fiche en préprod (le Roll Out sert l'ancienne).
+Pas joués : la suppression réelle du compte (ACCOUNT-10 s'arrête à la confirmation), envoi réel des formulaires (profil, newsletter, « Être prévenu(e) »), CART-08 (bannière : aucune aujourd'hui), code promo (décision QA du 14 octobre 2026), nouvelle fiche en préprod (le Roll Out sert l'ancienne).
