@@ -38,9 +38,7 @@ test('Checkout · résumé de la commande, paiement express et blocs d\'informat
       await expect(bouton, 'Le résumé doit être replié au départ').toHaveAttribute('aria-expanded', 'false');
       await expect(bouton, `Le résumé replié doit afficher le total (${formatCents(total)})`).toContainText(/Prix total|Total/i);
       await checkout.expectTotalVisible(total);
-      // Fiche TNR CHECKOUT-01 : résumé « fixé » en haut de l'écran. Il défile avec la page (question à la QA).
-      const fixe = await bouton.evaluate(b => { for (let e: Element | null = b; e; e = e.parentElement) { const p = getComputedStyle(e).position; if (p === 'sticky' || p === 'fixed') return true; } return false; });
-      if (!fixe) testInfo.annotations.push({ type: 'Résumé mobile', description: 'Le résumé défile avec la page (la fiche TNR le dit fixé en haut de l\'écran)' });
+      // La fiche TNR CHECKOUT-01 le disait fixé en haut de l'écran : il défile avec la page, c'est normal (QA, 15 octobre 2026).
       await bouton.click();
       await expect(bouton, 'Un toucher doit ouvrir le résumé').toHaveAttribute('aria-expanded', 'true');
       await expect(page.getByRole('row').filter({ visible: true }).first(), 'Le résumé ouvert doit montrer le produit').toBeVisible();
