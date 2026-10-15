@@ -8,16 +8,19 @@ import { PAGES_VISUELLES, verifierPage } from '../src/visuel';
 // Pas de vidéo : l'attendu, l'obtenu et la différence suffisent, et l'enregistrement surcharge la machine.
 // Densité 1 pixel par point : même mise en page que sur le vrai appareil, mais Safari mobile émulé
 // réduit les photos différemment d'un passage à l'autre en densité 3 (écarts sur toute la collection iPhone).
-// Fiche produit : la nouvelle, celle des références (2 octobre 2026). L'ancienne, servie à la moitié des clients par
-// le Roll Out depuis le 15 octobre 2026, n'a pas encore de référence (à prendre avec l'accord de la QA).
+// Fiche produit : chaque fiche du Roll Out a sa référence (nouvelle : 2 octobre 2026, ancienne : 15 octobre 2026).
+// Les autres pages ne passent par la fiche que pour lire la variante (panier) : la nouvelle, comme à l'origine.
 test.use({ video: 'off', deviceScaleFactor: 1, fiche: 'nouvelle' });
 
 for (const pageVisuelle of PAGES_VISUELLES) {
-  test(`Visuel · ${pageVisuelle.nom} @visuel @${pageVisuelle.typePage}`, async ({ page, qaEnv }, testInfo) => {
-    test.skip(qaEnv.name !== 'prod', 'Tests visuels en prod uniquement pour l\'instant');
-    testInfo.annotations.push({ type: 'Environnement', description: `${qaEnv.label} (${qaEnv.baseURL})` });
-    await verifierPage(page, testInfo, pageVisuelle, {
-      message: `La page « ${pageVisuelle.nom} » ne correspond plus à la référence : comparer attendu, obtenu et différence ci-dessous`,
+  test.describe(() => {
+    if (pageVisuelle.fiche) test.use({ fiche: pageVisuelle.fiche });
+    test(`Visuel · ${pageVisuelle.nom} @visuel @${pageVisuelle.typePage}`, async ({ page, qaEnv }, testInfo) => {
+      test.skip(qaEnv.name !== 'prod', 'Tests visuels en prod uniquement pour l\'instant');
+      testInfo.annotations.push({ type: 'Environnement', description: `${qaEnv.label} (${qaEnv.baseURL})` });
+      await verifierPage(page, testInfo, pageVisuelle, {
+        message: `La page « ${pageVisuelle.nom} » ne correspond plus à la référence : comparer attendu, obtenu et différence ci-dessous`,
+      });
     });
   });
 }

@@ -1,5 +1,5 @@
 import type { Locator, Page, TestInfo } from '@playwright/test';
-import { test, expect } from './fixtures';
+import { test, expect, type Fiche } from './fixtures';
 import { CartPage } from './pages/cart';
 import { ProductPage } from './pages/product';
 
@@ -67,6 +67,8 @@ export interface PageVisuelle {
   fichier: string;
   /** Type de page, en anglais comme chez Polène : étiquette @home, @pdp, @cart… */
   typePage: 'home' | 'plp' | 'pdp' | 'cart' | 'checkout';
+  /** Fiche produit que le Roll Out doit servir (src/fiches.ts). Sans valeur : la nouvelle (test.use des tests visuels). */
+  fiche?: Fiche;
   ouvrir: (page: Page) => Promise<void>;
   /** Zones qui changent sans que ce soit un bug : recouvertes d'un aplat rose dans la capture. */
   zonesIgnorees?: (page: Page) => { libelle: string; zone: Locator }[];
@@ -83,11 +85,20 @@ export const PAGES_VISUELLES: PageVisuelle[] = [
   // Pas de collection : les mentions de stock (« Être prévenu(e) », « Précommande le … ») changent plusieurs fois
   // par jour en prod, une capture n'y reste jamais valable. Les collections sont vérifiées par leur structure
   // (tests/structure-collections.spec.ts, décision QA du 6 octobre 2026).
+  // Une référence par fiche du Roll Out (moitié des clients chacune depuis le 15 octobre 2026). goto vérifie aussi
+  // que le Roll Out a servi la fiche voulue.
   {
     nom: 'Fiche produit Numéro Un',
     fichier: 'fiche-produit',
     typePage: 'pdp',
-    // Vérifie aussi que le Roll Out a servi la fiche de la référence (test.use({ fiche }) des tests visuels).
+    fiche: 'nouvelle',
+    ouvrir: async page => { await new ProductPage(page).goto(PRODUIT, { waitUntil: 'load' }); },
+  },
+  {
+    nom: 'Fiche produit Numéro Un (ancienne fiche)',
+    fichier: 'fiche-produit-ancienne',
+    typePage: 'pdp',
+    fiche: 'ancienne',
     ouvrir: async page => { await new ProductPage(page).goto(PRODUIT, { waitUntil: 'load' }); },
   },
   {
