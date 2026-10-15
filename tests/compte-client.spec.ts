@@ -130,6 +130,8 @@ test('Espace client · Adresses : liste, ajout, modification @tnr @account', asy
     const modifier = main.locator('a[href*="view=edit"]');
     await expect(modifier.first(), 'Le compte de test doit avoir au moins une adresse, avec un lien « Edit »').toBeVisible();
     lienModifier = (await modifier.first().getAttribute('href'))!;
+    // Fiche TNR ACCOUNT-11 : l'adresse par défaut est signalée comme telle.
+    await expect(main.getByText(/^(Default|Par défaut|Adresse par défaut)$/i).filter({ visible: true }).first(),'L\'adresse par défaut doit être signalée').toBeVisible();
     await expect(main.locator('a[href*="view=add"]').first(), 'Lien « Add address »').toBeVisible();
     await verifierPage(page, testInfo, erreursJs);
   });
@@ -177,6 +179,119 @@ test('Espace client · Commandes et détail d\'une commande @tnr @account', asyn
     await expect(main.locator('a[href*="/products/"], img').first(), 'Le détail doit montrer au moins un produit').toBeAttached();
     await expect(main.getByText(/[€$£]\s*\d|\d\s*[€$£]/).filter({ visible: true }).first(), 'Le détail doit montrer un montant').toBeVisible();
     await verifierPage(page, testInfo, erreursJs);
+  });
+});
+
+/** Entrées du menu de l'espace client : nom, adresse et titre de la page ouverte. « Log out » n'est jamais cliqué. */
+const ENTREES_MENU = [
+  { nom: /^(Orders|Commandes)$/i, chemin: /account\?view=orders/, titre: /Order history|Historique des commandes/i },
+  { nom: /^(Profile|Profil)$/i, chemin: /account\?view=profile/, titre: /Your Profile|Votre profil/i },
+  { nom: /^(Addresses|Adresses)$/i, chemin: /account\/addresses/, titre: /Your addresses|Vos adresses/i },
+  { nom: /^(Wishlist|Favoris)$/i, chemin: /account\?view=wishlist/, titre: /Your favorites|Vos favoris/i },
+  { nom: /back in stock|retour en stock/i, chemin: /account\?view=back-in-stock/, titre: /Your Alerts|Vos alertes/i },
+  { nom: /^Assistance$/i, chemin: /account\?view=assistance/, titre: /Need Assistance|Besoin d.aide/i },
+  { nom: /^(Overview|Aperçu)$/i, chemin: /account$/, titre: /^Welcome|^Bienvenue/i },
+];
+
+test('Espace client · menu : chaque entrée ouvre sa page et devient l\'entrée active @tnr @account', async ({ page, qaEnv }, testInfo) => {
+  conditions(qaEnv, testInfo);
+  const entreeMenu = (nom: RegExp) => page.locator('main nav').getByRole('menuitem', { name: nom }).first();
+
+  await etape(page, testInfo, '1. Ouvrir l\'accueil du compte : « Overview » est l\'entrée active, « Log out » est proposé', async () => {
+    await ouvrir(page, 'account');
+    await expect(entreeMenu(/^(Overview|Aperçu)$/i), '« Overview » doit être l\'entrée active').toHaveAttribute('aria-current', 'page');
+    // Fiche TNR ACCOUNT-01 : la déconnexion est dans le menu (lue, jamais cliquée : elle fermerait la session de test).
+    await expect(page.locator('main a.customer-navigation__link[href*="logout"]').first(), 'Le menu doit proposer « Log out »').toBeAttached();
+  });
+
+  for (const [i, entree] of ENTREES_MENU.entries()) {
+    await etape(page, testInfo, `${i + 2}. Cliquer « ${entree.nom.source.replace(/[\^$()\\]/g, '').split('|')[0]} » : sa page s'ouvre, l'entrée devient active`, async () => {
+      await entreeMenu(entree.nom).click();
+      await expect(page, `L'entrée doit ouvrir ${entree.chemin.source}`).toHaveURL(entree.chemin);
+      await expect(titre(page, entree.titre), 'La page doit afficher son titre').toBeVisible();
+      await expect(entreeMenu(entree.nom), 'L\'entrée cliquée doit être l\'entrée active').toHaveAttribute('aria-current', 'page');
+      expect(await page.locator('main nav [aria-current="page"]').count(), 'Une seule entrée active à la fois').toBe(1);
+    });
+  }
+});
+
+test('Espace client · accueil et profil : nom, dernière commande, assistance, profil en lecture seule @tnr @account', async ({ page, qaEnv }, testInfo) => {
+  conditions(qaEnv, testInfo);
+  const main = page.locator('main');
+  let prenom = '';
+
+  await etape(page, testInfo, '1. Profil : civilité, prénom, nom, téléphone, date de naissance et newsletter, sans enregistrer', async () => {
+    await ouvrir(page, 'account?view=profile');
+    await expect(titre(page, /Your Profile|Votre profil/i)).toBeVisible();
+    const civilite = main.getByRole('combobox').first();
+    await expect(civilite, 'La civilité du compte de test doit être choisie').not.toHaveValue('');
+    prenom = await main.getByRole('textbox', { name: /First name|Prénom/i }).first().inputValue();
+    expect(prenom, 'Le prénom du compte doit être rempli').not.toBe('');
+    await expect(main.getByRole('textbox', { name: /Last name|Nom/i }).first(), 'Le nom du compte doit être rempli').not.toHaveValue('');
+    await expect(main.getByRole('textbox', { name: /Phone|Téléphone/i }).first(), 'Champ téléphone').toBeVisible();
+    const naissance = main.getByRole('textbox', { name: /Birth|naissance/i }).first();
+    await expect(naissance, 'Champ date de naissance').toBeVisible();
+    testInfo.annotations.push({ type: 'Date de naissance', description: `format attendu : « ${await naissance.getAttribute('placeholder')} »` });
+    const newsletter = main.getByRole('checkbox', { name: /newsletter/i }).first();
+    await expect(newsletter, 'Case d\'inscription à la newsletter').toBeAttached();
+    testInfo.annotations.push({ type: 'Newsletter du compte', description: (await newsletter.isChecked()) ? 'inscrit' : 'non inscrit' });
+    await expect(main.getByRole('button', { name: /Save your information|Enregistrer/i }), 'Bouton d\'enregistrement (pas cliqué)').toBeVisible();
+    // ACCOUNT-10 (suppression du compte) : bouton lu, jamais cliqué (il supprimerait le compte de test).
+    await expect(main.getByRole('button', { name: /Delete account|Supprimer (mon|le) compte/i }), 'Bouton de suppression du compte (pas cliqué)').toBeVisible();
+  });
+
+  await etape(page, testInfo, '2. Accueil : « Welcome » avec le prénom, lien vers le profil', async () => {
+    await ouvrir(page, 'account');
+    await expect(titre(page, /^Welcome|^Bienvenue/i), `L'accueil doit saluer le client par son prénom (« ${prenom} »)`).toHaveText(new RegExp(`^(Welcome|Bienvenue) ${prenom}$`, 'i'));
+    await expect(main.getByRole('link', { name: /Edit profile|Modifier (le|mon) profil/i }), 'Lien vers le profil').toHaveAttribute('href', /account\?view=profile/);
+  });
+
+  await etape(page, testInfo, '3. Accueil : dernière commande avec son numéro, son produit et le lien vers son détail', async () => {
+    const derniere = titre(page, /latest order|dernière commande/i);
+    await expect(derniere, 'La dernière commande doit être affichée').toHaveText(/#\s?[A-Z0-9]+/);
+    const numero = ((await derniere.textContent()) ?? '').match(/#\s?([A-Z0-9]+)/)![1];
+    testInfo.annotations.push({ type: 'Dernière commande', description: numero });
+    const detail = main.getByRole('link', { name: /see order details|voir le détail/i });
+    await expect(detail, 'Le lien du détail doit porter le numéro de la commande').toHaveAccessibleName(new RegExp(numero));
+    await detail.click();
+    await expect(page, 'Le lien doit ouvrir le détail de la commande').toHaveURL(/\/account\/orders\/[0-9a-f]+/);
+    await expect(main, `Le détail doit être celui de la commande ${numero}`).toContainText(numero);
+  });
+
+  await etape(page, testInfo, '4. Accueil : bloc « Need Assistance? » avec l\'email et le chat', async () => {
+    await ouvrir(page, 'account');
+    await expect(titre(page, /Need Assistance|Besoin d.aide/i)).toBeVisible();
+    await expect(main.getByRole('link', { name: /by email|par e-?mail/i }).first(), 'Contact par email').toHaveAttribute('href', /^mailto:\S+@polene-paris\.com$/);
+    await expect(main.getByRole('button', { name: /Chat with us|Discuter/i }).first(), 'Bouton du chat').toBeVisible();
+  });
+});
+
+test('Espace client · assistance : formulaire, email, FAQ, chat et réseaux sociaux @tnr @account', async ({ page, qaEnv }, testInfo) => {
+  conditions(qaEnv, testInfo);
+  const main = page.locator('main');
+
+  await etape(page, testInfo, '1. Ouvrir l\'assistance : formulaire de contact et email', async () => {
+    await ouvrir(page, 'account?view=assistance');
+    await expect(titre(page, /Need Assistance|Besoin d.aide/i)).toBeVisible();
+    await expect(main.getByRole('link', { name: /Contact us form|formulaire/i }), 'Formulaire de contact du support').toHaveAttribute('href', /^https:\/\/support\.polene-paris\.com\/hc\/fr\/requests\/new$/);
+    await expect(main.getByRole('link', { name: /by email|par e-?mail/i }), 'Contact par email').toHaveAttribute('href', /^mailto:\S+@polene-paris\.com$/);
+  });
+
+  await etape(page, testInfo, '2. FAQ : 3 liens vers l\'aide en français, « See more » vers l\'accueil de l\'aide', async () => {
+    const faq = main.getByRole('list').filter({ has: page.locator('a[href*="support.polene-paris.com"]') }).getByRole('link');
+    expect(await faq.count(), 'La FAQ doit proposer 3 liens').toBe(3);
+    for (const lien of await faq.all()) {
+      // Fiche TNR (bug n° 2) : les liens de la FAQ doivent mener à l'aide en français, comme « See more ».
+      expect.soft(await lien.getAttribute('href'), `« ${await lien.textContent()} » doit mener à l'aide en français (/hc/fr/), constat 47`).toMatch(/^https:\/\/support\.polene-paris\.com\/hc\/fr\//);
+    }
+    await expect(main.getByRole('link', { name: /^(See more|Voir plus)$/i }), '« See more » doit mener à l\'aide en français').toHaveAttribute('href', /^https:\/\/support\.polene-paris\.com\/hc\/fr\/?$/);
+  });
+
+  await etape(page, testInfo, '3. Chat en direct et réseaux sociaux', async () => {
+    await expect(titre(page, /Live Chat|Chat en direct/i)).toBeVisible();
+    await expect(main.getByRole('button', { name: /Chat with us|Discuter/i }).filter({ visible: true }).first(), 'Bouton du chat').toBeVisible();
+    await expect(main.getByRole('link', { name: 'Instagram' }), 'Lien Instagram').toHaveAttribute('href', /^https:\/\/www\.instagram\.com\/polene_paris\/?$/);
+    await expect(main.getByRole('link', { name: 'Facebook' }), 'Lien Facebook').toHaveAttribute('href', /^https:\/\/www\.facebook\.com\/poleneparis\/?$/);
   });
 });
 
