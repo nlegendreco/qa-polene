@@ -1,4 +1,4 @@
-import { test, expect, etape } from '../src/fixtures';
+import { test, expect, etape, ficheDeLAppareil } from '../src/fixtures';
 import { Header } from '../src/pages/header';
 import { CollectionPage } from '../src/pages/collection';
 import { ProductPage, type ProductData } from '../src/pages/product';
@@ -13,7 +13,12 @@ import { produitFixe } from '../src/produits-fixes';
  * ouvre un produit en stock (préprod : toujours QA01), l'ajoute au panier et arrive au checkout.
  * - Prod : arrêt avant le paiement.
  * - Préprod : paiement de test jusqu'à la confirmation de commande.
+ *
+ * Fiche produit : l'ancienne sur Chrome ordinateur et iPhone, la nouvelle sur Safari ordinateur et Android
+ * (FICHE_PAR_APPAREIL, src/fixtures.ts) : les deux fiches du Roll Out à chaque lancement, toujours 4 commandes.
  */
+test.use({ fiche: ficheDeLAppareil });
+
 test('Parcours d\'achat nominal @smoke @tnr @journey', async ({ page, qaEnv, isMobile }, testInfo) => {
   const header = new Header(page, isMobile);
   const collection = new CollectionPage(page);
@@ -47,6 +52,7 @@ test('Parcours d\'achat nominal @smoke @tnr @journey', async ({ page, qaEnv, isM
     } else {
       handle = await collection.openFirstInStockProduct();
     }
+    await product.verifierFiche();
     productData = await product.fetchProductData(handle);
     testInfo.annotations.push({ type: 'Produit testé', description: `${productData.title} (${handle}) – ${formatCents(productData.priceCents)}` });
     await product.expectPurchasable();

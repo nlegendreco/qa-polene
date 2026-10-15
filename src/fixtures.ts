@@ -1,5 +1,6 @@
 import { test as base, expect, type Page, type TestInfo } from '@playwright/test';
 import { getEnvironment, type QaEnvironment } from './environments';
+import { FICHES, NOM_FICHE, ficheVoulue, preparerFiche, type Fiche } from './fiches';
 
 /**
  * Domaines bloqués pendant les tests :
@@ -39,6 +40,11 @@ export async function etape<T>(page: Page, testInfo: TestInfo, name: string, bod
 
 type Fixtures = {
   qaEnv: QaEnvironment;
+  /**
+   * Fiche produit que le Roll Out doit servir pendant le test (src/fiches.ts). Sans valeur, Shopify choisit au
+   * hasard. Posée par `pourChaqueFiche` ou `test.use({ fiche: 'nouvelle' })`.
+   */
+  fiche: Fiche | undefined;
 };
 
 export const test = base.extend<Fixtures>({
@@ -48,16 +54,25 @@ export const test = base.extend<Fixtures>({
     await use(getEnvironment(envName));
   },
 
-  context: async ({ context, qaEnv }, use) => {
+  fiche: [undefined, { option: true }],
+
+  context: async ({ context, qaEnv, fiche }, use, testInfo) => {
     // Bandeau cookies (Consentmo) : on pose directement le choix pour qu'il n'apparaisse jamais.
     await context.addCookies([
       { name: 'cookieconsent_status', value: 'allow', domain: qaEnv.cookieDomain, path: '/' },
     ]);
     await context.route(isBlocked, route => route.abort('blockedbyclient'));
+    if (fiche) {
+      const tirages = await preparerFiche(context, qaEnv, fiche);
+      // Le Roll Out ne sert plus cette fiche (il a pris fin, ou une seule fiche reste en ligne) : rien à tester.
+      testInfo.skip(tirages === null, `Le Roll Out ne sert plus l'${NOM_FICHE[fiche]} : test sans objet tant qu'elle n'est pas remise en ligne`);
+      testInfo.annotations.push({ type: 'Fiche produit', description: NOM_FICHE[fiche] });
+    }
     await use(context);
   },
 
-  page: async ({ page }, use, testInfo) => {
+  page: async ({ page, fiche }, use, testInfo) => {
+    if (fiche) ficheVoulue.set(page, fiche);
     // Filet de sécurité si le bandeau cookies s'affiche malgré tout.
     await page.addLocatorHandler(
       page.locator('button[data-csm-button-type="accept"]'),
@@ -110,4 +125,34 @@ export const test = base.extend<Fixtures>({
   },
 });
 
+/**
+ * Déclare les tests de `corps` deux fois, une par fiche produit du Roll Out : « Ancienne fiche › … » et
+ * « Nouvelle fiche › … ». Pour un test qui vérifie la fiche elle-même (@pdp).
+ */
+export function pourChaqueFiche(corps: (fiche: Fiche) => void) {
+  for (const fiche of FICHES) {
+    test.describe(fiche === 'ancienne' ? 'Ancienne fiche' : 'Nouvelle fiche', () => {
+      test.use({ fiche });
+      corps(fiche);
+    });
+  }
+}
+
+/**
+ * Une fiche par appareil, pour les tests qui passent seulement par la fiche (parcours d'achat, panier) : chaque
+ * fiche est vue sur un ordinateur et un téléphone à chaque lancement, sans doubler les tests (ni les commandes).
+ */
+export const FICHE_PAR_APPAREIL: Record<string, Fiche> = {
+  'desktop-chrome': 'ancienne',
+  'desktop-safari': 'nouvelle',
+  'iphone': 'ancienne',
+  'android': 'nouvelle',
+};
+
+/** À appeler en tête de fichier : `test.use({ fiche: ficheDeLAppareil })`. */
+export const ficheDeLAppareil = async ({}, use: (f: Fiche | undefined) => Promise<void>, testInfo: TestInfo) => {
+  await use(FICHE_PAR_APPAREIL[testInfo.project.name.split(' · ')[1]]);
+};
+
 export { expect };
+export type { Fiche };

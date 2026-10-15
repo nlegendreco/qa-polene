@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { formatCents } from '../price';
 import { appelShopify } from '../shopify';
+import { NOM_FICHE, ficheAffichee, ficheVoulue, type Fiche } from '../fiches';
 
 export interface ProductData {
   handle: string;
@@ -13,11 +14,36 @@ export interface ProductData {
   variants: { id: number; option1: string; available: boolean; price: number }[];
 }
 
+/** Vignettes de coloris de l'ancienne fiche, puis de la nouvelle (diapositives liens vers une autre fiche). */
+const COLORIS = '.js-color-option, a.component-carousel__slide[href*="/products/"]';
+
+/** Onglets de l'ancienne fiche : `li[role=button]` jusqu'au 14 octobre 2026, bouton dans le `li` depuis. */
+const ONGLETS_ANCIENNE_FICHE = 'ul.product-detail-list > li[role="button"], ul.product-detail-list > li > button';
+
 export class ProductPage {
   constructor(private readonly page: Page) {}
 
   get main() {
     return this.page.getByRole('main');
+  }
+
+  /** Ouvre la fiche, attend le nom du produit et vérifie que c'est la fiche demandée au Roll Out (src/fiches.ts). */
+  async goto(handle: string, { waitUntil = 'domcontentloaded' as 'domcontentloaded' | 'load' } = {}) {
+    const reponse = await this.page.goto(`products/${handle}`, { waitUntil });
+    await expect(this.title, 'Le nom du produit doit s\'afficher').toBeVisible();
+    await this.verifierFiche();
+    return reponse;
+  }
+
+  /** Fiche affichée : l'ancienne (onglets, vignettes, menu « Select size ») ou la nouvelle (« Explore all »…). */
+  async fiche(): Promise<Fiche> {
+    return ficheAffichee(this.page);
+  }
+
+  /** Si le test a demandé une fiche (fixture `fiche`), vérifie que le Roll Out l'a bien servie. */
+  async verifierFiche() {
+    const voulue = ficheVoulue.get(this.page);
+    if (voulue) expect(await this.fiche(), `Le Roll Out devait servir l'${NOM_FICHE[voulue]}`).toBe(voulue);
   }
 
   get title() {
@@ -50,23 +76,35 @@ export class ProductPage {
   }
 
   /**
-   * Vignettes de coloris de l'ancienne fiche : un lien par fiche de la même famille (métachamp filter.families), celle
-   * du produit affiché porte la classe is-active. La nouvelle fiche les range derrière « Explore all ».
+   * Vignettes de coloris : un lien par fiche de la même famille (métachamp filter.families). Ancienne fiche :
+   * `.js-color-option`, classe is-active sur celle du produit affiché. Nouvelle fiche : diapositives d'un carrousel,
+   * classe active et aria-current="page", et la liste complète dans la fenêtre « Explore all (N) ».
    */
   get colorOptions() {
-    return this.main.locator('.js-color-option').filter({ visible: true });
+    return this.main.locator(COLORIS).filter({ visible: true });
   }
 
   colorOption(handle: string) {
-    return this.main.locator(`.js-color-option[href*="/products/${handle}"]`).filter({ visible: true }).first();
+    return this.main.locator(COLORIS.split(', ').map(s => `${s}[href*="/products/${handle}"]`).join(', ')).filter({ visible: true }).first();
   }
 
   /** Handles des vignettes de coloris affichées, dans l'ordre, et celui de la vignette active. */
   async colorHandles(): Promise<{ tous: string[]; actif: string[] }> {
     return this.colorOptions.evaluateAll(liens => {
       const handle = (a: Element) => a.getAttribute('href')?.split('/products/')[1]?.split(/[?#]/)[0] ?? '';
-      return { tous: liens.map(handle), actif: liens.filter(a => a.classList.contains('is-active')).map(handle) };
+      const actif = (a: Element) => a.classList.contains('is-active') || a.getAttribute('aria-current') === 'page';
+      return { tous: liens.map(handle), actif: liens.filter(actif).map(handle) };
     });
+  }
+
+  /** Nouvelle fiche : bouton « Explore all (N) » qui ouvre la fenêtre de tous les coloris. */
+  get exploreAllButton() {
+    return this.main.getByRole('button', { name: /^(Explore all|Découvrir tout)\s*\(\d+\)$/i }).filter({ visible: true }).first();
+  }
+
+  /** Nouvelle fiche : fenêtre « Select a color » ouverte par « Explore all ». */
+  get colorModal() {
+    return this.page.getByRole('dialog', { name: /Color selector|coloris|couleur/i }).filter({ visible: true });
   }
 
   /** Barre d'achat fixée en bas de l'écran sur mobile (titre, prix, bouton). Sur mobile, le bouton principal est le sien. */
@@ -117,9 +155,18 @@ export class ProductPage {
     return this.main.locator('[data-ref="custom-select"]').filter({ visible: true }).first();
   }
 
-  /** Une taille dans la liste du menu (ouverte ou non). Une taille épuisée porte disabled="true" et « Notify me ». */
+  /**
+   * Une taille dans la liste du menu (ouverte ou non). Une taille épuisée porte « Notify me » et est marquée
+   * indisponible : disabled="true" jusqu'au 14 octobre 2026, role="option" et aria-disabled="true" depuis le
+   * 15 octobre 2026 (menu devenu une vraie liste déroulante pour les lecteurs d'écran).
+   */
   sizeOption(size: string) {
     return this.sizeSelector.locator('span.option').filter({ hasText: new RegExp(`^\\s*${size}\\s*$`) }).locator('xpath=..');
+  }
+
+  /** La taille est-elle marquée indisponible dans le menu (ancien ou nouveau balisage) ? */
+  async sizeOptionDisabled(size: string): Promise<boolean> {
+    return this.sizeOption(size).evaluate(o => o.getAttribute('disabled') === 'true' || o.getAttribute('aria-disabled') === 'true');
   }
 
   /** Valeur du select caché : identifiant de la variante choisie, « 0 » tant qu'aucune taille n'est choisie. */
@@ -139,23 +186,66 @@ export class ProductPage {
   }
 
   /**
+   * Nouvelle fiche : fenêtre « Choose your size », ouverte par le bouton principal (data-state="modal"). Une case
+   * radio par taille (« 50 », « 52 Out of stock », « M Pre-order »), un bouton d'ajout qui change avec la taille
+   * choisie, et le guide des tailles en dessous.
+   */
+  get sizeModal() {
+    return this.page.locator('component-modal.active').filter({ has: this.page.locator('.product-size-selector') });
+  }
+
+  /** Case radio d'une taille dans la fenêtre (son nom commence par la taille). */
+  sizeRadio(size: string) {
+    return this.sizeModal.getByRole('radio', { name: new RegExp(`^${size}(\\s|$)`) });
+  }
+
+  /** Bouton d'ajout de la fenêtre des tailles (Add to cart, Notify me, Preorder now). */
+  get sizeModalButton() {
+    return this.sizeModal.locator('.cta-primary-add-to-cart').filter({ visible: true }).first();
+  }
+
+  /** Ouvre la fenêtre des tailles par le bouton principal « Choose your size ». */
+  async openSizeModal() {
+    await this.mainButton.evaluate(e => e.scrollIntoView({ block: 'center', behavior: 'instant' }));
+    await this.mainButton.click();
+    await expect(this.sizeModal, 'La fenêtre « Choose your size » doit s\'ouvrir').toBeVisible();
+  }
+
+  /** Choisit une taille dans la fenêtre, en touchant son libellé (la case radio est cachée sous le libellé). */
+  async chooseSizeInModal(size: string) {
+    await this.sizeModal.locator('label').filter({ hasText: new RegExp(`^\\s*${size}(\\s|$)`) }).first().click();
+    await expect(this.sizeRadio(size), `La taille ${size} doit être cochée`).toBeChecked();
+  }
+
+  /** Nouvelle fiche : onglets Description, Details, Composition, Shipping & Return (rôle tab), Description ouvert. */
+  get tabs() {
+    return this.main.getByRole('tab').filter({ visible: true });
+  }
+
+  /** Nouvelle fiche : contenu de l'onglet sélectionné (un seul tabpanel affiché à la fois). */
+  get tabPanels() {
+    return this.main.getByRole('tabpanel').filter({ visible: true });
+  }
+
+  /**
    * Onglets d'information de l'ancienne fiche (Description, Size & fit, Materials, Shipping and returns) : rangée
-   * d'onglets sur ordinateur, accordéon sur mobile. Éléments `li[role=button]` avec aria-expanded ; seuls ceux affichés.
+   * d'onglets sur ordinateur, accordéon sur mobile. Avec aria-expanded ; seuls ceux affichés. Jusqu'au 14 octobre 2026,
+   * `li[role=button]` ; depuis le 15 octobre 2026 (préprod), un vrai bouton dans chaque `li`.
    */
   get infoTabs() {
-    return this.main.locator('ul.product-detail-list > li[role="button"]').filter({ visible: true });
+    return this.main.locator(ONGLETS_ANCIENNE_FICHE).filter({ visible: true });
   }
 
   /** Un onglet par sa clé (data-item : description, details pour « Size & fit », materials, shipping). */
   infoTab(cle: string) {
-    return this.main.locator(`ul.product-detail-list > li[role="button"][data-item="${cle}"]`).filter({ visible: true }).first();
+    return this.main.locator(ONGLETS_ANCIENNE_FICHE.split(', ').map(s => `${s}[data-item="${cle}"]`).join(', ')).filter({ visible: true }).first();
   }
 
   /** Clé du contenu de chaque onglet affiché (data-item : description, details pour « Size & fit »…), dans l'ordre. */
   async infoTabKeys(): Promise<{ titre: string; cle: string }[]> {
-    return this.infoTabs.evaluateAll(lis => lis.map(li => ({
-      titre: li.querySelector('.product-detail-list__toggle-title')?.textContent?.trim() ?? '',
-      cle: li.getAttribute('data-item') ?? '',
+    return this.infoTabs.evaluateAll(onglets => onglets.map(o => ({
+      titre: (o.querySelector('.product-detail-list__toggle-title') ?? o).textContent?.replace(/\s+/g, ' ').trim() ?? '',
+      cle: o.getAttribute('data-item') ?? '',
     })));
   }
 

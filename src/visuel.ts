@@ -1,6 +1,7 @@
 import type { Locator, Page, TestInfo } from '@playwright/test';
 import { test, expect } from './fixtures';
 import { CartPage } from './pages/cart';
+import { ProductPage } from './pages/product';
 
 /**
  * Prépare une page pour une capture visuelle stable :
@@ -86,7 +87,8 @@ export const PAGES_VISUELLES: PageVisuelle[] = [
     nom: 'Fiche produit Numéro Un',
     fichier: 'fiche-produit',
     typePage: 'pdp',
-    ouvrir: async page => { await page.goto(`products/${PRODUIT}`, { waitUntil: 'load' }); },
+    // Vérifie aussi que le Roll Out a servi la fiche de la référence (test.use({ fiche }) des tests visuels).
+    ouvrir: async page => { await new ProductPage(page).goto(PRODUIT, { waitUntil: 'load' }); },
   },
   {
     nom: 'Panier avec un produit',

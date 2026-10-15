@@ -29,7 +29,8 @@ function casser(selecteur: string, style: Partial<CSSStyleDeclaration>) {
 // Pas de vidéo : l'attendu, l'obtenu et la différence suffisent, et l'enregistrement surcharge la machine.
 // Densité 1 pixel par point : même mise en page que sur le vrai appareil, mais Safari mobile émulé
 // réduit les photos différemment d'un passage à l'autre en densité 3 (écarts sur toute la collection iPhone).
-test.use({ video: 'off', deviceScaleFactor: 1 });
+// Fiche produit : la nouvelle, celle des références (voir tests/visuel.spec.ts).
+test.use({ video: 'off', deviceScaleFactor: 1, fiche: 'nouvelle' });
 
 const REGRESSIONS = [
   { page: 'accueil', libelle: 'Header décalé de 10 px', casser: casser('header.header', { transform: 'translateY(10px)' }) },

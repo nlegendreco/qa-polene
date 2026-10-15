@@ -8,7 +8,9 @@ import { PAGES_VISUELLES, verifierPage } from '../src/visuel';
 // Pas de vidéo : l'attendu, l'obtenu et la différence suffisent, et l'enregistrement surcharge la machine.
 // Densité 1 pixel par point : même mise en page que sur le vrai appareil, mais Safari mobile émulé
 // réduit les photos différemment d'un passage à l'autre en densité 3 (écarts sur toute la collection iPhone).
-test.use({ video: 'off', deviceScaleFactor: 1 });
+// Fiche produit : la nouvelle, celle des références (2 octobre 2026). L'ancienne, servie à la moitié des clients par
+// le Roll Out depuis le 15 octobre 2026, n'a pas encore de référence (à prendre avec l'accord de la QA).
+test.use({ video: 'off', deviceScaleFactor: 1, fiche: 'nouvelle' });
 
 for (const pageVisuelle of PAGES_VISUELLES) {
   test(`Visuel · ${pageVisuelle.nom} @visuel @${pageVisuelle.typePage}`, async ({ page, qaEnv }, testInfo) => {

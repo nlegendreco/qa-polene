@@ -1,4 +1,4 @@
-import { test, expect, etape } from '../src/fixtures';
+import { test, expect, etape, ficheDeLAppareil } from '../src/fixtures';
 import { Header } from '../src/pages/header';
 import { CartPage } from '../src/pages/cart';
 import { CheckoutPage } from '../src/pages/checkout';
@@ -12,7 +12,10 @@ import { appelShopify } from '../src/shopify';
  * Aucune commande : on s'arrête au plus à l'arrivée sur le checkout, sans rien saisir. Le panier est rempli par
  * l'adresse /cart/add?id=…, pas par l'API que Shopify limite vite (429), sauf une précommande : seul le bouton de
  * la fiche pose ses propriétés (_is_preorder, _preorder_date).
+ *
+ * Fiche de la précommande : une par appareil (FICHE_PAR_APPAREIL, src/fixtures.ts), les deux à chaque lancement.
  */
+test.use({ fiche: ficheDeLAppareil });
 
 const MENTION_PRECOMMANDE = /Pre-?order|Précommand/i;
 
@@ -152,7 +155,7 @@ test(`Panier · mixte, en stock et précommande (${produitFixe('QA01').id} + ${p
   });
 
   await etape(page, testInfo, `2. Précommander ${precommande.id} depuis sa fiche`, async () => {
-    await page.goto(`products/${precommande.handle}`, { waitUntil: 'domcontentloaded' });
+    await fiche.goto(precommande.handle);
     await expect.poll(() => fiche.mainButton.innerText(), { message: 'Le bouton principal doit proposer de précommander' }).toMatch(MENTION_PRECOMMANDE);
     await centrer(fiche.mainButton);
     await fiche.mainButton.click();

@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 import type { Page } from '@playwright/test';
-import { test, expect, etape } from '../src/fixtures';
+import { test, expect, etape, ficheDeLAppareil } from '../src/fixtures';
+import { ProductPage } from '../src/pages/product';
 import { Wishlist } from '../src/pages/wishlist';
 import { produitFixe } from '../src/produits-fixes';
 
@@ -16,8 +17,8 @@ import { produitFixe } from '../src/produits-fixes';
  *   la prod, connexion par email et mot de passe (PROD_COMPTE_EMAIL et PROD_COMPTE_PASSWORD dans .env). Le test vide les
  *   favoris du compte au début et à la fin.
  *
- * En prod, deux bugs annoncés par la QA le 15 octobre 2026 et déjà corrigés en préprod font échouer ces tests : nombres
- * et rubriques faux (constat 48), produits les uns sous les autres au lieu d'une grille (constat 51).
+ * Ces tests ont détecté en prod les deux bugs annoncés par la QA le 15 octobre 2026 : nombres et rubriques faux
+ * (constat 48), produits les uns sous les autres au lieu d'une grille (constat 51). Corrigés en prod le jour même.
  */
 
 /** Produits mis en favori. Préprod : QA01 et QA08 en stock, QA02 en rupture. Prod : l'état des stocks bouge. */
@@ -39,6 +40,9 @@ async function ouvrirFavoris(page: Page, chemin: string) {
   await chargement;
 }
 
+// Cœur de la fiche : une fiche du Roll Out par appareil (FICHE_PAR_APPAREIL, src/fixtures.ts).
+test.use({ fiche: ficheDeLAppareil });
+
 /** Rubriques comparées sans tenir compte de l'ordre des produits dans chacune. */
 const parRubrique = (rubriques: { cartes: { handle: string }[] }[]) => rubriques.map(r => r.cartes.map(c => c.handle).sort());
 
@@ -48,7 +52,7 @@ test('Favoris · visiteur : cœur de la fiche et de la carte, page des favoris @
   const attendus: string[] = [produits.fiche];
 
   await etape(page, testInfo, `1. Fiche ${produits.fiche} : le cœur ajoute le produit aux favoris, compteur à 1`, async () => {
-    await page.goto(`products/${produits.fiche}`, { waitUntil: 'domcontentloaded' });
+    await new ProductPage(page).goto(produits.fiche);
     await expect(favoris.productHeart, 'Le cœur doit être vide au départ').toHaveAttribute('aria-pressed', 'false');
     await favoris.toggle(favoris.productHeart, true);
     await expect.poll(() => favoris.headerCount(), { message: 'Le compteur des favoris de l\'en-tête doit passer à 1' }).toBe(1);
@@ -102,6 +106,8 @@ const PRODUITS_COMPTE: Record<string, string[]> = {
 
 test.describe('Favoris du client connecté', () => {
   test.use({ storageState: existsSync(SESSION) ? SESSION : undefined });
+  // Pas de choix de fiche : il remplacerait le cookie de la session client enregistrée. Les deux fiches sont acceptées.
+  test.use({ fiche: async ({}, use) => use(undefined) });
 
   test('Favoris · client connecté : ajout depuis les fiches, page des favoris du compte, retrait @tnr @account', async ({ page, qaEnv, isMobile }, testInfo) => {
     if (qaEnv.name === 'preprod') test.skip(!existsSync(SESSION), `Pas de session client : lancer « npm run connexion:compte » (${SESSION})`);
