@@ -166,6 +166,18 @@ Fiches jouées en plus de 2.2, sans commande. Le site fait foi ; un écart avec 
 | ACCOUNT-01 à 04, 07 à 11, 19 à 23 | `compte-client.spec.ts` | Chaque entrée du menu et l'entrée active, « Log out » présent (jamais cliqué), accueil (prénom, dernière commande, détail, assistance), profil en lecture seule (civilité, nom, téléphone, naissance, newsletter), suppression du compte jusqu'à la confirmation puis « Cancel » (jamais confirmée), adresse par défaut, assistance (formulaire, email, FAQ, chat, réseaux) ; constat 47 |
 | Header et accueil (grille Mandatory) | `en-tete.spec.ts` | Logo, panneau du menu au survol, menu mobile, tous les liens internes de l'en-tête et du pied de page, newsletter (saisies invalides), vidéo de l'accueil, défilement jusqu'au pied de page |
 
+Ajoutés le 15 octobre 2026 au soir :
+
+| Fiche | Où | Ce qui est vérifié |
+|---|---|---|
+| PLP-04 Tailles épuisées sur la carte | `cartes-collection.spec.ts` | QA10 sur C1 : tailles en stock « Add to cart », tailles épuisées « Out of stock » (`data-state="disabled"`), qui ouvrent « Être prévenu(e) » sans rien ajouter au panier ; fermeture sans envoi |
+| CART-02 Panier de 10 articles | `panier.spec.ts` | 10 produits de remplissage : 10 lignes, « 10 products », compteur de l'en-tête, sous-total = somme, photo et quantité de chaque ligne, chaque « + » atteignable malgré le récapitulatif fixe sur mobile, « Continue » toujours à l'écran sur mobile |
+| CART-03 Favoris depuis le panier | `panier.spec.ts` | Cœur de la ligne (ajout, retrait), « Add to wishlist » de « Remove item ? » qui devient « Already in your wishlist », produit toujours au panier, page des favoris ; constat 55 noté |
+| CHECKOUT-03, 04 Pays et clavier | `checkout.spec.ts` | France par défaut, code postal au clavier numérique, téléphones en `type="tel"`, Canada : « Province » obligatoire, retour à la France ; prod et préprod |
+| ACCOUNT-05, 06 Historique | `compte-client.spec.ts` | Colonnes numéro, date, statut, total ; chaque ligne remplie et menant à son détail |
+| ACCOUNT-13 Ajout d'adresse | `compte-client.spec.ts` | « Save » sans rien remplir : un message sous prénom, nom, adresse, code postal, ville ; aucun envoi (bloqué par sécurité, constat 21) |
+| ACCOUNT-18 Alertes vides | `compte-client.spec.ts` | « You have no back in stock alerts », lien vers les nouveautés |
+
 Pas joués : la suppression réelle du compte (ACCOUNT-10 s'arrête à la confirmation), envoi réel des formulaires (profil, newsletter, « Être prévenu(e) »), CART-08 (bannière : aucune aujourd'hui), code promo (décision QA du 14 octobre 2026).
 
 ### Les deux fiches produit (15 octobre 2026)
