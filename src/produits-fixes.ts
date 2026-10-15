@@ -112,6 +112,13 @@ export function contenuCollectionQa(collection: DonneesQa['collections'][number]
   return (collection.contenu.produits ?? []).map(id => tous.find(p => p.id === id)!.handle);
 }
 
+/** Collection QA de data/donnees-qa.json (C1, C5…) et handles des produits qu'elle doit contenir. */
+export function collectionQa(id: string): { id: string; titre: string; handle: string; cas: string; handles: string[] } {
+  const collection = DONNEES_QA.collections.find(c => c.id === id);
+  if (!collection) throw new Error(`Collection QA inconnue : ${id}. Voir data/donnees-qa.json`);
+  return { id, titre: collection.titre, handle: collection.handle, cas: collection.cas, handles: contenuCollectionQa(collection) };
+}
+
 /** Tous les handles QA (cas et remplissage). */
 export const HANDLES_QA = [...DONNEES_QA.produits, ...FILLERS].map(p => p.handle);
 

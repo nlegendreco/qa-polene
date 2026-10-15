@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test';
 import { test, expect, etape } from '../src/fixtures';
 import { parsePriceToCents } from '../src/price';
 import { appelShopify } from '../src/shopify';
+import { collectionQa } from '../src/produits-fixes';
 
 /**
  * Structure des collections (décision QA du 6 octobre 2026) : en prod, les mentions de stock des cartes
@@ -10,14 +11,24 @@ import { appelShopify } from '../src/shopify';
  * chaque carte a sa photo, son nom, son prix et son lien, la grille a le bon nombre de colonnes,
  * rien ne déborde de l'écran, et les « PLP breaks » (sections posées dans la grille) s'affichent.
  *
- * Prod uniquement pour l'instant : la préprod n'a pas les mêmes collections.
+ * Prod : vraies collections Sacs et Crossbody. Préprod (fiche TNR PLP-03, 14 octobre 2026) : collections QA de
+ * data/donnees-qa.json, dont on connaît le contenu exact : C1 (tous les produits QA), C5 (une sélection, titre seul),
+ * C7 (aucun produit achetable). Dans les deux cas, un clic sur une carte doit ouvrir la fiche du produit.
  */
 
-const COLLECTIONS = [
-  { nom: 'Sacs', handle: 'handbags', avecBreak: false },
-  // Grande photo demi-largeur en 3e position (Boky Cerise Noire, 6 octobre 2026).
-  { nom: 'Crossbody', handle: 'crossbody', avecBreak: true },
-];
+type CollectionTestee = { nom: string; handle: string; avecBreak: boolean; handles?: string[] };
+
+const COLLECTIONS: Record<string, CollectionTestee[]> = {
+  prod: [
+    { nom: 'Sacs', handle: 'handbags', avecBreak: false },
+    // Grande photo demi-largeur en 3e position (Boky Cerise Noire, 6 octobre 2026).
+    { nom: 'Crossbody', handle: 'crossbody', avecBreak: true },
+  ],
+  preprod: ['C1', 'C5', 'C7'].map(id => {
+    const c = collectionQa(id);
+    return { nom: `${c.id} ${c.titre}`, handle: c.handle, avecBreak: false, handles: c.handles };
+  }),
+};
 
 /** Cartes produit et PLP breaks de la grille, lus dans la page (textContent : WebKit renvoie un innerText vide hors écran). */
 function lireGrille(page: Page) {
@@ -83,9 +94,9 @@ async function chargerToutesLesImages(page: Page) {
 
 const liste = (elements: string[]) => elements.slice(0, 10).join(', ') + (elements.length > 10 ? `… (${elements.length} en tout)` : '');
 
-for (const collection of COLLECTIONS) {
+for (const [env, collections] of Object.entries(COLLECTIONS)) for (const collection of collections) {
   test(`Structure · Collection ${collection.nom} @tnr @plp`, async ({ page, qaEnv, isMobile }, testInfo) => {
-    test.skip(qaEnv.name !== 'prod', 'Prod uniquement pour l\'instant : la préprod n\'a pas les mêmes collections');
+    test.skip(qaEnv.name !== env, `Collection de la ${env === 'prod' ? 'prod' : 'préprod'}`);
     testInfo.annotations.push({ type: 'Environnement', description: `${qaEnv.label} (${qaEnv.baseURL})` });
     let grille!: Awaited<ReturnType<typeof lireGrille>>;
 
@@ -102,6 +113,14 @@ for (const collection of COLLECTIONS) {
       testInfo.annotations.push({ type: 'Produits', description: `${grille.cartes.length} cartes affichées${Number.isFinite(grille.total) ? ` sur ${grille.total} produits` : ''}` });
 
       expect(grille.cartes.length, 'La collection doit afficher des produits').toBeGreaterThan(0);
+      if (collection.handles) {
+        // Collection QA : on connaît son contenu exact (data/donnees-qa.json).
+        const affiches = grille.cartes.map(c => c.lien.match(/\/products\/([^/?#]+)/)?.[1] ?? `(lien illisible : ${c.lien})`);
+        const manquants = collection.handles.filter(h => !affiches.includes(h));
+        const enTrop = affiches.filter(h => !collection.handles!.includes(h));
+        expect.soft(manquants, `Produits absents de la collection : ${liste(manquants)}`).toEqual([]);
+        expect.soft(enTrop, `Produits en trop dans la collection : ${liste(enTrop)}`).toEqual([]);
+      }
       if (Number.isFinite(grille.total)) {
         expect.soft(grille.cartes.length, `La première page doit afficher ${Math.min(48, grille.total)} produits (48 au plus, ${grille.total} dans la collection)`)
           .toBe(Math.min(48, grille.total));
@@ -122,7 +141,9 @@ for (const collection of COLLECTIONS) {
       const colonnesAttendues = isMobile ? 2 : 4;
       const colonnes = new Set(premiereLigne.map(c => c.x)).size;
       // Un break en début de grille prend la place de cartes : on ne compte que si la ligne est complète.
-      if (premiereLigne.length >= colonnesAttendues || grille.breaks.every(b => b.position > colonnesAttendues)) {
+      // Une collection plus petite qu'une ligne (C7 : 3 produits) ne remplit pas toutes les colonnes.
+      if (grille.cartes.length >= colonnesAttendues
+        && (premiereLigne.length >= colonnesAttendues || grille.breaks.every(b => b.position > colonnesAttendues))) {
         expect.soft(colonnes, `La grille doit avoir ${colonnesAttendues} colonnes sur cet appareil`).toBe(colonnesAttendues);
       }
       const largeurs = new Set(grille.cartes.map(c => c.largeur));
@@ -147,6 +168,17 @@ for (const collection of COLLECTIONS) {
           await appelShopify(page, `Le lien du PLP break (${brk.lien})`, () => page.request.get(brk.lien.replace(/^\//, '')));
         }
       }
+    });
+
+    await etape(page, testInfo, '5. Cliquer sur la photo de la première carte : la fiche du produit s\'ouvre', async () => {
+      const carte = page.locator('.collection__product-grid > component-product-card').first();
+      const lien = carte.locator('a[href*="/products/"]').first();
+      const handle = ((await lien.getAttribute('href')) ?? '').match(/\/products\/([^/?#]+)/)?.[1];
+      expect(handle, 'La première carte doit avoir un lien vers une fiche produit').toBeTruthy();
+      await carte.evaluate(e => e.scrollIntoView({ block: 'center', behavior: 'instant' }));
+      await lien.click();
+      await expect(page, `Le clic doit ouvrir la fiche de ${handle}`).toHaveURL(new RegExp(`/products/${handle}`));
+      await expect(page.getByRole('main').getByRole('heading', { level: 1 }).first(), 'La fiche doit afficher le nom du produit').toBeVisible();
     });
   });
 }
