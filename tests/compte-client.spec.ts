@@ -91,9 +91,10 @@ const VUES = [
   { nom: 'Accueil du compte', chemin: 'account', titre: /^Welcome|^Bienvenue/i },
   { nom: 'Profil', chemin: 'account?view=profile', titre: /Your Profile|Votre profil/i },
   { nom: 'Favoris', chemin: 'account?view=wishlist', titre: /Your favorites|Vos favoris/i },
-  { nom: 'Alertes de retour en stock', chemin: 'account?view=back-in-stock', titre: /Your Alerts|Vos alertes/i },
+  // Fiche TNR ACCOUNT-18 : le compte de test n'a aucune alerte (l'envoi réel de « Être prévenu(e) » n'est pas testé).
+  { nom: 'Alertes de retour en stock', chemin: 'account?view=back-in-stock', titre: /Your Alerts|Vos alertes/i, vide: /You have no back in stock alerts|Vous n.avez (aucune|pas d.)alerte/i },
   { nom: 'Assistance', chemin: 'account?view=assistance', titre: /Need Assistance|Besoin d.aide/i },
-];
+] as { nom: string; chemin: string; titre: RegExp; vide?: RegExp }[];
 
 for (const vue of VUES) {
   test(`Espace client · ${vue.nom} @tnr @account`, async ({ page, qaEnv }, testInfo) => {
@@ -102,6 +103,11 @@ for (const vue of VUES) {
     await etape(page, testInfo, `1. Ouvrir ${vue.nom.toLowerCase()} (client connecté)`, async () => {
       await ouvrir(page, vue.chemin);
       await expect(titre(page, vue.titre)).toBeVisible();
+      if (vue.vide) {
+        await expect(page.locator('main').getByText(vue.vide), 'La page vide doit le dire au client').toBeVisible();
+        await expect(page.locator('main').getByRole('link', { name: /new in|nouveautés/i }), 'La page vide doit proposer les nouveautés')
+          .toHaveAttribute('href', /collections\/new-in/);
+      }
     });
     if (vue.chemin === 'account' || vue.chemin === 'account?view=profile') {
       await etape(page, testInfo, '2. Vérifier que le compte affiché est celui du client de test', async () => {
@@ -146,7 +152,28 @@ test('Espace client · Adresses : liste, ajout, modification @tnr @account', asy
     await verifierPage(page, testInfo, erreursJs);
   });
 
-  await etape(page, testInfo, '3. Ouvrir le formulaire de modification : l\'adresse est pré-remplie (sans l\'envoyer)', async () => {
+  await etape(page, testInfo, '3. « Save » sans rien remplir : un message sous chaque champ obligatoire, rien n\'est envoyé', async () => {
+    // Fiche TNR ACCOUNT-13. Une adresse enregistrée ne se supprime plus (constat 21) : tout envoi est bloqué par
+    // sécurité, et le test vérifie que le formulaire n'a même pas essayé.
+    const envois: string[] = [];
+    await page.route('**/account/addresses**', route => {
+      if (route.request().method() === 'GET') return route.continue();
+      envois.push(`${route.request().method()} ${route.request().url()}`);
+      return route.abort();
+    });
+    await main.getByRole('button', { name: /^(Save|Enregistrer)$/i }).click();
+    const messages = main.locator('.form-input__error-span').filter({ visible: true });
+    for (const [champ, message] of [['prénom', /first name|prénom/i], ['nom', /last name|nom/i], ['adresse', /address 1|adresse/i], ['code postal', /postal|ZIP|code postal/i], ['ville', /city|ville/i]] as [string, RegExp][]) {
+      await expect.soft(messages.filter({ hasText: /Please enter your|Veuillez (saisir|entrer)/i }).filter({ hasText: message }).first(), `Message attendu sous le champ ${champ}`).toBeVisible();
+    }
+    testInfo.annotations.push({ type: 'Messages affichés', description: (await messages.allInnerTexts()).map(m => m.trim()).join(' · ') });
+    await page.waitForTimeout(1_000);
+    expect(envois, 'Le formulaire vide ne doit rien envoyer').toEqual([]);
+    await expect(page, 'On doit rester sur le formulaire d\'ajout').toHaveURL(/view=add/);
+    await page.unroute('**/account/addresses**');
+  });
+
+  await etape(page, testInfo, '4. Ouvrir le formulaire de modification : l\'adresse est pré-remplie (sans l\'envoyer)', async () => {
     await ouvrir(page, lienModifier.replace(/^\/(fr-fr\/)?/, ''));
     await expect(titre(page, /Update address|Modifier l.adresse/i)).toBeVisible();
     for (const champ of champsAdresse) {
@@ -170,6 +197,18 @@ test('Espace client · Commandes et détail d\'une commande @tnr @account', asyn
     lienCommande = (await derniere.first().getAttribute('href'))!;
     expect(historique.length, 'L\'historique des commandes (chargé par l\'application Polène) doit lister au moins une commande').toBeGreaterThan(0);
     testInfo.annotations.push({ type: 'Commandes du compte', description: `${historique.length} : ${historique.slice(0, 5).join(' ; ')}` });
+    // Fiches TNR ACCOUNT-05 et 06 : colonnes de l'historique, et chaque ligne remplie (numéro, date, montant, détail).
+    const colonnes = (await main.locator('table th').allInnerTexts()).map(c => c.trim()).filter(Boolean);
+    testInfo.annotations.push({ type: 'Colonnes de l\'historique', description: colonnes.join(' · ') });
+    const attendues: [string, RegExp][] = [['numéro', /Order number|N° de commande|Numéro/i], ['date', /^Date$/i], ['statut', /status|statut/i], ['total', /^Total$/i]];
+    const absentes = attendues.filter(([, nom]) => !colonnes.some(c => nom.test(c))).map(([c]) => c);
+    expect(absentes, `L'historique doit avoir les colonnes numéro, date, statut et total. Manquantes : ${absentes.join(', ')}`).toEqual([]);
+    for (const ligne of historique) {
+      expect.soft(ligne, `Ligne de l'historique incomplète : « ${ligne} »`).toMatch(/^\S+\s.*\d{4}.*(?:[€$£]\s?\d|\d\s?[€$£])/);
+    }
+    // « See details » en dernière colonne sur ordinateur ; la mise en page diffère sur téléphone : on compte les liens.
+    expect(await main.locator('table tr:has(td) a[href*="/account/orders/"]').count(), 'Chaque commande de l\'historique doit mener à son détail')
+      .toBeGreaterThanOrEqual(historique.length);
     await verifierPage(page, testInfo, erreursJs);
   });
 
