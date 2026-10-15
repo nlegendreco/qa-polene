@@ -38,7 +38,16 @@ function conditions(qaEnv: { name: string }, testInfo: TestInfo) {
 
 /** Ouvre une page de l'espace client ; échoue clairement si la session a expiré. */
 async function ouvrir(page: Page, chemin: string) {
-  const reponse = await page.goto(chemin, { waitUntil: 'domcontentloaded' });
+  let reponse = await page.goto(chemin, { waitUntil: 'domcontentloaded' });
+  if (new URL(page.url()).pathname.endsWith('/password')) {
+    // La session du compte garde aussi l'accès à la boutique, qui expire avant elle (15 octobre 2026) : on ressaisit
+    // le mot de passe de la boutique, comme tests/auth.setup.ts, et la connexion du client est toujours là.
+    expect(process.env.PREPROD_PASSWORD, 'PREPROD_PASSWORD est vide : renseignez-le dans le fichier .env').toBeTruthy();
+    await page.locator('input[name="password"]').fill(process.env.PREPROD_PASSWORD!);
+    await page.locator('input[name="password"]').press('Enter');
+    await page.waitForURL(url => !url.pathname.endsWith('/password'));
+    reponse = await page.goto(chemin, { waitUntil: 'domcontentloaded' });
+  }
   expect(page.url(), 'Session du compte client expirée (renvoi vers la connexion) : relancer « npm run connexion:compte »')
     .not.toMatch(/account\/login|customer_authentication|shopify\.com\/authentication/);
   expect(reponse?.status(), `La page ${chemin} doit répondre (code 200)`).toBe(200);
