@@ -233,43 +233,44 @@ pourChaqueFiche(version => {
     });
   });
 
-  // La nouvelle fiche n'a pas de barre d'achat fixe sur mobile, en prod comme en préprod (15 octobre 2026) : sa barre
-  // `product-buy-bar` reste masquée, même après défilement. Le bouton reste dans la fiche, sous le prix.
-  if (version === 'ancienne') {
-    test(`Fiche produit · barre d'achat fixe en bas de l'écran sur mobile (${produitFixe('QA01').id}) @tnr @pdp`, async ({ page, qaEnv, isMobile }, testInfo) => {
-      test.skip(qaEnv.name !== 'preprod', 'Produits QA : préprod uniquement');
-      test.skip(!isMobile, 'Barre d\'achat fixe : mobile seulement');
-      const enStock = produitFixe('QA01');
-      const header = new Header(page, isMobile);
-      const fiche = new ProductPage(page);
-      const barre = fiche.stickyBuyBar;
-      const hauteurEcran = page.viewportSize()!.height;
-      testInfo.annotations.push({ type: 'Produit testé', description: `${enStock.id} (${enStock.handle})` });
-      const verifierEnBas = async (moment: string) => {
-        await expect(barre, `La barre d'achat doit être affichée (${moment})`).toBeVisible();
-        const zone = (await barre.boundingBox())!;
-        expect(Math.abs(zone.y + zone.height - hauteurEcran), `La barre d'achat doit être collée au bas de l'écran (${moment})`).toBeLessThanOrEqual(2);
-      };
+  // Les deux fiches ont une barre d'achat fixée en bas de l'écran sur mobile, dès l'ouverture : celle de l'ancienne
+  // rappelle le nom et le prix, celle de la nouvelle n'a que le bouton (prod et préprod, 15 octobre 2026).
+  test(`Fiche produit · barre d'achat fixe en bas de l'écran sur mobile (${produitFixe('QA01').id}) @tnr @pdp`, async ({ page, qaEnv, isMobile }, testInfo) => {
+    test.skip(qaEnv.name !== 'preprod', 'Produits QA : préprod uniquement');
+    test.skip(!isMobile, 'Barre d\'achat fixe : mobile seulement');
+    const enStock = produitFixe('QA01');
+    const header = new Header(page, isMobile);
+    const fiche = new ProductPage(page);
+    const barre = fiche.stickyBuyBar;
+    const hauteurEcran = page.viewportSize()!.height;
+    testInfo.annotations.push({ type: 'Produit testé', description: `${enStock.id} (${enStock.handle})` });
+    const verifierEnBas = async (moment: string) => {
+      await expect(barre, `La barre d'achat doit être affichée (${moment})`).toBeVisible();
+      const zone = (await barre.boundingBox())!;
+      expect(Math.abs(zone.y + zone.height - hauteurEcran), `La barre d'achat doit être collée au bas de l'écran (${moment})`).toBeLessThanOrEqual(2);
+    };
+    const contenu = version === 'ancienne' ? 'avec le nom, le prix et « Add to cart »' : 'avec « Add to cart »';
 
-      await etape(page, testInfo, `1. Ouvrir la fiche ${enStock.id} : barre d'achat en bas de l'écran, avec le nom, le prix et « Add to cart »`, async () => {
-        const donnees = await fiche.fetchProductData(enStock.handle);
-        await fiche.goto(enStock.handle);
-        await verifierEnBas('à l\'ouverture');
+    await etape(page, testInfo, `1. Ouvrir la fiche ${enStock.id} : barre d'achat en bas de l'écran, ${contenu}`, async () => {
+      const donnees = await fiche.fetchProductData(enStock.handle);
+      await fiche.goto(enStock.handle);
+      await verifierEnBas('à l\'ouverture');
+      if (version === 'ancienne') {
         await expect(barre, 'La barre doit rappeler le nom du produit').toContainText(/QA Numéro Un/i);
         await fiche.expectPrice(parsePriceToCents(await barre.innerText()), donnees, 'La barre doit afficher le prix du produit');
-        await expect(barre.locator('.cta-primary-add-to-cart'), 'La barre doit proposer l\'ajout au panier').toContainText(LIBELLE_AJOUT);
-      });
-
-      await etape(page, testInfo, '2. Faire défiler la page : la barre reste en bas de l\'écran', async () => {
-        await page.evaluate(() => window.scrollTo({ top: 800, behavior: 'instant' }));
-        await verifierEnBas('après défilement');
-      });
-
-      await etape(page, testInfo, '3. Toucher « Add to cart » dans la barre : notification, compteur à 1', async () => {
-        await barre.locator('.cta-primary-add-to-cart').click();
-        await expect(fiche.cartNotification, 'La notification « ajouté au panier » doit apparaître').toBeVisible();
-        await expect.poll(() => header.cartCount(), { message: 'Le compteur du panier doit passer à 1' }).toBe(1);
-      });
+      }
+      await expect(barre.locator('.cta-primary-add-to-cart'), 'La barre doit proposer l\'ajout au panier').toContainText(LIBELLE_AJOUT);
     });
-  }
+
+    await etape(page, testInfo, '2. Faire défiler la page : la barre reste en bas de l\'écran', async () => {
+      await page.evaluate(() => window.scrollTo({ top: 800, behavior: 'instant' }));
+      await verifierEnBas('après défilement');
+    });
+
+    await etape(page, testInfo, '3. Toucher « Add to cart » dans la barre : notification, compteur à 1', async () => {
+      await barre.locator('.cta-primary-add-to-cart').click();
+      await expect(fiche.cartNotification, 'La notification « ajouté au panier » doit apparaître').toBeVisible();
+      await expect.poll(() => header.cartCount(), { message: 'Le compteur du panier doit passer à 1' }).toBe(1);
+    });
+  });
 });

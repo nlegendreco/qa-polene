@@ -107,9 +107,13 @@ export class ProductPage {
     return this.page.getByRole('dialog', { name: /Color selector|coloris|couleur/i }).filter({ visible: true });
   }
 
-  /** Barre d'achat fixée en bas de l'écran sur mobile (titre, prix, bouton). Sur mobile, le bouton principal est le sien. */
+  /**
+   * Barre d'achat fixée en bas de l'écran sur mobile, dès l'ouverture de la fiche. Sur mobile, le bouton principal est le sien.
+   * Ancienne fiche : `.sticky-buy-bar` (titre, prix, bouton), cachée une fois le pied de page atteint.
+   * Nouvelle fiche : `.product-add-to-cart` (bouton seul ; la page en contient une seconde, vide et cachée).
+   */
   get stickyBuyBar() {
-    return this.page.locator('.sticky-buy-bar');
+    return this.page.locator('.sticky-buy-bar, .product-add-to-cart').filter({ visible: true }).first();
   }
 
   /** Prix affiché sous le nom du produit (pas celui de la barre d'achat qui apparaît au défilement, cachée sur mobile). */
