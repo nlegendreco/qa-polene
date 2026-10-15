@@ -6,8 +6,9 @@ import { formatCents } from '../src/price';
 
 /**
  * Checkout, ce qui se lit sans rien saisir (roadmap phase 2.3, fiches TNR CHECKOUT-01, 02 et 08) : résumé de la
- * commande (replié sur mobile), paiement express, blocs d'information de la colonne du résumé. Arrivée au checkout
- * seulement, en prod comme en préprod : aucun champ rempli, aucun bouton de paiement touché.
+ * commande (replié sur mobile), paiement express, blocs d'information de la colonne du résumé ; et le pays de
+ * livraison (CHECKOUT-03 et 04 : champs qui suivent le pays, clavier numérique). Arrivée au checkout seulement, en prod
+ * comme en préprod : seul le pays est changé, aucun autre champ rempli, aucun bouton de paiement touché.
  */
 
 const PRODUITS: Record<string, string> = {
@@ -80,5 +81,47 @@ test('Checkout · résumé de la commande, paiement express et blocs d\'informat
     }
     await expect(page.getByRole('link', { name: /Contactez-nous par e-?mail|Contact us by e-?mail/i }).filter({ visible: true }).first(),
       '« Besoin d\'aide ? » doit proposer un email de contact').toHaveAttribute('href', /^mailto:\S+@polene-paris\.com$/);
+  });
+});
+
+test('Checkout · pays de livraison : le formulaire d\'adresse suit le pays, clavier numérique en France @tnr @checkout', async ({ page, qaEnv }, testInfo) => {
+  const handle = PRODUITS[qaEnv.name];
+  const panier = new CartPage(page);
+  const checkout = new CheckoutPage(page);
+  const pays = page.getByRole('combobox', { name: /Pays|Country/i });
+  // Champ région : « Province » pour le Canada, « État » pour les États-Unis. Les champs cachés d'auto-remplissage du
+  // checkout portent le même nom mais sont masqués aux lecteurs d'écran : le rôle ne trouve que le vrai champ.
+  const region = page.getByRole('combobox', { name: /^(Province|État|Région|State|Region)/i });
+  testInfo.annotations.push({ type: 'Produit testé', description: handle });
+
+  await etape(page, testInfo, `1. Mettre ${handle} au panier et aller au checkout, sans rien saisir`, async () => {
+    await panier.addByUrl(handle);
+    await panier.goToCheckout();
+    await checkout.expectLoaded();
+  });
+
+  await etape(page, testInfo, '2. France par défaut : pas de région, code postal et téléphones au clavier numérique', async () => {
+    await expect(pays, 'Le pays de livraison doit être la France par défaut').toHaveValue('FR');
+    await expect(region, 'Pas de champ région pour une adresse en France').toHaveCount(0);
+    await expect(checkout.postalCodeField, 'Le code postal français doit ouvrir le clavier numérique sur téléphone').toHaveAttribute('inputmode', 'numeric');
+    const telephones = page.getByRole('textbox', { name: /Téléphone|Phone/i }).filter({ visible: true });
+    expect(await telephones.count(), 'Le checkout doit demander un téléphone').toBeGreaterThan(0);
+    for (const tel of await telephones.all()) {
+      await expect(tel, `« ${await tel.getAttribute('name')} » doit ouvrir le clavier du téléphone (type tel)`).toHaveAttribute('type', 'tel');
+    }
+    testInfo.annotations.push({ type: 'Nombre de pays proposés', description: `${new Set(await pays.locator('option').evaluateAll(os => os.map(o => (o as HTMLOptionElement).value))).size}` });
+  });
+
+  await etape(page, testInfo, '3. Choisir le Canada : le champ « Province » apparaît, le code postal accepte les lettres', async () => {
+    await pays.selectOption('CA');
+    await expect(region, 'Le Canada doit demander une province').toBeVisible();
+    await expect(region, 'Le champ « Province » doit être obligatoire').toHaveAttribute('required');
+    await expect(checkout.postalCodeField, 'Le code postal canadien contient des lettres : plus de clavier numérique').not.toHaveAttribute('inputmode', 'numeric');
+  });
+
+  await etape(page, testInfo, '4. Revenir à la France : la région disparaît, le clavier numérique revient', async () => {
+    await pays.selectOption('FR');
+    await expect(region, 'Plus de champ région une fois revenu en France').toHaveCount(0);
+    await expect(checkout.postalCodeField, 'Le code postal français doit de nouveau ouvrir le clavier numérique').toHaveAttribute('inputmode', 'numeric');
   });
 });
