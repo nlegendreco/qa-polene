@@ -236,8 +236,8 @@ test('Espace client · accueil et profil : nom, dernière commande, assistance, 
     await expect(newsletter, 'Case d\'inscription à la newsletter').toBeAttached();
     testInfo.annotations.push({ type: 'Newsletter du compte', description: (await newsletter.isChecked()) ? 'inscrit' : 'non inscrit' });
     await expect(main.getByRole('button', { name: /Save your information|Enregistrer/i }), 'Bouton d\'enregistrement (pas cliqué)').toBeVisible();
-    // ACCOUNT-10 (suppression du compte) : bouton lu, jamais cliqué (il supprimerait le compte de test).
-    await expect(main.getByRole('button', { name: /Delete account|Supprimer (mon|le) compte/i }), 'Bouton de suppression du compte (pas cliqué)').toBeVisible();
+    // ACCOUNT-10 (suppression du compte) : voir le test « suppression du compte », qui s'arrête à la confirmation.
+    await expect(main.getByRole('button', { name: /Delete account|Supprimer (mon|le) compte/i }), 'Bouton de suppression du compte').toBeVisible();
   });
 
   await etape(page, testInfo, '2. Accueil : « Welcome » avec le prénom, lien vers le profil', async () => {
@@ -263,6 +263,53 @@ test('Espace client · accueil et profil : nom, dernière commande, assistance, 
     await expect(titre(page, /Need Assistance|Besoin d.aide/i)).toBeVisible();
     await expect(main.getByRole('link', { name: /by email|par e-?mail/i }).first(), 'Contact par email').toHaveAttribute('href', /^mailto:\S+@polene-paris\.com$/);
     await expect(main.getByRole('button', { name: /Chat with us|Discuter/i }).first(), 'Bouton du chat').toBeVisible();
+  });
+});
+
+/**
+ * ACCOUNT-10, suppression du compte : jouée jusqu'à la fenêtre de confirmation, puis « Cancel ». Jamais « Yes, delete
+ * account » : le compte de test serait perdu (décision QA du 15 octobre 2026, un compte supprimé à chaque passage ne
+ * tiendrait pas). Garde-fous : le bouton n'est cliqué que si la fenêtre de confirmation existe dans la page, et toute
+ * requête d'envoi pendant le test est bloquée.
+ */
+test('Espace client · suppression du compte : confirmation demandée, « Cancel » ne supprime rien @tnr @account', async ({ page, qaEnv }, testInfo) => {
+  conditions(qaEnv, testInfo);
+  const main = page.locator('main');
+  const envois: string[] = [];
+  // Pendant le clic et la fenêtre : toute requête autre qu'une lecture (GET) est bloquée et notée.
+  const bloquerEnvois = (route: import('@playwright/test').Route) => route.request().method() !== 'GET'
+    ? (envois.push(route.request().url()), route.abort())
+    : route.fallback();
+  const fenetre = page.locator('component-modal[data-ref="account-delete-modal"]');
+
+  await etape(page, testInfo, '1. Profil : bouton « Delete account », fenêtre de confirmation prête dans la page', async () => {
+    await ouvrir(page, 'account?view=profile');
+    await expect(main.getByRole('button', { name: /Delete account|Supprimer (mon|le) compte/i })).toBeVisible();
+    // Garde-fou : sans fenêtre de confirmation, on ne clique pas (le clic supprimerait peut-être le compte tout de suite).
+    await expect(fenetre, 'La fenêtre de confirmation doit exister avant qu\'on touche au bouton').toBeAttached();
+    // Fenêtre encore fermée : ses boutons sont masqués, cherchés par leur texte.
+    await expect(fenetre.locator('button', { hasText: /^\s*(Cancel|Annuler)\s*$/i }), 'La fenêtre doit proposer « Cancel »').toBeAttached();
+  });
+
+  await etape(page, testInfo, '2. Cliquer « Delete account » : la fenêtre demande confirmation', async () => {
+    await page.route('**/*', bloquerEnvois);
+    await main.getByRole('button', { name: /Delete account|Supprimer (mon|le) compte/i }).click();
+    const dialogue = page.locator('component-modal.active[data-ref="account-delete-modal"]');
+    await expect(dialogue, 'La fenêtre de confirmation doit s\'ouvrir').toBeVisible();
+    await expect(dialogue, 'Elle doit demander confirmation').toContainText(/Are you certain|Êtes-vous sûr/i);
+    await expect(dialogue.getByRole('button', { name: /Confirm deletion|Yes, delete account|Oui, supprimer/i }), 'Bouton de confirmation (pas cliqué)').toBeVisible();
+  });
+
+  await etape(page, testInfo, '3. « Cancel » : la fenêtre se ferme, le compte est toujours là', async () => {
+    await page.locator('component-modal.active[data-ref="account-delete-modal"]').getByRole('button', { name: /^(Cancel( deletion)?|Annuler)$/i }).click();
+    await expect(page.locator('component-modal.active[data-ref="account-delete-modal"]'), 'La fenêtre doit se fermer').toHaveCount(0);
+    await page.unroute('**/*', bloquerEnvois);
+    // Seuls comptent les envois vers la boutique, hors mesures d'audience de Shopify (monorail…) ; les outils tiers
+    // (Forter, mesures) envoient aussi en POST.
+    const boutique = new URL(page.url()).hostname;
+    expect(envois.filter(u => new URL(u).hostname === boutique && !/monorail|\/api\/collect|web-pixels|\/fec\//.test(u)), 'Aucune demande ne doit partir vers la boutique').toEqual([]);
+    await ouvrir(page, 'account?view=profile');
+    await expect(main, 'Le compte de test doit toujours exister').toContainText(emailCompte(), { ignoreCase: true });
   });
 });
 
