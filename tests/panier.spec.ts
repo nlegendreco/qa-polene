@@ -6,6 +6,8 @@ import { ProductPage } from '../src/pages/product';
 import { produitFixe } from '../src/produits-fixes';
 import { formatCents, parsePriceToCents } from '../src/price';
 import { appelShopify } from '../src/shopify';
+import { Wishlist } from '../src/pages/wishlist';
+import { verifierLargeur } from '../src/controles';
 
 /**
  * Panier (roadmap phase 2.2, fiches TNR CART-01 à CART-04, toutes « Bloquant »), sur les produits QA de la préprod.
@@ -307,5 +309,157 @@ test('Panier · vide : connexion, réassurance, assistance et suggestions @tnr @
     await expect(panier.emptyHeading, 'Le panier ne doit plus être vide').toBeHidden();
     await expect(panier.lines, `« ${nom} » doit être dans le panier`).toHaveCount(1);
     await expect.poll(() => header.cartCount(), { message: 'Le compteur de l\'en-tête doit passer à 1' }).toBe(1);
+  });
+});
+
+test(`Panier · favoris depuis la ligne et depuis « Remove item ? », le produit reste au panier (${produitFixe('QA01').id}) @tnr @cart`, async ({ page, qaEnv, isMobile }, testInfo) => {
+  test.skip(qaEnv.name !== 'preprod', 'Produits QA : préprod uniquement');
+  const produit = produitFixe('QA01');
+  const header = new Header(page, isMobile);
+  const panier = new CartPage(page);
+  const favoris = new Wishlist(page);
+  testInfo.annotations.push({ type: 'Produit testé', description: `${produit.id} (${produit.handle})` });
+  // Favoris d'un visiteur : gardés dans le navigateur (localStorage wishlist_products), sous l'identifiant du produit.
+  const enregistres = () => page.evaluate(() => JSON.parse(localStorage.getItem('wishlist_products') ?? '[]') as string[]);
+  const coeurLigne = panier.line(produit.handle).locator('[data-ref="wishlist-button"]').filter({ visible: true }).first();
+  const boutonFenetre = panier.removeDialog.locator('[data-ref="wishlist-button"]');
+  const DEJA = /Already in your wishlist|Déjà dans (vos|tes) favoris/i;
+  // Le bouton contient ses deux libellés (« Add to Wishlist », « Already in your wishlist ») : on lit celui affiché.
+  const libelleFenetre = async () => (await boutonFenetre.innerText()).replace(/\s+/g, ' ').trim();
+  let idProduit = '';
+
+  const ouvrirFenetre = async () => {
+    await centrer(panier.removeButton(produit.handle));
+    await panier.removeButton(produit.handle).click();
+    await expect(panier.removeDialog, 'La croix doit ouvrir la fenêtre « Remove item ? »').toBeVisible();
+  };
+  const fermerFenetre = async () => {
+    await panier.removeDialog.getByRole('button', { name: /Close modal|Fermer/i }).click();
+    await expect(panier.removeDialog, 'La fenêtre doit se fermer').toBeHidden();
+    await expect(panier.lines, 'Le produit doit toujours être au panier').toHaveCount(1);
+  };
+
+  await etape(page, testInfo, `1. Mettre ${produit.id} au panier, aucun favori`, async () => {
+    await panier.addByUrl(produit.handle);
+    await expect(panier.lines, 'Le panier doit contenir une seule ligne').toHaveCount(1);
+    expect(await favoris.headerCount(), 'Aucun favori au départ (navigateur neuf)').toBe(0);
+    idProduit = (await coeurLigne.getAttribute('data-product-id'))!;
+  });
+
+  await etape(page, testInfo, '2. Cœur de la ligne : produit en favori, message, compteur des favoris à 1, toujours au panier', async () => {
+    await favoris.toggle(coeurLigne, true);
+    await expect.poll(() => favoris.headerCount(), { message: 'Le compteur des favoris de l\'en-tête doit passer à 1' }).toBe(1);
+    expect(await enregistres(), 'Le produit doit être enregistré dans les favoris du navigateur').toContain(idProduit);
+    await expect(panier.lines, 'Mettre en favori ne doit pas retirer le produit du panier').toHaveCount(1);
+  });
+
+  await etape(page, testInfo, '3. Croix de la ligne : la fenêtre « Remove item ? » sait-elle que le produit est en favori ? Fermer sans retirer', async () => {
+    await ouvrirFenetre();
+    // Constat 55 (15 octobre 2026) : sans rechargement, la fenêtre ignore le cœur de la ligne et propose encore
+    // « Add to wishlist » (un clic redit « ajouté », sans doublon). Noté sans échec ; rechargé, elle est juste (étape 4).
+    const libelle = await libelleFenetre();
+    if (!DEJA.test(libelle)) testInfo.annotations.push({ type: 'Constat 55', description: `Produit mis en favori par le cœur de la ligne, la fenêtre « Remove item ? » propose encore « ${libelle} » (correct une fois la page rechargée)` });
+    await fermerFenetre();
+  });
+
+  await etape(page, testInfo, '4. Recharger le panier : cœur de la ligne plein, la fenêtre dit « Already in your wishlist »', async () => {
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await panier.expectLoaded();
+    await expect(coeurLigne, 'Le cœur de la ligne doit rester plein après rechargement').toHaveAttribute('aria-pressed', 'true');
+    await ouvrirFenetre();
+    await expect.poll(libelleFenetre, { message: 'Le produit étant en favori, la fenêtre doit le dire' }).toMatch(DEJA);
+    await fermerFenetre();
+  });
+
+  await etape(page, testInfo, '5. Cœur de la ligne de nouveau : retiré des favoris, compteur à 0', async () => {
+    await favoris.toggle(coeurLigne, false);
+    await expect.poll(() => favoris.headerCount(), { message: 'Le compteur des favoris de l\'en-tête doit revenir à 0' }).toBe(0);
+    expect(await enregistres(), 'Le produit ne doit plus être dans les favoris du navigateur').not.toContain(idProduit);
+  });
+
+  await etape(page, testInfo, '6. Recharger, croix, « Add to wishlist » dans la fenêtre : en favori, le bouton devient « Already in your wishlist »', async () => {
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await panier.expectLoaded();
+    await ouvrirFenetre();
+    await expect.poll(libelleFenetre, { message: 'La fenêtre doit proposer « Add to wishlist »' }).toMatch(/^(Add to wishlist|Ajouter aux favoris)$/i);
+    await boutonFenetre.click();
+    await expect(favoris.snackbar.first(), 'Un message doit confirmer l\'ajout aux favoris').toContainText(/added to your favorites|ajouté à vos favoris/i);
+    await expect.poll(libelleFenetre, { message: 'Le bouton doit dire que le produit est maintenant en favori' }).toMatch(DEJA);
+    await expect.poll(() => favoris.headerCount(), { message: 'Le compteur des favoris de l\'en-tête doit passer à 1' }).toBe(1);
+    expect(await enregistres(), 'Le produit doit être enregistré dans les favoris du navigateur').toContain(idProduit);
+    await fermerFenetre();
+    await expect.poll(() => header.cartCount(), { message: 'Le compteur du panier doit rester à 1' }).toBe(1);
+    if (await coeurLigne.getAttribute('aria-pressed') !== 'true') {
+      testInfo.annotations.push({ type: 'Constat 55', description: 'Produit mis en favori depuis la fenêtre, le cœur de la ligne reste vide (correct une fois la page rechargée)' });
+    }
+  });
+
+  await etape(page, testInfo, '7. Page des favoris : le produit y est', async () => {
+    await page.goto('pages/wishlist', { waitUntil: 'domcontentloaded' });
+    // La liste est remplie après le chargement de la page, d'après les favoris gardés dans le navigateur.
+    await expect(page.getByRole('main').locator(`component-accordion a[href*="/products/${produit.handle}"]`).first(), `${produit.id} doit apparaître dans les favoris`).toBeAttached({ timeout: 20_000 });
+    const rubriques = await favoris.expectSections([produit.handle]);
+    testInfo.annotations.push({ type: 'Rubriques', description: rubriques.map(r => `${r.titre} : ${r.cartes.map(c => c.handle).join(', ') || 'vide'}`).join(' | ') });
+  });
+});
+
+/** Nombre de lignes d'un grand panier (fiche TNR CART-02 : « 10 articles et plus »). */
+const GRAND_PANIER = 10;
+
+test(`Panier · ${GRAND_PANIER} produits : lignes complètes, sous-total, chaque ligne atteignable @tnr @cart`, async ({ page, qaEnv, isMobile }, testInfo) => {
+  test.skip(qaEnv.name !== 'preprod', 'Produits QA : préprod uniquement');
+  const header = new Header(page, isMobile);
+  const panier = new CartPage(page);
+  let handles: string[] = [];
+
+  await etape(page, testInfo, `1. Mettre ${GRAND_PANIER} produits QA de remplissage au panier, en un seul appel`, async () => {
+    // Produits de remplissage de la collection C2 (en stock, tag qa-filler). Un seul appel à cart/add.js pour les
+    // ${GRAND_PANIER} produits : dix passages par /cart/add?id=… déclencheraient la limite de Shopify (429).
+    const collection = await (await appelShopify(page, 'La lecture de la collection C2', () => page.request.get('collections/qa-collection-infinite-scroll/products.json?limit=30'))).json() as
+      { products: { handle: string; tags: string[]; variants: { id: number; available: boolean }[] }[] };
+    // La collection contient aussi des produits QA à état particulier (précommande retardée…) : seulement le remplissage.
+    const choisis = collection.products.filter(p => p.tags.includes('qa-filler') && p.variants[0]?.available).slice(0, GRAND_PANIER);
+    expect(choisis.length, `La collection C2 doit avoir au moins ${GRAND_PANIER} produits en stock`).toBe(GRAND_PANIER);
+    handles = choisis.map(p => p.handle);
+    await appelShopify(page, `L'ajout de ${GRAND_PANIER} produits au panier`, () => page.request.post('cart/add.js', {
+      data: { items: choisis.map(p => ({ id: p.variants[0].id, quantity: 1 })) },
+    }));
+    testInfo.annotations.push({ type: 'Produits', description: handles.join(', ') });
+  });
+
+  await etape(page, testInfo, `2. Ouvrir le panier : ${GRAND_PANIER} lignes, « ${GRAND_PANIER} products », compteur de l'en-tête`, async () => {
+    await page.goto('cart', { waitUntil: 'domcontentloaded' });
+    await panier.expectLoaded();
+    await expect(panier.lines, `Le panier doit afficher ${GRAND_PANIER} lignes`).toHaveCount(GRAND_PANIER);
+    await expect(panier.itemCountLabel, `Le compteur du panier doit dire « ${GRAND_PANIER} products »`).toHaveText(new RegExp(`^\\s*${GRAND_PANIER}\\s+(products|produits|articles|items)\\s*$`, 'i'));
+    await expect.poll(() => header.cartCount(), { message: `Le compteur de l'en-tête doit dire ${GRAND_PANIER}` }).toBe(GRAND_PANIER);
+  });
+
+  await etape(page, testInfo, '3. Sous-total = somme des lignes', async () => {
+    const prix = await Promise.all(handles.map(async h => (await panier.linePriceCents(h))!));
+    const somme = prix.reduce((a, b) => a + b, 0);
+    expect(prix.every(p => p > 0), 'Chaque ligne doit afficher son prix').toBe(true);
+    expect(await panier.subtotalCents(), `Le sous-total doit être la somme des ${GRAND_PANIER} lignes (${formatCents(somme)})`).toBe(somme);
+  });
+
+  await etape(page, testInfo, '4. Faire défiler le panier : chaque ligne s\'affiche avec photo et quantité, son « + » peut être touché', async () => {
+    for (const handle of handles) {
+      const ligne = panier.line(handle);
+      await centrer(ligne);
+      await expect(ligne.getByRole('img').first(), `La photo de ${handle} doit être affichée`).toBeVisible();
+      await expect(panier.quantity(handle), `La quantité de ${handle} doit être 1`).toHaveValue('1');
+      // Sur mobile, le récapitulatif collé au bas de l'écran prend jusqu'à la moitié de l'écran (Android) : une ligne
+      // centrée peut passer dessous. Le clic d'essai (sans clic réel) fait défiler la page comme un client jusqu'à ce
+      // que le « + » ne soit plus recouvert, et échoue s'il l'est toujours.
+      const atteint = await panier.increaseButton(handle).click({ trial: true, timeout: 5_000 }).then(() => true, () => false);
+      expect.soft(atteint, `Le bouton « + » de ${handle} doit pouvoir être touché (pas recouvert par le récapitulatif ou l'en-tête)`).toBe(true);
+    }
+  });
+
+  await etape(page, testInfo, '5. En bas du panier : « Continue » visible, page pas plus large que l\'écran', async () => {
+    await centrer(panier.line(handles.at(-1)!));
+    await expect(panier.checkoutButton, '« Continue » doit rester accessible après le défilement').toBeVisible();
+    if (isMobile) await expect(panier.checkoutButton, 'Sur mobile, « Continue » doit rester à l\'écran (récapitulatif collé en bas)').toBeInViewport();
+    await verifierLargeur(page, testInfo);
   });
 });
