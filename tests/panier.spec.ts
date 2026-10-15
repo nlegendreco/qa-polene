@@ -206,3 +206,103 @@ test(`Panier · mixte, en stock et précommande (${produitFixe('QA01').id} + ${p
     await expect.poll(() => header.cartCount(), { message: 'Le compteur de l\'en-tête doit revenir à 1' }).toBe(1);
   });
 });
+
+test('Panier · vide : connexion, réassurance, assistance et suggestions @tnr @cart', async ({ page, qaEnv, isMobile }, testInfo) => {
+  const panier = new CartPage(page);
+  const header = new Header(page, isMobile);
+  const suggestions = panier.main.getByRole('listitem').filter({ has: page.getByRole('button', { name: /- (Add to cart|Ajouter au panier)$/i }) });
+
+  await etape(page, testInfo, '1. Ouvrir le panier sans rien ajouter : « Votre panier est vide », découvrir la sélection, se connecter', async () => {
+    await page.goto('cart', { waitUntil: 'domcontentloaded' });
+    await expect(panier.emptyHeading, 'Le panier doit annoncer qu\'il est vide').toBeVisible();
+    const decouvrir = panier.main.getByRole('link', { name: /Discover polène selection|Découvrir la sélection Polène/i });
+    await expect(decouvrir, 'Le panier vide doit proposer la sélection Polène').toHaveAttribute('href', /\/collections\/[a-z-]+$/);
+    // Fiche TNR CART-01 : un visiteur peut se connecter depuis le panier vide pour retrouver son panier et ses favoris.
+    const connexion = panier.main.getByRole('link', { name: /^(Login|Se connecter|Sign in)$/i });
+    await expect(connexion, 'Le panier vide doit proposer la connexion').toBeVisible();
+    const href = (await connexion.getAttribute('href')) ?? '';
+    testInfo.annotations.push({ type: 'Lien de connexion', description: href });
+    expect(href, 'Le lien doit mener à la connexion').toMatch(/account\/login|customer_authentication|authentication/);
+    if (qaEnv.name === 'preprod' && /account\/login/.test(href)) {
+      // Constat 44 : la préprod se connecte par code, mais ce lien mène encore à l'ancienne connexion par mot de passe.
+      testInfo.annotations.push({ type: 'Constat 44', description: `« Login » du panier vide mène à ${href} (ancienne connexion), l'icône Account de l'en-tête à la connexion par code` });
+    }
+  });
+
+  await etape(page, testInfo, '2. Réassurance : retours sous 30 jours, suivi, garantie 2 ans, logos des paiements', async () => {
+    for (const texte of [/30 days return|Retours sous 30 jours/i, /Track every steps?|Suivi de chaque étape/i, /2 years? warranty|Garantie 2 ans/i]) {
+      // Deux exemplaires (ordinateur et mobile), l'un masqué.
+      await expect(panier.main.getByText(texte).filter({ visible: true }).first(), `Réassurance « ${texte.source} »`).toBeVisible();
+    }
+    const paiements = panier.main.getByRole('heading', { name: /100 ?% (secure payments|sécurisé)/i }).filter({ visible: true }).first();
+    await expect(paiements, 'Le titre « Paiement 100 % sécurisé » doit s\'afficher').toBeVisible();
+    // Logos dessinés en SVG, nommés par leur titre (« Visa », « Mastercard »…).
+    const logos: string[] = [];
+    for (const logo of await panier.main.getByRole('img').filter({ visible: true }).all()) {
+      const nom = await logo.evaluate(e => e.getAttribute('aria-label') ?? e.getAttribute('alt') ?? e.querySelector('title')?.textContent ?? '');
+      if (/^(Visa|Mastercard|Maestro|American Express|Apple Pay|Google Pay|PayPal|Shop Pay|Cartes Bancaires|Bancontact|Bizum|Diners Club|Discover|MB WAY|Satispay|Klarna)$/i.test(nom) && !logos.includes(nom)) logos.push(nom);
+    }
+    testInfo.annotations.push({ type: 'Logos de paiement', description: logos.join(', ') });
+    expect(logos, 'Les logos des cartes acceptées doivent s\'afficher (au moins Visa et Mastercard)').toEqual(expect.arrayContaining(['Visa', 'Mastercard']));
+  });
+
+  await etape(page, testInfo, '3. Accordéon « Assistance » : fermé au départ, s\'ouvre au clic, se ferme avec Entrée', async () => {
+    const bouton = panier.main.getByRole('button', { name: /^Assistance$/i }).filter({ visible: true }).first();
+    const contenu = panier.main.getByRole('region', { name: /^Assistance$/i });
+    await centrer(bouton);
+    await expect(bouton, 'L\'accordéon doit être fermé au départ').toHaveAttribute('aria-expanded', 'false');
+    await bouton.click();
+    await expect(bouton, 'Un clic doit ouvrir l\'accordéon').toHaveAttribute('aria-expanded', 'true');
+    await expect(contenu, 'Le texte du service client doit s\'afficher').toBeVisible();
+    const email = contenu.getByRole('link', { name: /by email|par e-?mail/i });
+    await expect(email, 'Le contact par email doit être proposé').toHaveAttribute('href', /^mailto:\S+@polene-paris\.com$/);
+    const formulaire = contenu.getByRole('link', { name: /Contact us form|^Contactez-nous$/i });
+    const href = (await formulaire.getAttribute('href')) ?? '';
+    // Constat 45 : en préprod, le lien du formulaire de contact est vide (il recharge le panier).
+    expect.soft(href, 'Le formulaire de contact doit mener au support Polène (constat 45 en préprod : lien vide)').toMatch(/^https:\/\/support\.polene-paris\.com\/hc\/[a-z-]+\/requests\/new$/);
+    await bouton.focus();
+    await page.keyboard.press('Enter');
+    await expect(bouton, 'Entrée doit refermer l\'accordéon').toHaveAttribute('aria-expanded', 'false');
+    await expect(contenu, 'Le texte doit se masquer').toBeHidden();
+  });
+
+  await etape(page, testInfo, '4. Suggestions (« Polène suggère ») : 10 produits, cartes complètes, flèches au clavier', async () => {
+    const titre = panier.main.getByRole('heading', { name: /^(Polène suggère|You may also like|Complétez votre panier)$/i });
+    await centrer(titre);
+    await expect(titre, 'Le bloc de suggestions doit s\'afficher').toBeVisible();
+    const noms = await panier.main.getByRole('listitem', { name: /\d+ (of|sur) \d+$/ }).evaluateAll(ls => ls.map(l => l.getAttribute('aria-label') ?? ''));
+    const total = Number(noms[0]?.match(/(\d+)$/)?.[1] ?? 0);
+    testInfo.annotations.push({ type: 'Suggestions', description: `${total} produits` });
+    expect(total, 'Le bloc doit suggérer plusieurs produits').toBeGreaterThanOrEqual(4);
+    const premiere = suggestions.first();
+    await expect(premiere.getByRole('heading', { level: 3 }), 'La carte doit afficher le nom du produit').toBeVisible();
+    expect(parsePriceToCents(await premiere.innerText()), 'La carte doit afficher un prix').not.toBeNull();
+    // Flèches de 1 × 1 px, réservées aux lecteurs d'écran : testées au clavier.
+    const precedent = panier.main.getByRole('button', { name: /^(Previous|Précédent)$/i });
+    const suivant = panier.main.getByRole('button', { name: /^(Next|Suivant)$/i });
+    await expect(precedent, '« Précédent » doit être inactif sur la première suggestion').toBeDisabled();
+    await suivant.focus();
+    await page.keyboard.press('Enter');
+    await expect(precedent, 'Après « Suivant », « Précédent » doit devenir actif').toBeEnabled();
+    await precedent.focus();
+    await page.keyboard.press('Enter');
+    await expect(precedent, '« Précédent » doit ramener à la première suggestion (et redevenir inactif)').toBeDisabled();
+  });
+
+  await etape(page, testInfo, '5. Ajouter une suggestion au panier : le panier n\'est plus vide, compteur à 1', async () => {
+    // Première suggestion qui commence à l'écran (après « Suivant », la première est sortie à gauche).
+    const index = await suggestions.evaluateAll(ls => ls.findIndex(l => { const r = l.getBoundingClientRect(); return r.width > 0 && r.left >= -1 && r.left + r.width / 2 <= window.innerWidth; }));
+    expect(index, 'Une suggestion doit être à l\'écran').toBeGreaterThanOrEqual(0);
+    const carte = suggestions.nth(index);
+    const nom = (await carte.getAttribute('aria-label'))?.replace(/, \d+ (of|sur) \d+$/, '') ?? '';
+    const bouton = carte.getByRole('button', { name: /- (Add to cart|Ajouter au panier)$/i });
+    await centrer(bouton);
+    if (!isMobile) await carte.hover();
+    const ajout = page.waitForResponse(r => /\/cart\/add/.test(r.url()) && r.request().method() === 'POST');
+    await bouton.click();
+    expect((await ajout).status(), `Shopify doit accepter l'ajout de « ${nom} »`).toBe(200);
+    await expect(panier.emptyHeading, 'Le panier ne doit plus être vide').toBeHidden();
+    await expect(panier.lines, `« ${nom} » doit être dans le panier`).toHaveCount(1);
+    await expect.poll(() => header.cartCount(), { message: 'Le compteur de l\'en-tête doit passer à 1' }).toBe(1);
+  });
+});
