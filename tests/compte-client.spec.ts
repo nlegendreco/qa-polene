@@ -91,10 +91,10 @@ const VUES = [
   { nom: 'Accueil du compte', chemin: 'account', titre: /^Welcome|^Bienvenue/i },
   { nom: 'Profil', chemin: 'account?view=profile', titre: /Your Profile|Votre profil/i },
   { nom: 'Favoris', chemin: 'account?view=wishlist', titre: /Your favorites|Vos favoris/i },
-  // Fiche TNR ACCOUNT-18 : le compte de test n'a aucune alerte (l'envoi réel de « Être prévenu(e) » n'est pas testé).
-  { nom: 'Alertes de retour en stock', chemin: 'account?view=back-in-stock', titre: /Your Alerts|Vos alertes/i, vide: /You have no back in stock alerts|Vous n.avez (aucune|pas d.)alerte/i },
+  // État vide et alerte remplie (ACCOUNT-18) : test « alerte de retour en stock » plus bas, qui pose une alerte.
+  { nom: 'Alertes de retour en stock', chemin: 'account?view=back-in-stock', titre: /Your Alerts|Vos alertes/i },
   { nom: 'Assistance', chemin: 'account?view=assistance', titre: /Need Assistance|Besoin d.aide/i },
-] as { nom: string; chemin: string; titre: RegExp; vide?: RegExp }[];
+];
 
 for (const vue of VUES) {
   test(`Espace client · ${vue.nom} @tnr @account`, async ({ page, qaEnv }, testInfo) => {
@@ -103,11 +103,6 @@ for (const vue of VUES) {
     await etape(page, testInfo, `1. Ouvrir ${vue.nom.toLowerCase()} (client connecté)`, async () => {
       await ouvrir(page, vue.chemin);
       await expect(titre(page, vue.titre)).toBeVisible();
-      if (vue.vide) {
-        await expect(page.locator('main').getByText(vue.vide), 'La page vide doit le dire au client').toBeVisible();
-        await expect(page.locator('main').getByRole('link', { name: /new in|nouveautés/i }), 'La page vide doit proposer les nouveautés')
-          .toHaveAttribute('href', /collections\/new-in/);
-      }
     });
     if (vue.chemin === 'account' || vue.chemin === 'account?view=profile') {
       await etape(page, testInfo, '2. Vérifier que le compte affiché est celui du client de test', async () => {
@@ -379,6 +374,112 @@ test('Espace client · assistance : formulaire, email, FAQ, chat et réseaux soc
     await expect(main.getByRole('link', { name: 'Instagram' }), 'Lien Instagram').toHaveAttribute('href', /^https:\/\/www\.instagram\.com\/polene_paris\/?$/);
     await expect(main.getByRole('link', { name: 'Facebook' }), 'Lien Facebook').toHaveAttribute('href', /^https:\/\/www\.facebook\.com\/poleneparis\/?$/);
   });
+});
+
+/**
+ * Alerte de retour en stock (fiches TNR PDP-08 et ACCOUNT-18, accord QA du 15 octobre 2026 pour un envoi réel en
+ * préprod) : le client s'inscrit depuis la fiche de QA02 (rupture), l'alerte apparaît dans son compte, il l'annule.
+ * L'inscription passe par l'application Polène (`apps/polene-theme-features/back-in-stock-subscribe`, réponse 202), qui
+ * l'enregistre en différé : 2 à 3 minutes avant qu'elle apparaisse dans le compte (15 octobre 2026). « Cancel » la
+ * retire tout de suite (DELETE sur `back-in-stock-subscriptions`), sans confirmation. Case newsletter décochée avant
+ * l'envoi (cochée par défaut, constat 13), et l'envoi est bloqué si elle partait cochée. Le compte finit sans alerte.
+ */
+test(`Espace client · alerte de retour en stock : inscription depuis la fiche, alerte dans le compte, annulation (${produitFixe('QA02').id}) @tnr @journey`, async ({ page, qaEnv }, testInfo) => {
+  conditions(qaEnv, testInfo);
+  // Un seul appareil : les alertes sont celles du compte, deux navigateurs en même temps se marcheraient dessus.
+  test.skip(testInfo.project.name.split(' · ')[1] !== 'desktop-chrome', 'Alerte du compte : Chrome ordinateur seulement (un seul compte de test)');
+  test.setTimeout(8 * 60_000);
+  const produit = produitFixe('QA02');
+  const fiche = new ProductPage(page);
+  const main = page.locator('main');
+  const alerte = main.locator('bis-product-card').filter({ has: page.locator(`a[href*="/products/${produit.handle}"]`) });
+  const annuler = (carte: import('@playwright/test').Locator) => carte.locator('[data-ref="bis-cancel"]');
+  const VIDE = /You have no back in stock alerts|Vous n.avez (aucune|pas d.)alerte/i;
+  testInfo.annotations.push({ type: 'Produit testé', description: `${produit.id} (${produit.handle})` });
+
+  /** Ouvre les alertes du compte et attend la liste, chargée après la page par l'application Polène. */
+  const ouvrirAlertes = async () => {
+    const liste = page.waitForResponse(r => r.url().includes('/back-in-stock-subscriptions') && r.request().method() === 'GET', { timeout: 30_000 });
+    await ouvrir(page, 'account?view=back-in-stock');
+    await liste;
+    await expect(titre(page, /Your Alerts|Vos alertes/i)).toBeVisible();
+  };
+
+  /** Annule toutes les alertes affichées, en attendant la réponse de l'application à chaque fois. */
+  const toutAnnuler = async () => {
+    for (let i = 0; i < 10 && await main.locator('[data-ref="bis-cancel"]').count(); i++) {
+      const reponse = page.waitForResponse(r => r.url().includes('/back-in-stock-subscriptions') && r.request().method() === 'DELETE');
+      await main.locator('[data-ref="bis-cancel"]').first().click();
+      expect((await reponse).ok(), 'L\'annulation de l\'alerte doit être acceptée').toBe(true);
+    }
+  };
+
+  await etape(page, testInfo, '1. Alertes du compte : retirer celles d\'un essai précédent, la page dit qu\'il n\'y en a aucune', async () => {
+    await ouvrirAlertes();
+    await toutAnnuler();
+    await expect(main.getByText(VIDE), 'Sans alerte, la page doit le dire au client').toBeVisible();
+    await expect(main.getByRole('link', { name: /new in|nouveautés/i }), 'La page vide doit proposer les nouveautés').toHaveAttribute('href', /collections\/new-in/);
+  });
+
+  try {
+    await etape(page, testInfo, `2. Fiche de ${produit.id} (rupture) : « Notify me » ouvre « Être prévenu(e) »`, async () => {
+      await fiche.goto(produit.handle);
+      await expect.poll(() => fiche.mainButton.innerText(), { message: 'Le bouton principal doit proposer d\'être prévenu du retour en stock' }).toMatch(/Notify me|Être prévenu/i);
+      await fiche.mainButton.evaluate(e => e.scrollIntoView({ block: 'center', behavior: 'instant' }));
+      await fiche.mainButton.click();
+      await expect(fiche.backInStockModal, 'La fenêtre « Être prévenu(e) » doit s\'ouvrir').toBeVisible();
+      const champ = fiche.backInStockModal.getByRole('textbox', { name: /email/i });
+      if (!(await champ.inputValue())) testInfo.annotations.push({ type: 'Remarque', description: 'Client connecté : le champ email de la fenêtre n\'est pas pré-rempli avec l\'adresse du compte' });
+    });
+
+    await etape(page, testInfo, '3. Décocher la newsletter, saisir l\'email du compte, « Notify me » : « Thanks for subscribing »', async () => {
+      const fenetre = fiche.backInStockModal;
+      const newsletter = fenetre.getByRole('checkbox', { name: /newsletter/i });
+      if (await newsletter.isChecked()) testInfo.annotations.push({ type: 'Constat 13', description: 'Case newsletter de la fenêtre « Être prévenu(e) » cochée par défaut' });
+      await newsletter.uncheck({ force: true });
+      await expect(newsletter, 'La case newsletter doit être décochée avant l\'envoi').not.toBeChecked();
+      // Garde-fou : l'adresse du compte de test ne doit jamais être inscrite à la newsletter par ce test.
+      let consentement = '';
+      await page.route('**/back-in-stock-subscribe', route => {
+        consentement = /name="email_marketing_consent"\s+(\S+)/.exec(route.request().postData() ?? '')?.[1] ?? '';
+        return consentement === 'false' ? route.continue() : route.abort();
+      });
+      await fenetre.getByRole('textbox', { name: /email/i }).fill(emailCompte());
+      const reponse = page.waitForResponse(r => r.url().includes('/back-in-stock-subscribe'));
+      await fenetre.getByRole('button', { name: /Notify me|Être prévenu|M'avertir/i }).click();
+      const statut = (await reponse).status();
+      expect(consentement, 'L\'inscription doit partir sans consentement newsletter (email_marketing_consent=false)').toBe('false');
+      expect(statut, statut === 409 ? 'Le compte est déjà inscrit à l\'alerte de ce produit (essai précédent pas encore visible dans le compte ?)' : 'L\'application Polène doit accepter l\'inscription (202)').toBe(202);
+      await expect(fenetre, 'La fenêtre doit confirmer l\'inscription').toContainText(/Thanks for subscribing|Merci/i);
+      await page.unroute('**/back-in-stock-subscribe');
+      await fenetre.getByRole('button', { name: /Close modal|Fermer/i }).first().click();
+    });
+
+    await etape(page, testInfo, '4. Alertes du compte : l\'alerte de QA02 apparaît (enregistrée en différé, jusqu\'à 5 minutes)', async () => {
+      const debut = Date.now();
+      await expect(async () => {
+        await ouvrirAlertes();
+        await expect(alerte, `L'alerte de ${produit.id} doit apparaître dans le compte`).toBeVisible({ timeout: 2_000 });
+      }).toPass({ timeout: 5 * 60_000, intervals: [20_000] });
+      testInfo.annotations.push({ type: 'Délai d\'apparition', description: `${Math.round((Date.now() - debut) / 1000)} s après l'inscription` });
+      await expect(alerte.getByRole('link').first(), 'L\'alerte doit mener à la fiche du produit').toHaveAttribute('href', new RegExp(`/products/${produit.handle}`));
+      await expect(alerte, 'L\'alerte doit nommer le produit').toContainText(/QA Numéro Un Nano/i);
+      await expect(annuler(alerte), 'L\'alerte doit proposer « Cancel »').toBeVisible();
+      await expect(main.getByText(VIDE), 'La page ne doit plus dire qu\'il n\'y a aucune alerte').toBeHidden();
+    });
+
+    await etape(page, testInfo, '5. « Cancel » : l\'alerte disparaît, la page revient à l\'état vide, même après rechargement', async () => {
+      await toutAnnuler();
+      await expect(alerte, 'L\'alerte doit disparaître').toHaveCount(0);
+      await expect(main.getByText(VIDE), 'La page doit de nouveau dire qu\'il n\'y a aucune alerte').toBeVisible();
+      await ouvrirAlertes();
+      await expect(main.getByText(VIDE), 'Après rechargement, toujours aucune alerte').toBeVisible();
+    });
+  } finally {
+    // Le compte de test doit finir sans alerte, même si le test a échoué en route.
+    await ouvrirAlertes().catch(() => {});
+    await toutAnnuler().catch(() => {});
+  }
 });
 
 /**
