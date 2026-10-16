@@ -29,6 +29,8 @@ Sans `PREPROD_PASSWORD`, seuls les tests de prod sont lancés (un avertissement 
 | `npm run test:visuel` | Tests visuels (prod) : compare 4 pages (accueil, fiche produit nouvelle et ancienne, panier) × 4 appareils à la référence |
 | `npm run test:visuel:maj` | Sauvegarde la référence actuelle dans `archives/references/<date>/`, puis la reprend (après une MEP validée, avec l'accord de tout le monde) |
 | `npm run test:regressions` | Démo : 4 régressions injectées (desktop Chrome + iPhone), chacune **doit** échouer |
+| `npm run test:accessibilite` | Accessibilité (prod et préprod, Chrome ordinateur et iPhone) : axe sur 51 pages, comparé au relevé de chaque page (seul un problème absent du relevé échoue), et bouton pause / lecture au clavier. Voir [docs/accessibilite.md](docs/accessibilite.md) |
+| `npm run test:accessibilite:maj` | Enregistre les corrections d'accessibilité dans `references/accessibilite/` (le relevé ne fait que rétrécir), avec l'accord de la QA |
 | `npm run archiver -- <nom>` | Conserve les rapports de toutes les séries dans `archives/<date>-<nom>/` (hors Git), voir [docs/demo-poc.md](docs/demo-poc.md) |
 
 Pour lancer un seul appareil : `npx playwright test --project "prod · iphone"`.
@@ -43,6 +45,7 @@ resultats/
   tnr/            npm test, test:prod, test:preprod (parcours d'achat, structure des collections, données préprod)
   donnees/        npm run test:donnees
   visuel/         npm run test:visuel
+  accessibilite/  npm run test:accessibilite
   regressions/    npm run test:regressions
   demo-echec/     npm run test:demo-echec
     rapport-polene/      le Rapport Polène
