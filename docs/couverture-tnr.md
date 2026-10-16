@@ -140,7 +140,7 @@ Aucun ne va jusqu'au paiement.
 
 - ~~Quick Add et « Variant Picker » depuis une carte : où les voit-on aujourd'hui ?~~ Trouvés le 14 octobre 2026 sur les cartes de la préprod (ancienne carte) : « Add to cart » au survol sur ordinateur, icône sur mobile ; pour un bijou à tailles, les tailles remplacent le bouton au survol sur ordinateur et une fenêtre « Select size » s'ouvre sur mobile. Testés dans `tests/cartes-collection.spec.ts`.
 - ~~Favoris d'un visiteur non connecté : fenêtre de connexion ou sauvegarde dans le navigateur (question ouverte dans CART-03 et PDP-08) ?~~ Vu le 15 octobre 2026 : sauvegarde dans le navigateur, page `pages/wishlist` avec un lien « Sign in ». Testé dans `tests/favoris.spec.ts`.
-- Peut-on remplir les favoris et poser une alerte BIS sur le compte de test `+qacompte` ? Favoris : oui, le test les remplit puis les vide (15 octobre 2026). Alerte BIS : toujours ouvert (l'envoi réel de « Être prévenu(e) » n'est pas testé).
+- Peut-on remplir les favoris et poser une alerte BIS sur le compte de test `+qacompte` ? Favoris : oui, le test les remplit puis les vide (15 octobre 2026). Alerte BIS : oui en préprod (QA, 15 octobre 2026), le test la pose depuis la fiche de QA02 puis l'annule.
 - ~~Compte de prod pour les favoris du compte~~ : `+qacompte` en prod, fourni par la QA le 15 octobre 2026 (identifiants dans `.env`), à créer par elle.
 - ~~Compte dédié pour ACCOUNT-10~~ : un compte supprimé à chaque passage ne tiendrait pas (QA, 15 octobre 2026). Le test va jusqu'à la confirmation et annule.
 - ~~Résumé du checkout mobile fixé ?~~ Non : il défile avec la page, la fiche CHECKOUT-01 se trompait (QA, 15 octobre 2026).
@@ -176,9 +176,9 @@ Ajoutés le 15 octobre 2026 au soir :
 | CHECKOUT-03, 04 Pays et clavier | `checkout.spec.ts` | France par défaut, code postal au clavier numérique, téléphones en `type="tel"`, Canada : « Province » obligatoire, retour à la France ; prod et préprod |
 | ACCOUNT-05, 06 Historique | `compte-client.spec.ts` | Colonnes numéro, date, statut, total ; chaque ligne remplie et menant à son détail |
 | ACCOUNT-13 Ajout d'adresse | `compte-client.spec.ts` | « Save » sans rien remplir : un message sous prénom, nom, adresse, code postal, ville ; aucun envoi (bloqué par sécurité, constat 21) |
-| ACCOUNT-18 Alertes vides | `compte-client.spec.ts` | « You have no back in stock alerts », lien vers les nouveautés |
+| PDP-08, ACCOUNT-18 Alerte de retour en stock | `compte-client.spec.ts` | Envoi réel en préprod (Chrome ordinateur, `+qacompte`) : état vide (« You have no back in stock alerts », lien vers les nouveautés), « Notify me » de QA02, newsletter décochée (envoi bloqué sinon), « Thanks for subscribing », alerte dans le compte (2 à 3 min plus tard) avec lien vers la fiche, « Cancel », retour à l'état vide |
 
-Pas joués : la suppression réelle du compte (ACCOUNT-10 s'arrête à la confirmation), envoi réel des formulaires (profil, newsletter, « Être prévenu(e) »), CART-08 (bannière : aucune aujourd'hui), code promo (décision QA du 14 octobre 2026).
+Pas joués : la suppression réelle du compte (ACCOUNT-10 s'arrête à la confirmation), envoi réel des formulaires (profil, newsletter, « Coming soon » ; « Être prévenu(e) » seulement depuis la fiche, sur le compte de test), CART-08 (bannière : aucune aujourd'hui), code promo (décision QA du 14 octobre 2026).
 
 ### Les deux fiches produit (15 octobre 2026)
 
