@@ -13,6 +13,7 @@ On commence petit : un POC qui prouve deux choses (un parcours testé automatiqu
 | **Décision** | Go / No-Go | 1 démo |
 | Phase 1 | Préprod déterministe | ~1 semaine |
 | Phase 2 | TNR préprod complet | ~3 semaines |
+| Phase 2 V2 | Fiabiliser la suite, première MEP | à mesurer |
 | Phase 3 | Scope de release (Jira) | ~1 semaine |
 | Phase 4 | Cycle MEP et références | ~1 semaine |
 | Phase 5 | CI et surveillance prod | ~1 semaine |
@@ -22,7 +23,7 @@ Légende des intervenants : **QA**, **Claude Code**, **Devs**, **Équipe** (QA +
 
 ## Avancement
 
-> Mis à jour le 16 octobre 2026. **POC 1 et POC 2 validés par la QA (7 octobre). Phase 1 faite (9 octobre) : données QA créées et contrôlées (40/40). Phase 2 en cours depuis le 12 octobre : pages de sections (69 sections du thème sur 83), espace client connecté, fiches TNR de la QA relevées (2.1, 13 octobre), états produit, cartes, panier et erreurs du checkout terminés (2.2, 14 octobre), reste du site codé (2.3, 15 octobre : collections, recherche, favoris, galerie et 3D, panier vide, checkout, espace client, en-tête et accueil), en attente des réponses de la QA ; contrôles automatiques et accessibilité axe en cran (2.4, 16 octobre). Prochaine étape : 2.5 références de structure. Reste du POC : critère des 10 minutes à la première MEP.**
+> Mis à jour le 16 octobre 2026. **POC 1 et POC 2 validés par la QA (7 octobre). Phase 1 faite (9 octobre) : données QA créées et contrôlées (40/40). Phase 2 en cours depuis le 12 octobre : pages de sections (69 sections du thème sur 83), espace client connecté, fiches TNR de la QA relevées (2.1, 13 octobre), états produit, cartes, panier et erreurs du checkout terminés (2.2, 14 octobre), reste du site codé (2.3, 15 octobre : collections, recherche, favoris, galerie et 3D, panier vide, checkout, espace client, en-tête et accueil), en attente des réponses de la QA ; contrôles automatiques et accessibilité axe en cran (2.4, 16 octobre), références de structure (2.5, 16 octobre) : toute la phase 2 est codée, la QA relit. Prochaine étape : V2, fiabiliser la suite (bugs connus marqués, tests instables, commande MEP), puis première MEP testée (2.6). Reste du POC : critère des 10 minutes à la première MEP.**
 
 | Étape | Statut | Détail |
 | --- | --- | --- |
@@ -50,7 +51,8 @@ Légende des intervenants : **QA**, **Claude Code**, **Devs**, **Équipe** (QA +
 | Phase 2.2 États produit | ✅ Fait (14 octobre 2026) | 14 octobre 2026, fin de l'étape : coming soon QA04 (fiche et carte, fenêtre d'inscription refusant un email vide ou « test@ »), nouveauté QA08 (« New in » sur la carte), précommande expirée QA07 (redevenue normale) et retardée QA06 (date `preorder.date` affichée), coloris QA13 à QA15 (PDP-05), titre long QA21 (fiche, carte, panier, checkout), prix QA17 et QA18 (PDP-04), double clic et barre d'achat fixe mobile (PDP-07), ajout rapide depuis la carte, en stock et à tailles (`tests/cartes-collection.spec.ts`, PLP-04), « Être prévenu(e) » avec email invalide depuis la carte (PLP-07, PDP-08), récapitulatif du panier (CART-04), erreurs du checkout sans commande et lien des CGV en prod et en préprod (`tests/checkout-erreurs.spec.ts`, CHECKOUT-03 à 06), cartes refusées sur Chrome ordinateur (accord QA). Volontairement laissés : code promo (décision QA), nouvelle fiche produit (tests en « ignoré » quand le Roll Out la sert), envois réels des fenêtres d'inscription. Constats 37 à 39. Avant : 12 octobre 2026 : rupture (QA02) sur la fiche et la carte de collection, 4 appareils, sans envoi ni commande (`tests/etats-produit.spec.ts`). 13 octobre 2026 : précommande (QA05, PDP-07) de la fiche jusqu'à l'arrivée au checkout (bouton, date d'expédition, notification, ligne du panier et propriétés `_is_preorder` / `_preorder_date`, total), plus la carte de la collection C5, 4 appareils, 8/8, sans commande. 13 octobre 2026 : tailles (QA10 tailles partielles, QA12 une taille en précommande, QA11 toutes épuisées, PDP-06) sur l'ancienne fiche, 4 appareils, 12/12 ; la nouvelle fiche reste à faire quand le Roll Out la remontre. Rupture de la fiche en échec depuis le 13 octobre : « Notify me » n'ouvre plus la fenêtre sur l'ancienne fiche (constat 33, à confirmer). 13 octobre 2026 : panier (`tests/panier.spec.ts`, CART-01, 03, 04) : +/−, suppression avec confirmation, panier vide, dernière pièce QA03 bloquée à 1 avec message, 4 appareils, 8/8. 14 octobre 2026 : onglets d'information et guide des tailles de la fiche (`tests/fiche-produit.spec.ts`, QA09, PDP-09 et PDP-06, ancienne fiche) : 4 onglets dans l'ordre, aucun ouvert au chargement (normal sur l'ancienne fiche), un seul contenu affiché à la fois, Entrée au clavier, diamètre de chaque taille dans « Size & fit », 4 appareils, 8/8. 14 octobre 2026 : panier mixte QA01 + QA05 (CART-02) jusqu'à l'arrivée au checkout sans payer, 4 appareils. Checkout complet : parcours invité (4 appareils) et client connecté (13 octobre 2026, commande T19581) |
 | Phase 2.3 Reste du site | 🟡 Codé, à valider | 15 octobre 2026 : collections (structure de C1, C5, C7 en préprod, menu des sous-collections, filtres et tri, « Voir plus », défilement infini, collection vide), recherche, favoris (visiteur et compte, en préprod et en prod ; les deux bugs des favoris de la prod sont détectés, constats 48 et 51), fiche produit (fil d'Ariane, zoom, fenêtre des photos, vue 3D, savoir-faire), panier vide, checkout (résumé mobile, paiement express, blocs d'information), espace client (menu, accueil, profil en lecture seule, suppression du compte jusqu'à la confirmation, assistance), en-tête, pied de page et accueil (liens, menus, newsletter en saisies invalides, vidéo). Série complète : 163 réussis, 25 en échec dont 19 écarts réels (constats 45 à 50). Le soir, derniers trous des fiches comblés : tailles épuisées sur la carte (PLP-04), favoris depuis le panier (CART-03, constat 55), panier de 10 produits (CART-02), pays de livraison et clavier numérique au checkout (CHECKOUT-03 et 04, prod et préprod), alerte de retour en stock réelle posée puis annulée sur le compte de test (PDP-08, ACCOUNT-18, accord QA), colonnes de l'historique et formulaire d'adresse vide refusé (ACCOUNT-05, 06, 13). Hors de 2.3 par décision : envoi réel des formulaires, code promo, adresse secondaire (constat 21). Reste : validation de la QA. Le même jour, après l'annonce du Roll Out 50/50 en prod : les tests de la fiche tournent sur les deux fiches à chaque lancement (choix par cookie, `src/fiches.ts`), nouvelle fiche écrite pour les tailles, les onglets, le guide des tailles, les coloris et la barre d'achat fixe sur mobile, référence visuelle de l'ancienne fiche prise en prod ; compte de test de la prod créé, favoris de la prod verts (constats 48 et 51 corrigés en prod). Détail : [docs/couverture-tnr.md](docs/couverture-tnr.md#phase-23-15-octobre-2026). Avant : étiquettes de page en anglais sur tous les tests (`@home`, `@plp`, `@pdp`, `@cart`, `@checkout`, `@account`, `@sections`…). Pages de sections (3 articles « Sections », UAT accessibilité, design system) et 19 pages réelles (accueil, fiche, panier, recherche, blogs, boutiques, Savoir-Faire…) : 69 des 83 sections du thème testées, sur Chrome ordinateur et iPhone (les 4 appareils sont gardés pour les parcours critiques, limite d'appels Shopify) ; 47/48, le design system déborde sur iPhone. Espace client connecté (13 octobre 2026) : 7 pages × 2 appareils, 14/14, sans envoi de formulaire. |
 | Phase 2.4 Contrôles automatiques | ✅ Codé, à valider (16 octobre 2026) | Sur les pages de sections, les pages réelles et l'espace client : images affichées toutes chargées, pas de débordement sur mobile, pas de « translation missing » ni « Liquid error », aucune erreur JS (hors outils bloqués par les tests). 16 octobre 2026 : les 16 pages réelles qui existent en prod y passent les mêmes contrôles (32/32 ; défilement infini retiré pour le contrôle des images, comme dans les tests visuels). Accessibilité axe (`npm run test:accessibilite`, [docs/accessibilite.md](docs/accessibilite.md)) : relevé par page (51 pages, Chrome ordinateur et iPhone, prod et préprod), en cran : seul un problème absent du relevé échoue, ce qui est en cours de correction est noté, ce qui est corrigé s'enregistre avec `npm run test:accessibilite:maj` (accord QA). Premier relevé : 8 types de problème, aucun sur l'accueil, les fiches et le panier. Bouton pause / lecture des vidéos au clavier (page UAT, 13 boutons, Chrome et Safari). Reste : fenêtres et menus ouverts, autres tests au clavier, annonces des lecteurs d'écran, Safari et Android |
-| Phase 2.5 Références de structure | 🟡 Collections seulement | Structure des collections (cartes, prix, photos, colonnes, PLP breaks) en prod. Reste : liens du menu, titres et boutons de chaque page |
+| Phase 2.5 Références de structure | ✅ Codé, à valider (16 octobre 2026) | `npm run test:structure` ([docs/structure.md](docs/structure.md)) : titres, boutons et liens de 49 pages en préprod et en prod (pages de sections et pages réelles, fiche produit sur les deux fiches du Roll Out, espace client), en-tête (menus compris) et pied de page, Chrome ordinateur et iPhone, 102 tests comparés à `references/structure/`. Zones qui changent seules exclues (cartes produit et d'articles, carrousels, recommandations, Instagram), prix et compteurs masqués. Deux passages de suite verts après les réglages (cartes d'articles de La Maison chargées au défilement, fenêtre de géolocalisation, attente que la page ne change plus). Détection vérifiée : bouton renommé et adresse du lien « Sacs » changée dans la référence, les deux signalés (« disparu » / « nouveau »). Avant : structure des collections (cartes, prix, photos, colonnes, PLP breaks) |
+| Phase 2 V2 Fiabiliser | ⬜ Prochaine étape | Bugs connus marqués comme attendus, tests instables corrigés un par un, commande « MEP » (prod puis préprod). Détail dans « Phase 2 V2 » |
 | Phase 2.6 En parallèle de la recette manuelle | ⬜ Pas commencé | QA, pendant 1 ou 2 releases |
 
 ## Ce qui est déjà acté
@@ -63,6 +65,7 @@ Légende des intervenants : **QA**, **Claude Code**, **Devs**, **Équipe** (QA +
 - Coming soon et précommande sont des métachamps basculés à la main ; la précommande expire seule après sa date.
 - Accès API d'administration sur la préprod : d'accord sur le principe, à mettre en place.
 - Le périmètre de chaque release (Jira) doit être connu avant de lancer le TNR.
+- Périmètre (QA, 16 octobre 2026) : Polène FR (prod) et la préprod ASIA suffisent pour l'instant ; pas besoin de code promo, de PayPal ni de Klarna ; emails à faire plus tard. Les autres boutiques (UK, JP…) restent en phase 6.
 
 ---
 
@@ -247,10 +250,34 @@ Fait le 16 octobre 2026 : les quatre premiers contrôles sur les pages de sectio
 
 Pour chaque page, Playwright enregistre la liste des liens du menu, des titres et des boutons. Il détecte un lien disparu ou un bouton renommé, même quand le visuel change peu.
 
+Fait le 16 octobre 2026 (`npm run test:structure`, [docs/structure.md](docs/structure.md)) : titres, boutons et liens de 49 pages (préprod et prod, mêmes pages que l'accessibilité sans le checkout), en-tête (menus compris) et pied de page, Chrome ordinateur et iPhone, 102 tests. Ce qui change seul (cartes produit et d'articles, carrousels, recommandations, prix, compteurs) n'est pas relevé. Changement voulu : `npm run test:structure:maj` (accord QA).
+
 #### 2.6 Faire tourner en parallèle de votre recette manuelle
 *QA*
 
 Pendant 1 ou 2 releases, vous faites les deux et vous comparez : ce que la suite rate, ce qu'elle trouve en plus.
+
+C'est la première MEP testée avec la suite (objectif de la QA, 16 octobre 2026) : elle vient après la V2 ci-dessous.
+
+### Phase 2 V2 : fiabiliser la suite avant la première MEP
+
+*Claude Code · QA*
+
+Décidé avec la QA le 16 octobre 2026 : on finit d'abord toute la phase 2, même avec des réglages en attente (la QA les relit ensuite), puis on corrige les tests un par un. Le but : tester rapidement la non-régression d'une MEP. Un test en échec à cause d'une nouvelle feature est acceptable : la QA sait dire ce qui est vrai ou faux, tant que c'est remonté proprement et filtrable dans le Rapport Polène.
+
+#### V2.1 Marquer les bugs connus comme attendus
+Chaque test laissé volontairement en échec sur un bug déjà connu (constats 45, 46, 47, 50, 27…) est marqué « échec attendu » avec son numéro de constat : visible dans le rapport, mais la série ne rougit plus pour lui. Le jour où l'équipe corrige le bug, le test le signale (« attendu en échec, mais il passe ») et on retire la marque. Une série rouge veut alors dire : problème nouveau.
+
+#### V2.2 Corriger les tests instables, un par un
+Lancer la série complète (sans les paiements préprod, sauf accord), relever chaque échec qui ne vient ni d'un bug connu ni du site, et le corriger : 3D sous Chrome sur un Mac chargé, saisie trop rapide sous Safari et Android, menu Android, connexion iPhone (« Blocked a frame … shop.app », vu une fois le 16 octobre 2026), limite d'appels Shopify (429). Critère : deux séries complètes de suite sans échec en dehors des bugs connus et des changements voulus.
+
+#### V2.3 Une commande « MEP »
+Une seule commande pour le jour de MEP, avec un verdict clair et sa durée mesurée. Ordre voulu par la QA : la prod d'abord, puis la préprod. À noter : lancée avant le merge, la préprod peut aussi servir à arrêter une MEP ; à trancher au moment de l'écrire. Base de la phase 4 (smoke après merge).
+
+#### V2.4 Plus tard, quand la suite est fiable
+- Appareils : étendre les tests qui ne tournent que sur une partie des appareils (à préciser par la QA).
+- Accessibilité, suites de la 2.4 : fenêtres et menus ouverts sous axe, autres tests au clavier, annonces des lecteurs d'écran ([docs/accessibilite.md](docs/accessibilite.md)).
+- Emails (voir « Pistes gardées pour plus tard ») : à faire, pas encore nécessaire.
 
 ## Phase 3 : le périmètre de release avant le TNR (~1 semaine)
 
