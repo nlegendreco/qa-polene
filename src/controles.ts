@@ -5,10 +5,12 @@ import { expect } from './fixtures';
  * Erreurs JS qui ne viennent pas du thème : le blocage d'Elevar sous WebKit ; sous WebKit encore, les cadres isolés
  * des « web pixels » Shopify (web-pixel-sandbox-…, sans allow-same-origin), présents sur toutes les pages ; et les
  * envois de ces mêmes pixels vers les outils que les tests bloquent (« Failed to fetch ») ; et sous WebKit, le refus
- * d'envoyer les mesures techniques de Shopify (`otlp-http-production.shopifysvc.com`, « access control checks »).
+ * d'envoyer les mesures techniques de Shopify (`otlp-http-production.shopifysvc.com`, et en prod
+ * `.well-known/shopify/monorail`, « access control checks »).
+ * Sous Chrome, en prod, le blocage d'Elevar donne « Failed to fetch dynamically imported module: …getelevar.com… ».
  */
 export function erreurIgnoree(e: Error): boolean {
-  return /Importing a module script failed|Blocked a frame .* sandboxed and lacks the "allow-same-origin" flag|shopifysvc\.com/.test(e.message)
+  return /Importing a module script failed|Blocked a frame .* sandboxed and lacks the "allow-same-origin" flag|shopifysvc\.com|shopify\/monorail|getelevar\.com/.test(e.message)
     || /web-pixel/.test(e.stack ?? '');
 }
 

@@ -9,6 +9,7 @@ import { decrireErreur, erreurIgnoree, verifierLargeur } from '../src/controles'
  * pour voir leur comportement, et les pages réelles qui portent les sections impossibles à poser sur un article
  * (accueil, fiche produit, panier, compte…). On vérifie que chaque section attendue est là, s'affiche, que ses images
  * chargent, sans erreur JavaScript, sans texte d'erreur Shopify et sans débordement de l'écran. Lecture seule.
+ * Les pages réelles qui existent aussi en prod (`cheminProd`) y passent les mêmes contrôles (16 octobre 2026).
  */
 
 interface PageSections {
@@ -17,6 +18,8 @@ interface PageSections {
   /** Chemin de la page, ou fiche du produit QA `produitFixe`. */
   chemin?: string;
   produitFixe?: string;
+  /** Page réelle qui existe aussi en prod : son chemin en prod (souvent le même). Absent : préprod seulement. */
+  cheminProd?: string;
   role: string;
   /** Pages de sections de la QA : sections attendues, dans l'ordre. Absent pour une page réelle (contenu modifié par l'équipe). */
   sections?: string[];
@@ -55,10 +58,11 @@ const ERREURS_CONNUES = [
 ];
 
 for (const pageSections of pages) {
-  const chemin = pageSections.produitFixe ? `products/${produitFixe(pageSections.produitFixe).handle}` : pageSections.chemin ?? '';
   const statut = pageSections.statut ?? 200;
   test(`Sections · ${pageSections.nom} @tnr ${pageSections.etiquette ?? '@sections'}`, async ({ page, qaEnv }, testInfo) => {
-    test.skip(qaEnv.name !== 'preprod', 'Pages de sections : préprod uniquement');
+    const enProd = pageSections.cheminProd !== undefined;
+    test.skip(qaEnv.name === 'prod' && !enProd, 'Page de la préprod uniquement');
+    const chemin = qaEnv.name === 'prod' ? pageSections.cheminProd! : pageSections.produitFixe ? `products/${produitFixe(pageSections.produitFixe).handle}` : pageSections.chemin ?? '';
     test.skip(!APPAREILS.includes(testInfo.project.name.split(' · ')[1]), `Sections : ${APPAREILS.join(' et ')} seulement (appels Shopify gardés pour les parcours critiques)`);
     testInfo.annotations.push({ type: 'Page', description: `${chemin || 'accueil'} : ${pageSections.role}` });
     if (pageSections.couvre) testInfo.annotations.push({ type: 'Sections du thème', description: pageSections.couvre.join(', ') });
@@ -100,6 +104,10 @@ for (const pageSections of pages) {
       // Hauteur prise au départ : la recherche et les collections ajoutent des produits en bas de page (9 000 →
       // 26 000 px sur iPhone pour « sac »), on ne les suit pas.
       await page.evaluate(async () => {
+        // Collection : première page de produits seulement, comme les tests visuels. En bas de page, le défilement
+        // infini ajoutait des produits dont les photos ne se chargent qu'à l'écran (collection Sacs de la prod).
+        // Il est vérifié par tests/collections.spec.ts.
+        document.querySelector('collection-infinite-scroll')?.remove();
         const hauteur = document.documentElement.scrollHeight;
         for (let y = 0; y < hauteur; y += window.innerHeight * 0.8) {
           window.scrollTo({ top: y, behavior: 'instant' });
@@ -108,17 +116,29 @@ for (const pageSections of pages) {
       });
       await page.waitForLoadState('load');
       // Images différées passées trop vite (longues pages, résultats de recherche) : chaque image affichée mais pas
-      // encore chargée est ramenée à l'écran, puis on leur laisse 8 s. Seules celles qui ne chargent toujours pas comptent.
+      // encore chargée est ramenée à l'écran et attendue jusqu'à 2 s (une image différée ne se charge qu'à l'écran :
+      // une pause fixe la laissait de côté sur un Mac chargé), 40 s au total ; puis on leur laisse 8 s. Seules celles
+      // qui ne chargent toujours pas comptent.
       await page.evaluate(async () => {
         const pause = (ms: number) => new Promise(r => setTimeout(r, ms));
+        const chargee = (i: HTMLImageElement) => i.complete && i.naturalWidth > 0;
         const enAttente = () => [...document.querySelectorAll<HTMLImageElement>('[id^="shopify-section-template--"] img')].filter(i => {
           const r = i.getBoundingClientRect();
           return i.checkVisibility({ opacityProperty: true, visibilityProperty: true }) && r.width > 1 && r.height > 1
-            && r.right > 0 && r.left < window.innerWidth && !(i.complete && i.naturalWidth > 0);
+            && r.right > 0 && r.left < window.innerWidth && !chargee(i);
         });
-        for (const image of enAttente().slice(0, 150)) {
-          image.scrollIntoView({ block: 'center', behavior: 'instant' });
-          await pause(100);
+        // Plusieurs passages : la grille d'une collection peut être redessinée pendant ce temps (nouvelles images).
+        const finPassage = Date.now() + 40_000;
+        for (let passage = 0, vues = 0; passage < 5 && vues < 150 && Date.now() < finPassage; passage++) {
+          const liste = enAttente();
+          if (!liste.length) break;
+          for (const image of liste) {
+            if (Date.now() > finPassage || ++vues > 150) break;
+            if (chargee(image)) continue;
+            image.scrollIntoView({ block: 'center', behavior: 'instant' });
+            const finImage = Date.now() + 2_000;
+            while (!chargee(image) && Date.now() < finImage) await pause(100);
+          }
         }
         const fin = Date.now() + 8000;
         while (enAttente().length && Date.now() < fin) await pause(250);
