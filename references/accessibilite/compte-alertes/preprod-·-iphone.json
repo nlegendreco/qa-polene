@@ -1,0 +1,13 @@
+{
+  "page": "compte-alertes",
+  "projet": "preprod · iphone",
+  "date": "2026-10-16",
+  "problemes": [
+    {
+      "regle": "aria-required-parent",
+      "impact": "critique",
+      "aide": "Certains rôles ARIA doivent être contenus par des parents spécifiques",
+      "nombre": 7
+    }
+  ]
+}

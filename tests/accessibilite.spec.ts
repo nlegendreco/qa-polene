@@ -10,7 +10,7 @@ import { test, expect, etape } from '../src/fixtures';
 const PAGE_UAT = 'pages/uat-video-toggle';
 const BOUTON = '.component-video-toggle__button';
 
-test('Accessibilité · Bouton pause / lecture des vidéos au clavier (UAT) @tnr @sections', async ({ page, qaEnv, isMobile, browserName }, testInfo) => {
+test('Accessibilité · Bouton pause / lecture des vidéos au clavier (UAT) @tnr @accessibilite @sections', async ({ page, qaEnv, isMobile, browserName }, testInfo) => {
   test.skip(qaEnv.name !== 'preprod', 'Page UAT : préprod uniquement');
   test.skip(isMobile, 'Navigation au clavier : ordinateur seulement');
   // Safari ne passe sur les boutons et les liens avec Tab que si l'option du Mac est activée ; Option + Tab le fait toujours.

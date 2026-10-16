@@ -1,0 +1,25 @@
+{
+  "page": "checkout",
+  "projet": "preprod · iphone",
+  "date": "2026-10-16",
+  "problemes": [
+    {
+      "regle": "color-contrast",
+      "impact": "grave",
+      "aide": "Les éléments doivent avoir un contraste de couleurs suffisant",
+      "nombre": 2
+    },
+    {
+      "regle": "label-content-name-mismatch",
+      "impact": "grave",
+      "aide": "Le contenu textuel des éléments doit aussi se retrouver dans leur intitulé accessible",
+      "nombre": 1
+    },
+    {
+      "regle": "meta-viewport",
+      "impact": "moyen",
+      "aide": "Le zoom et l’agrandissement ne doivent pas être désactivés",
+      "nombre": 1
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "page": "sections-1-blog",
+  "projet": "preprod · iphone",
+  "date": "2026-10-16",
+  "problemes": [
+    {
+      "regle": "color-contrast",
+      "impact": "grave",
+      "aide": "Les éléments doivent avoir un contraste de couleurs suffisant",
+      "nombre": 1
+    },
+    {
+      "regle": "image-alt",
+      "impact": "critique",
+      "aide": "Les images doivent avoir une alternative textuelle",
+      "nombre": 1
+    },
+    {
+      "regle": "link-name",
+      "impact": "grave",
+      "aide": "Les liens doivent avoir un texte perceptible",
+      "nombre": 1
+    }
+  ]
+}

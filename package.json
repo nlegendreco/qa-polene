@@ -13,6 +13,8 @@
     "test:visuel": "VISUEL=1 QA_ENVS=prod playwright test --grep @visuel --workers 2 --retries 1",
     "test:visuel:maj": "node scripts/sauvegarder-references.mjs && VISUEL=1 QA_ENVS=prod playwright test --grep @visuel --workers 2 --update-snapshots",
     "test:regressions": "REGRESSIONS=1 QA_ENVS=prod playwright test --grep @regressions --project \"prod · desktop-chrome\" --project \"prod · iphone\"",
+    "test:accessibilite": "SERIE=accessibilite playwright test --grep @accessibilite --project \"prod · desktop-chrome\" --project \"prod · iphone\" --project \"preprod · desktop-chrome\" --project \"preprod · iphone\"",
+    "test:accessibilite:maj": "ACCESSIBILITE_MAJ=1 SERIE=accessibilite playwright test --grep @accessibilite --project \"prod · desktop-chrome\" --project \"prod · iphone\" --project \"preprod · desktop-chrome\" --project \"preprod · iphone\"",
     "rapport:polene": "node scripts/ouvrir-rapport.mjs",
     "rapport": "playwright show-report resultats/tnr/playwright-report",
     "archiver": "node scripts/archiver-rapport.mjs",
@@ -22,6 +24,7 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@playwright/test": "^1.63.0",
     "@shopify/cli": "^4.8.5",
     "@types/node": "^26.6.3",

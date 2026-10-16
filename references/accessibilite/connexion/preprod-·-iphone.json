@@ -1,0 +1,13 @@
+{
+  "page": "connexion",
+  "projet": "preprod · iphone",
+  "date": "2026-10-16",
+  "problemes": [
+    {
+      "regle": "color-contrast",
+      "impact": "grave",
+      "aide": "Les éléments doivent avoir un contraste de couleurs suffisant",
+      "nombre": 1
+    }
+  ]
+}
