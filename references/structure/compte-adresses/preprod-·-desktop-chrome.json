@@ -1,0 +1,61 @@
+{
+  "page": "compte-adresses",
+  "projet": "preprod · desktop-chrome",
+  "date": "2026-10-16",
+  "titres": [
+    "h1 My Account",
+    "h4 Are you sure you wish to delete this address?",
+    "h2 Your addresses",
+    "h2 Default",
+    "h2 Search for specific products"
+  ],
+  "boutons": [
+    "Close modal",
+    "Delete",
+    "Cancel",
+    "Close",
+    "Search"
+  ],
+  "liens": [
+    {
+      "texte": "Overview",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Orders",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Profile",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Addresses",
+      "lien": "/fr-fr/account/addresses"
+    },
+    {
+      "texte": "Wishlist",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Alert back in stock",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Assistance",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Log out",
+      "lien": "/customer_identity/logout"
+    },
+    {
+      "texte": "Edit address",
+      "lien": "/fr-fr/account/addresses"
+    },
+    {
+      "texte": "Add address",
+      "lien": "/fr-fr/account/addresses"
+    }
+  ]
+}

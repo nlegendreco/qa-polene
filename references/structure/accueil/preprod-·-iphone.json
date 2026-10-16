@@ -1,0 +1,59 @@
+{
+  "page": "accueil",
+  "projet": "preprod · iphone",
+  "date": "2026-10-16",
+  "titres": [
+    "h1 Polène PREPROD",
+    "h3 Boky",
+    "h2 Handbags",
+    "h2 Jewellery",
+    "h2 Small Leather Goods",
+    "h2 Boky, the art of folding",
+    "h3 Imagined as a daily companion for every woman, Boky can shift from crossbody to shoulder bag with a simple strap adjustm",
+    "h2 Numéro Neuf"
+  ],
+  "boutons": [
+    "Pause video",
+    "Previous",
+    "Next",
+    "Stop automatic slide rotation"
+  ],
+  "liens": [
+    {
+      "texte": "Boky <prix>",
+      "lien": "/fr-fr/products/boky-textured-black-cherry"
+    },
+    {
+      "texte": "Handbags",
+      "lien": "/fr-fr/collections/handbags"
+    },
+    {
+      "texte": "Jewellery",
+      "lien": "/fr-fr/collections/jewellery"
+    },
+    {
+      "texte": "Small Leather Goods",
+      "lien": "/fr-fr/collections/small-leather-goods"
+    },
+    {
+      "texte": "Discover - Boky, the art of folding",
+      "lien": "/fr-fr/collections/boky"
+    },
+    {
+      "texte": "Discover",
+      "lien": "/fr-fr/products/boky-textured-ebony"
+    },
+    {
+      "texte": "View the campaign",
+      "lien": "/fr-fr/blogs/news/boky"
+    },
+    {
+      "texte": "Discover the collection - Numéro Neuf",
+      "lien": "/fr-fr/collections/numero-neuf"
+    },
+    {
+      "texte": "Discover",
+      "lien": "/fr-fr/products/mokki-mini-textured-taupe"
+    }
+  ]
+}

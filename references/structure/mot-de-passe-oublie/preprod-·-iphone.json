@@ -1,0 +1,17 @@
+{
+  "page": "mot-de-passe-oublie",
+  "projet": "preprod · iphone",
+  "date": "2026-10-16",
+  "titres": [
+    "h2 Reset your password"
+  ],
+  "boutons": [
+    "Submit"
+  ],
+  "liens": [
+    {
+      "texte": "Cancel",
+      "lien": "/fr-fr/account"
+    }
+  ]
+}

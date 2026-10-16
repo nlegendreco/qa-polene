@@ -15,6 +15,8 @@
     "test:regressions": "REGRESSIONS=1 QA_ENVS=prod playwright test --grep @regressions --project \"prod · desktop-chrome\" --project \"prod · iphone\"",
     "test:accessibilite": "SERIE=accessibilite playwright test --grep @accessibilite --project \"prod · desktop-chrome\" --project \"prod · iphone\" --project \"preprod · desktop-chrome\" --project \"preprod · iphone\"",
     "test:accessibilite:maj": "ACCESSIBILITE_MAJ=1 SERIE=accessibilite playwright test --grep @accessibilite --project \"prod · desktop-chrome\" --project \"prod · iphone\" --project \"preprod · desktop-chrome\" --project \"preprod · iphone\"",
+    "test:structure": "SERIE=structure playwright test --grep @structure --project \"prod · desktop-chrome\" --project \"prod · iphone\" --project \"preprod · desktop-chrome\" --project \"preprod · iphone\"",
+    "test:structure:maj": "STRUCTURE_MAJ=1 SERIE=structure playwright test --grep @structure --project \"prod · desktop-chrome\" --project \"prod · iphone\" --project \"preprod · desktop-chrome\" --project \"preprod · iphone\"",
     "rapport:polene": "node scripts/ouvrir-rapport.mjs",
     "rapport": "playwright show-report resultats/tnr/playwright-report",
     "archiver": "node scripts/archiver-rapport.mjs",

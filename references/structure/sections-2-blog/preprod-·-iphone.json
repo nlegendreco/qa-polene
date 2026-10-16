@@ -1,0 +1,68 @@
+{
+  "page": "sections-2-blog",
+  "projet": "preprod · iphone",
+  "date": "2026-10-16",
+  "titres": [
+    "h2 Neyu",
+    "h3 Subscribe to the newsletter to receive the latest news from the brand.",
+    "h4 Explore Bags and Accessories",
+    "h1 BELTS",
+    "h2 Numéro Dix - Edition Galop",
+    "h3 Roisin Pierce x Polène"
+  ],
+  "boutons": [
+    "Previous",
+    "Next",
+    "Go to slide 1",
+    "Go to slide 2",
+    "Go to slide 3",
+    "Go to slide 4",
+    "Go to slide 5",
+    "Go to slide 6",
+    "Stop automatic slide rotation",
+    "CONFIRM",
+    "Pause video"
+  ],
+  "liens": [
+    {
+      "texte": "Privacy Policy",
+      "lien": "/policies/privacy-policy"
+    },
+    {
+      "texte": "Bags",
+      "lien": "/fr-fr/collections/handbags"
+    },
+    {
+      "texte": "Jewellery",
+      "lien": "/fr-fr/collections/jewellery"
+    },
+    {
+      "texte": "Accessories",
+      "lien": "/fr-fr/collections/small-leather-goods"
+    },
+    {
+      "texte": "Belts",
+      "lien": "/fr-fr/collections/belts"
+    },
+    {
+      "texte": "Discover",
+      "lien": "/fr-fr/products/mokki-textured-black-cherry"
+    },
+    {
+      "texte": "Discover Polène's new in",
+      "lien": "/fr-fr/collections/new-in"
+    },
+    {
+      "texte": "Découvrir - Numéro Dix - Edition Galop",
+      "lien": "/fr-fr/blogs/editorials/sections-2"
+    },
+    {
+      "texte": "Sections 1",
+      "lien": "/fr-fr/blogs/editorials/sections"
+    },
+    {
+      "texte": "Sections 3",
+      "lien": "/fr-fr/blogs/editorials/sections-3"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "page": "collection-qa",
+  "projet": "preprod · iphone",
+  "date": "2026-10-16",
+  "titres": [
+    "h1 QA Collection",
+    "h2 Bags by collections",
+    "h3 Sort by",
+    "h3 Availability",
+    "h3 Category (N)",
+    "h3 Materials (N)",
+    "h3 Color (N)",
+    "h3 Sizes (N)",
+    "h3 Size_new_test (N)"
+  ],
+  "boutons": [
+    "Previous",
+    "Next",
+    "Filters (N)",
+    "Close",
+    "Category (N)",
+    "Materials (N)",
+    "Color (N)",
+    "Sizes (N)",
+    "Size_new_test (N)",
+    "Clear",
+    "Show products • N",
+    "Back to top"
+  ],
+  "liens": [
+    {
+      "texte": "view all",
+      "lien": "/fr-fr/collections/handbags"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "page": "page-introuvable",
+  "projet": "preprod · desktop-chrome",
+  "date": "2026-10-16",
+  "titres": [
+    "h1 We're unable to find the page you're looking for.",
+    "h2 Search for specific products"
+  ],
+  "boutons": [
+    "Close",
+    "Search"
+  ],
+  "liens": [
+    {
+      "texte": "Go home",
+      "lien": "/"
+    }
+  ]
+}

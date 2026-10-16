@@ -1,0 +1,30 @@
+{
+  "page": "blog-sacs",
+  "projet": "prod · iphone",
+  "date": "2026-10-16",
+  "titres": [
+    "h3 Les artisans d'Ubrique",
+    "h3 Confection",
+    "h3 De la sélection des cuirs aux détails de finition",
+    "h3 Minimalisme & singularité"
+  ],
+  "boutons": [],
+  "liens": [
+    {
+      "texte": "Les artisans d'Ubrique Les artisans d'Ubrique",
+      "lien": "/blogs/bags/hors-champ"
+    },
+    {
+      "texte": "Confection Confection",
+      "lien": "/blogs/bags/manufacturing"
+    },
+    {
+      "texte": "De la sélection des cuirs aux détails de finition De la sélection des cuirs aux détails de finition",
+      "lien": "/blogs/bags/materials"
+    },
+    {
+      "texte": "Minimalisme & singularité Minimalisme & singularité",
+      "lien": "/blogs/bags/design"
+    }
+  ]
+}

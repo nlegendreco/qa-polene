@@ -1,0 +1,20 @@
+{
+  "page": "mot-de-passe-oublie",
+  "projet": "preprod · desktop-chrome",
+  "date": "2026-10-16",
+  "titres": [
+    "h2 Reset your password",
+    "h2 Search for specific products"
+  ],
+  "boutons": [
+    "Submit",
+    "Close",
+    "Search"
+  ],
+  "liens": [
+    {
+      "texte": "Cancel",
+      "lien": "/fr-fr/account"
+    }
+  ]
+}

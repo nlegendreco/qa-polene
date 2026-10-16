@@ -1,0 +1,19 @@
+{
+  "page": "recherche",
+  "projet": "preprod · desktop-chrome",
+  "date": "2026-10-16",
+  "titres": [
+    "h1 Search results for \"sac\" (N)",
+    "h2 Search for specific products"
+  ],
+  "boutons": [
+    "Close",
+    "Search"
+  ],
+  "liens": [
+    {
+      "texte": "Next page",
+      "lien": "/fr-fr/search"
+    }
+  ]
+}

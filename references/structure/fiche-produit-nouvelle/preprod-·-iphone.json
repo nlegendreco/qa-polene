@@ -1,0 +1,34 @@
+{
+  "page": "fiche-produit-nouvelle",
+  "projet": "preprod · iphone",
+  "date": "2026-10-16",
+  "titres": [
+    "h1 QA Numéro Un",
+    "h2 Edition In Stock",
+    "h3 Shipped with care",
+    "h2 Ubrique and its savoir-faire"
+  ],
+  "boutons": [
+    "Previous",
+    "Next",
+    "Go to slide 1",
+    "Go to slide 2",
+    "Go to slide 3",
+    "Go to slide 4",
+    "3D View",
+    "Close modal",
+    "QA Numéro Un - In Stock, 1 of 4",
+    "QA Numéro Un - In Stock, 2 of 4",
+    "QA Numéro Un - In Stock, 3 of 4",
+    "QA Numéro Un - In Stock, 4 of 4",
+    "Add to cart Added to cart",
+    "Add to Wishlist",
+    "Description",
+    "Details",
+    "Composition",
+    "Shipping & Return",
+    "Golden data test",
+    "Shipped with care"
+  ],
+  "liens": []
+}

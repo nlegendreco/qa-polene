@@ -1,0 +1,37 @@
+{
+  "page": "fiche-produit-nouvelle",
+  "projet": "preprod · desktop-chrome",
+  "date": "2026-10-16",
+  "titres": [
+    "h1 QA Numéro Un",
+    "h2 Edition In Stock",
+    "h1 QA Numéro Un",
+    "h2 Edition In Stock",
+    "h3 Shipped with care",
+    "h2 Ubrique and its savoir-faire",
+    "h2 Search for specific products"
+  ],
+  "boutons": [
+    "Add to cart Added to cart",
+    "Add to Wishlist",
+    "Zoom on image",
+    "(sans nom)",
+    "3D View",
+    "Close modal",
+    "Previous",
+    "Next",
+    "QA Numéro Un - In Stock, 1 of 4",
+    "QA Numéro Un - In Stock, 2 of 4",
+    "QA Numéro Un - In Stock, 3 of 4",
+    "QA Numéro Un - In Stock, 4 of 4",
+    "Description",
+    "Details",
+    "Composition",
+    "Shipping & Return",
+    "Golden data test",
+    "Shipped with care",
+    "Close",
+    "Search"
+  ],
+  "liens": []
+}

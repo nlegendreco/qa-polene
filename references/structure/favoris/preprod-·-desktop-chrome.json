@@ -1,0 +1,23 @@
+{
+  "page": "favoris",
+  "projet": "preprod · desktop-chrome",
+  "date": "2026-10-16",
+  "titres": [
+    "h2 Your favorites",
+    "h2 Search for specific products"
+  ],
+  "boutons": [
+    "Close",
+    "Search"
+  ],
+  "liens": [
+    {
+      "texte": "Sign in",
+      "lien": "/fr-fr/account/login"
+    },
+    {
+      "texte": "Create account",
+      "lien": "/fr-fr/account/register"
+    }
+  ]
+}

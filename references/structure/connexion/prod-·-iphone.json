@@ -1,0 +1,22 @@
+{
+  "page": "connexion",
+  "projet": "prod · iphone",
+  "date": "2026-10-16",
+  "titres": [
+    "h2 Se connecter"
+  ],
+  "boutons": [
+    "(sans nom)",
+    "Soumettre"
+  ],
+  "liens": [
+    {
+      "texte": "Mot de passe oublié ?",
+      "lien": "/account/login"
+    },
+    {
+      "texte": "Créer un compte",
+      "lien": "/account/register"
+    }
+  ]
+}

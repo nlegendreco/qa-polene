@@ -1,0 +1,15 @@
+{
+  "page": "recherche",
+  "projet": "prod · iphone",
+  "date": "2026-10-16",
+  "titres": [
+    "h1 Rechercher les résultats pour \"sac\" (N)"
+  ],
+  "boutons": [],
+  "liens": [
+    {
+      "texte": "Next page",
+      "lien": "/search"
+    }
+  ]
+}

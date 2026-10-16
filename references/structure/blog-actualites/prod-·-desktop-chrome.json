@@ -1,0 +1,44 @@
+{
+  "page": "blog-actualites",
+  "projet": "prod · desktop-chrome",
+  "date": "2026-10-16",
+  "titres": [
+    "h3 Boky",
+    "h3 Shuldo",
+    "h3 Longue Vue",
+    "h3 Longue Vue",
+    "h3 Béri Rizom",
+    "h3 Atelier de curiosités",
+    "h2 Rechercher des modèles spécifiques"
+  ],
+  "boutons": [
+    "Fermer",
+    "Recherche"
+  ],
+  "liens": [
+    {
+      "texte": "Boky Boky",
+      "lien": "/blogs/news/boky"
+    },
+    {
+      "texte": "Shuldo Shuldo",
+      "lien": "/blogs/news/shuldo"
+    },
+    {
+      "texte": "Longue Vue Longue Vue",
+      "lien": "/blogs/news/longue-vue-2026"
+    },
+    {
+      "texte": "Longue Vue Longue Vue",
+      "lien": "/blogs/news/longue-vue"
+    },
+    {
+      "texte": "Béri Rizom Béri Rizom",
+      "lien": "/blogs/news/beri-rizom"
+    },
+    {
+      "texte": "Atelier de curiosités Atelier de curiosités",
+      "lien": "/blogs/news/atelier-de-curiosites"
+    }
+  ]
+}

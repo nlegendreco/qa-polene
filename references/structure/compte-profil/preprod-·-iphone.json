@@ -1,0 +1,55 @@
+{
+  "page": "compte-profil",
+  "projet": "preprod · iphone",
+  "date": "2026-10-16",
+  "titres": [
+    "h1 My Account",
+    "h4 Are you certain you want to delete your account?",
+    "h2 Your Profile"
+  ],
+  "boutons": [
+    "Close modal",
+    "Confirm deletion",
+    "Cancel deletion",
+    "Save your information",
+    "Delete account"
+  ],
+  "liens": [
+    {
+      "texte": "Log out",
+      "lien": "/customer_identity/logout"
+    },
+    {
+      "texte": "Overview",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Orders",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Profile",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Addresses",
+      "lien": "/fr-fr/account/addresses"
+    },
+    {
+      "texte": "Wishlist",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Alert back in stock",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Assistance",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Privacy Policy",
+      "lien": "/policies/privacy-policy"
+    }
+  ]
+}

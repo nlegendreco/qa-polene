@@ -1,0 +1,25 @@
+{
+  "page": "connexion",
+  "projet": "prod · desktop-chrome",
+  "date": "2026-10-16",
+  "titres": [
+    "h2 Se connecter",
+    "h2 Rechercher des modèles spécifiques"
+  ],
+  "boutons": [
+    "(sans nom)",
+    "Soumettre",
+    "Fermer",
+    "Recherche"
+  ],
+  "liens": [
+    {
+      "texte": "Mot de passe oublié ?",
+      "lien": "/account/login"
+    },
+    {
+      "texte": "Créer un compte",
+      "lien": "/account/register"
+    }
+  ]
+}

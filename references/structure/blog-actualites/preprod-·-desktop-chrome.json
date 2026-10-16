@@ -1,0 +1,149 @@
+{
+  "page": "blog-actualites",
+  "projet": "preprod · desktop-chrome",
+  "date": "2026-10-16",
+  "titres": [
+    "h3 Boky",
+    "h3 Shuldo",
+    "h3 Savoir-Faire",
+    "h3 Longue Vue",
+    "h3 Béri Rizom",
+    "h3 2025",
+    "h3 Sia Hurtigkarl",
+    "h3 Ormé",
+    "h3 Numéro Neuf East-West",
+    "h3 Atelier de curiosités",
+    "h3 Winter Colors",
+    "h3 Neyu",
+    "h3 Teasing Neyu",
+    "h3 Raffia Edition",
+    "h3 Polène + Róisín Pierce",
+    "h3 Róisín Pierce",
+    "h3 Lorem ipsum dolor",
+    "h3 Mahoya - Blog",
+    "h3 Irlande - Blog",
+    "h3 Test Lukas",
+    "h3 Le conte de la lune",
+    "h3 Naé",
+    "h3 Maroquinerie trompe-l’œil",
+    "h3 « Edition Duo » Collection Eroz",
+    "h3 Fleurs de cuir",
+    "h3 Mokki",
+    "h3 First post",
+    "h2 Search for specific products"
+  ],
+  "boutons": [
+    "Close",
+    "Search"
+  ],
+  "liens": [
+    {
+      "texte": "Boky Boky",
+      "lien": "/fr-fr/blogs/news/boky"
+    },
+    {
+      "texte": "Shuldo Shuldo",
+      "lien": "/fr-fr/blogs/news/shuldo"
+    },
+    {
+      "texte": "Savoir-Faire Savoir-Faire",
+      "lien": "/fr-fr/blogs/news/savoir-faire"
+    },
+    {
+      "texte": "Longue Vue Longue Vue",
+      "lien": "/fr-fr/blogs/news/longue-vue"
+    },
+    {
+      "texte": "Béri Rizom Béri Rizom",
+      "lien": "/fr-fr/blogs/news/beri-rizom"
+    },
+    {
+      "texte": "2025 2025",
+      "lien": "/fr-fr/blogs/news/2025-trough-the-lens"
+    },
+    {
+      "texte": "Sia Hurtigkarl Sia Hurtigkarl",
+      "lien": "/fr-fr/blogs/news/sia-hurtigkarl"
+    },
+    {
+      "texte": "Ormé Ormé",
+      "lien": "/fr-fr/blogs/news/orme"
+    },
+    {
+      "texte": "Numéro Neuf East-West Numéro Neuf East-West",
+      "lien": "/fr-fr/blogs/news/numero-neuf-east-west"
+    },
+    {
+      "texte": "Atelier de curiosités Atelier de curiosités",
+      "lien": "/fr-fr/blogs/news/atelier-de-curiosites"
+    },
+    {
+      "texte": "Winter Colors Winter Colors",
+      "lien": "/fr-fr/blogs/news/winter-colors"
+    },
+    {
+      "texte": "Neyu Neyu",
+      "lien": "/fr-fr/blogs/news/neyu"
+    },
+    {
+      "texte": "Teasing Neyu Teasing Neyu",
+      "lien": "/fr-fr/blogs/news/new-creation-neyu"
+    },
+    {
+      "texte": "Raffia Edition Raffia Edition",
+      "lien": "/fr-fr/blogs/news/raffia-edition"
+    },
+    {
+      "texte": "Polène + Róisín Pierce Polène + Róisín Pierce",
+      "lien": "/fr-fr/blogs/news/polene-roisin-pierce"
+    },
+    {
+      "texte": "Róisín Pierce Róisín Pierce",
+      "lien": "/fr-fr/blogs/news/rosin-pierce"
+    },
+    {
+      "texte": "Lorem ipsum dolor Lorem ipsum dolor",
+      "lien": "/fr-fr/blogs/news/lorem-ipsum-dolor"
+    },
+    {
+      "texte": "Mahoya - Blog Mahoya - Blog",
+      "lien": "/fr-fr/blogs/news/mahoya-blog"
+    },
+    {
+      "texte": "Irlande - Blog Irlande - Blog",
+      "lien": "/fr-fr/blogs/news/losmose"
+    },
+    {
+      "texte": "Test Lukas Test Lukas",
+      "lien": "/fr-fr/blogs/news/test-lukas"
+    },
+    {
+      "texte": "Le conte de la lune Le conte de la lune",
+      "lien": "/fr-fr/blogs/news/the-tale-of-the-moon"
+    },
+    {
+      "texte": "Naé Naé",
+      "lien": "/fr-fr/blogs/news/nae"
+    },
+    {
+      "texte": "Maroquinerie trompe-l’œil Maroquinerie trompe-l’œil",
+      "lien": "/fr-fr/blogs/news/pai"
+    },
+    {
+      "texte": "« Edition Duo » Collection Eroz « Edition Duo » Collection Eroz",
+      "lien": "/fr-fr/blogs/news/edition-duo-collection-eroz"
+    },
+    {
+      "texte": "Fleurs de cuir Fleurs de cuir",
+      "lien": "/fr-fr/blogs/news/fleurs-de-cuir"
+    },
+    {
+      "texte": "Mokki Mokki",
+      "lien": "/fr-fr/blogs/news/mokki"
+    },
+    {
+      "texte": "First post First post",
+      "lien": "/fr-fr/blogs/news/first-post"
+    }
+  ]
+}

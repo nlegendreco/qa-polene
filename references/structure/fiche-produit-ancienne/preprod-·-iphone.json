@@ -1,0 +1,45 @@
+{
+  "page": "fiche-produit-ancienne",
+  "projet": "preprod · iphone",
+  "date": "2026-10-16",
+  "titres": [
+    "h1 QA Numéro Un",
+    "h2 Edition In Stock",
+    "h3 More about the product",
+    "h2 Ubrique and its savoir-faire"
+  ],
+  "boutons": [
+    "Add to Wishlist",
+    "Description",
+    "Size & fit",
+    "Materials",
+    "Shipping and returns",
+    "Add to cart - Notify me Preorder now Coming soon — Sign up Added to cart"
+  ],
+  "liens": [
+    {
+      "texte": ", 4 of 6",
+      "lien": "/cdn/shop/files/3_c256e2d1-eaf2-4965-a5e1-58a5834dff71.jpg"
+    },
+    {
+      "texte": ", 1 of 6",
+      "lien": "/cdn/shop/files/packshot-front_numero-un-noir-grain_e318be64-0072-4748-b9c3-ae11db5f0829.png"
+    },
+    {
+      "texte": ", 2 of 6",
+      "lien": "/cdn/shop/files/1_0e561099-5e1a-4f5e-bfef-473115dc58d9.jpg"
+    },
+    {
+      "texte": ", 3 of 6",
+      "lien": "/cdn/shop/files/2_c3ea271e-8bdb-4d34-83df-2ed88bd8c6ee.jpg"
+    },
+    {
+      "texte": "See shipping rates",
+      "lien": "support.polene-paris.com/hc/en-us/articles/360010107620-Delivery-fees"
+    },
+    {
+      "texte": "Returns",
+      "lien": "engpolene.returnscenter.com/"
+    }
+  ]
+}

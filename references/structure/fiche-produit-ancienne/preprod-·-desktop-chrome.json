@@ -1,0 +1,34 @@
+{
+  "page": "fiche-produit-ancienne",
+  "projet": "preprod · desktop-chrome",
+  "date": "2026-10-16",
+  "titres": [
+    "h1 QA Numéro Un",
+    "h2 Edition In Stock",
+    "h3 Details",
+    "h2 Ubrique and its savoir-faire",
+    "h2 Search for specific products"
+  ],
+  "boutons": [
+    "Add to cart <prix>",
+    "Zoom on image",
+    "Add to Wishlist",
+    "Add to cart - Notify me Preorder now Coming soon — Sign up Added to cart",
+    "Description",
+    "Size & fit",
+    "Materials",
+    "Shipping and returns",
+    "Close",
+    "Search"
+  ],
+  "liens": [
+    {
+      "texte": "See shipping rates",
+      "lien": "support.polene-paris.com/hc/en-us/articles/360010107620-Delivery-fees"
+    },
+    {
+      "texte": "Returns",
+      "lien": "engpolene.returnscenter.com/"
+    }
+  ]
+}

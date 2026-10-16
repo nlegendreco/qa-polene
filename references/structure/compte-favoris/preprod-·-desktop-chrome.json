@@ -1,0 +1,52 @@
+{
+  "page": "compte-favoris",
+  "projet": "preprod · desktop-chrome",
+  "date": "2026-10-16",
+  "titres": [
+    "h1 My Account",
+    "h2 Your favorites",
+    "h2 Search for specific products"
+  ],
+  "boutons": [
+    "Close",
+    "Search"
+  ],
+  "liens": [
+    {
+      "texte": "Overview",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Orders",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Profile",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Addresses",
+      "lien": "/fr-fr/account/addresses"
+    },
+    {
+      "texte": "Wishlist",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Alert back in stock",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Assistance",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Log out",
+      "lien": "/customer_identity/logout"
+    },
+    {
+      "texte": "Discover Polène's new in",
+      "lien": "/fr-fr/collections/new-in"
+    }
+  ]
+}

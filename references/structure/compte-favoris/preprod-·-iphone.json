@@ -1,0 +1,48 @@
+{
+  "page": "compte-favoris",
+  "projet": "preprod · iphone",
+  "date": "2026-10-16",
+  "titres": [
+    "h1 My Account",
+    "h2 Your favorites"
+  ],
+  "boutons": [],
+  "liens": [
+    {
+      "texte": "Log out",
+      "lien": "/customer_identity/logout"
+    },
+    {
+      "texte": "Overview",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Orders",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Profile",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Addresses",
+      "lien": "/fr-fr/account/addresses"
+    },
+    {
+      "texte": "Wishlist",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Alert back in stock",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Assistance",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Discover Polène's new in",
+      "lien": "/fr-fr/collections/new-in"
+    }
+  ]
+}

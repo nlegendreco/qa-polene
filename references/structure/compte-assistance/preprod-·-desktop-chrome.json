@@ -1,0 +1,84 @@
+{
+  "page": "compte-assistance",
+  "projet": "preprod · desktop-chrome",
+  "date": "2026-10-16",
+  "titres": [
+    "h1 My Account",
+    "h2 Need Assistance?",
+    "h2 FAQ",
+    "h2 Live Chat",
+    "h2 Social Media",
+    "h2 Search for specific products"
+  ],
+  "boutons": [
+    "Chat with us",
+    "Close",
+    "Search"
+  ],
+  "liens": [
+    {
+      "texte": "Overview",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Orders",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Profile",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Addresses",
+      "lien": "/fr-fr/account/addresses"
+    },
+    {
+      "texte": "Wishlist",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Alert back in stock",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Assistance",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Log out",
+      "lien": "/customer_identity/logout"
+    },
+    {
+      "texte": "Contact us form",
+      "lien": "support.polene-paris.com/hc/fr/requests/new"
+    },
+    {
+      "texte": "Contact us by email",
+      "lien": "mailto:contact@polene-paris.com"
+    },
+    {
+      "texte": "Delivery information",
+      "lien": "support.polene-paris.com/hc/en-150/articles/360010107620-Delivery-fees"
+    },
+    {
+      "texte": "Get information regarding payment",
+      "lien": "support.polene-paris.com/hc/en-150/categories/360002782360-Account-and-Payments"
+    },
+    {
+      "texte": "Read more about our return policy",
+      "lien": "support.polene-paris.com/hc/en-150/sections/360004768339-Return-My-Order"
+    },
+    {
+      "texte": "See more",
+      "lien": "support.polene-paris.com/hc/fr"
+    },
+    {
+      "texte": "Instagram",
+      "lien": "www.instagram.com/polene_paris"
+    },
+    {
+      "texte": "Facebook",
+      "lien": "www.facebook.com/poleneparis"
+    }
+  ]
+}

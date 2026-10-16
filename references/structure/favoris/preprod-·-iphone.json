@@ -1,0 +1,19 @@
+{
+  "page": "favoris",
+  "projet": "preprod · iphone",
+  "date": "2026-10-16",
+  "titres": [
+    "h2 Your favorites"
+  ],
+  "boutons": [],
+  "liens": [
+    {
+      "texte": "Sign in",
+      "lien": "/fr-fr/account/login"
+    },
+    {
+      "texte": "Create account",
+      "lien": "/fr-fr/account/register"
+    }
+  ]
+}

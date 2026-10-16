@@ -1,0 +1,32 @@
+{
+  "page": "collections-bags",
+  "projet": "prod · iphone",
+  "date": "2026-10-16",
+  "titres": [
+    "h1 Sacs",
+    "h2 Sacs",
+    "h3 Trier par",
+    "h3 Disponibilité",
+    "h3 Matières (N)",
+    "h3 Coloris (N)",
+    "h3 Tailles (N)"
+  ],
+  "boutons": [
+    "Précédent",
+    "Suivant",
+    "Filtres (N)",
+    "Fermer",
+    "Matières (N)",
+    "Coloris (N)",
+    "Tailles (N)",
+    "Supprimer",
+    "Afficher les produits • N",
+    "Retour en haut"
+  ],
+  "liens": [
+    {
+      "texte": "Next page",
+      "lien": "/collections/bags"
+    }
+  ]
+}

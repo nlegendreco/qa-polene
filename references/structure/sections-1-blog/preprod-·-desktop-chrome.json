@@ -1,0 +1,63 @@
+{
+  "page": "sections-1-blog",
+  "projet": "preprod · desktop-chrome",
+  "date": "2026-10-16",
+  "titres": [
+    "h3 Explore more jewellery",
+    "h2 Lorem Ipsum",
+    "h3 Osmo",
+    "h2 Lorem ipsum",
+    "h2 OSMO",
+    "h2 Search for specific products"
+  ],
+  "boutons": [
+    "Add to Wishlist",
+    "Add to cart - Notify me Preorder now Coming soon — Sign up Added to cart",
+    "Pause video",
+    "Previous",
+    "Next",
+    "Go to slide 1",
+    "Go to slide 2",
+    "Go to slide 3",
+    "Close",
+    "Search"
+  ],
+  "liens": [
+    {
+      "texte": "Explore All",
+      "lien": "/fr-fr/blogs/jewellery"
+    },
+    {
+      "texte": "manufacturing",
+      "lien": "/fr-fr/blogs/jewellery/confection"
+    },
+    {
+      "texte": "An ode to refinement",
+      "lien": "/fr-fr/blogs/jewellery/packaging"
+    },
+    {
+      "texte": "design",
+      "lien": "/fr-fr/blogs/jewellery/design"
+    },
+    {
+      "texte": "Osmo - Smooth Cognac",
+      "lien": "/fr-fr/products/osmo-smooth-cognac"
+    },
+    {
+      "texte": "Voir le cyme",
+      "lien": "/fr-fr/products/cyme-textured-black-cherry"
+    },
+    {
+      "texte": "Explore more",
+      "lien": "/fr-fr/collections/osmo"
+    },
+    {
+      "texte": "Sections 2",
+      "lien": "/fr-fr/blogs/editorials/sections-2"
+    },
+    {
+      "texte": "Sections 3",
+      "lien": "/fr-fr/blogs/editorials/sections-3"
+    }
+  ]
+}

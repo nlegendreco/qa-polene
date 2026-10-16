@@ -1,0 +1,25 @@
+{
+  "page": "connexion",
+  "projet": "preprod · desktop-chrome",
+  "date": "2026-10-16",
+  "titres": [
+    "h2 Login",
+    "h2 Search for specific products"
+  ],
+  "boutons": [
+    "(sans nom)",
+    "Submit",
+    "Close",
+    "Search"
+  ],
+  "liens": [
+    {
+      "texte": "Forgot your password?",
+      "lien": "/fr-fr/account/login"
+    },
+    {
+      "texte": "Create account",
+      "lien": "/fr-fr/account/register"
+    }
+  ]
+}

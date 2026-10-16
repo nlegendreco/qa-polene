@@ -1,0 +1,46 @@
+{
+  "page": "en-tete",
+  "projet": "preprod · desktop-chrome",
+  "date": "2026-10-16",
+  "boutons": [
+    "Savoir-Faire",
+    "Country/Currency FR",
+    "Select Language fr",
+    "Stores",
+    "Search"
+  ],
+  "liens": [
+    {
+      "texte": "Bestsellers",
+      "lien": "/fr-fr/collections/bestsellers"
+    },
+    {
+      "texte": "Bags",
+      "lien": "/fr-fr/collections/handbags"
+    },
+    {
+      "texte": "Jewellery",
+      "lien": "/fr-fr/collections/jewellery"
+    },
+    {
+      "texte": "Accessories",
+      "lien": "/fr-fr/collections/small-leather-goods"
+    },
+    {
+      "texte": "Polène logo - Back to home page",
+      "lien": "/fr-fr"
+    },
+    {
+      "texte": "Account",
+      "lien": "/customer_authentication/login"
+    },
+    {
+      "texte": "N Wishlist",
+      "lien": "/fr-fr/pages/wishlist"
+    },
+    {
+      "texte": "N Shopping cart, items: N",
+      "lien": "/fr-fr/cart"
+    }
+  ]
+}

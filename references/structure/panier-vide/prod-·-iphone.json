@@ -1,0 +1,31 @@
+{
+  "page": "panier-vide",
+  "projet": "prod · iphone",
+  "date": "2026-10-16",
+  "titres": [
+    "h2 Votre panier est vide",
+    "h2 Paiement 100% sécurisé",
+    "h3 Assistance"
+  ],
+  "boutons": [
+    "Assistance"
+  ],
+  "liens": [
+    {
+      "texte": "Découvrir la sélection Polène",
+      "lien": "/collections/polene-selection"
+    },
+    {
+      "texte": "Se connecter",
+      "lien": "/account/login"
+    },
+    {
+      "texte": "Contactez-nous",
+      "lien": "support.polene-paris.com/hc/fr/requests/new"
+    },
+    {
+      "texte": "Contactez-nous par e-mail",
+      "lien": "mailto:support@polene-paris.com"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "page": "en-tete",
+  "projet": "prod · desktop-chrome",
+  "date": "2026-10-16",
+  "boutons": [
+    "Savoir-Faire",
+    "Country/Currency FR",
+    "Boutiques",
+    "Recherche"
+  ],
+  "liens": [
+    {
+      "texte": "Best-sellers",
+      "lien": "/collections/bestsellers"
+    },
+    {
+      "texte": "Sacs",
+      "lien": "/collections/bags"
+    },
+    {
+      "texte": "Bijoux",
+      "lien": "/collections/jewellery"
+    },
+    {
+      "texte": "Accessoires",
+      "lien": "/collections/small-leather-goods"
+    },
+    {
+      "texte": "Logo Polène - Revenir à la page d'accueil",
+      "lien": "/"
+    },
+    {
+      "texte": "Compte",
+      "lien": "/account"
+    },
+    {
+      "texte": "N Favoris",
+      "lien": "/pages/wishlist"
+    },
+    {
+      "texte": "N Shopping cart with N items",
+      "lien": "/cart"
+    }
+  ]
+}

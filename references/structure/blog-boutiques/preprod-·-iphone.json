@@ -1,0 +1,85 @@
+{
+  "page": "blog-boutiques",
+  "projet": "preprod · iphone",
+  "date": "2026-10-16",
+  "titres": [
+    "h3 Singapore",
+    "h3 Tokyo, Ginza Six",
+    "h3 Osaka, Hankyu Umeda",
+    "h3 Pop-Up Paris Longue Vue",
+    "h3 Milan",
+    "h3 Beijing",
+    "h3 Copenhagen",
+    "h3 Hamburg",
+    "h3 Paris, Champs Elysées",
+    "h3 London",
+    "h3 Séoul",
+    "h3 Paris, Le Bon Marché",
+    "h3 Tokyo",
+    "h3 Paris, Richelieu",
+    "h3 New York"
+  ],
+  "boutons": [],
+  "liens": [
+    {
+      "texte": "Singapore Singapore Marina Bay Sands, B2-108A2 Bayfront Avenue Singapore 018972Open Friday and Saturday from 10.30 am to",
+      "lien": "/fr-fr/blogs/stores/singapour"
+    },
+    {
+      "texte": "Tokyo, Ginza Six Tokyo, Ginza Six Ginza Six – Ground floor6 Chome-10-1 Ginza, Chuo City, Tokyo 104-0061, JapanOpen every",
+      "lien": "/fr-fr/blogs/stores/tokyo-ginza-six"
+    },
+    {
+      "texte": "Osaka, Hankyu Umeda Osaka, Hankyu Umeda Hankyu Umeda Main Store 8-7 Kakudacho, Kita Ward, Osaka, 530-8350, JaponOpen fro",
+      "lien": "/fr-fr/blogs/stores/hankyu-umeda-osaka"
+    },
+    {
+      "texte": "Pop-Up Paris Longue Vue Pop-Up Paris Longue Vue La Papeterie de Cuir67 rue Montmartre, 75002 ParisPop-up ouvert jusqu'au",
+      "lien": "/fr-fr/blogs/stores/pop-up-paris-longue-vue"
+    },
+    {
+      "texte": "Milan Milan Via Alessandro Manzoni, 37 20121 Milano MI, Italy Open every day from 10.30 am to 7.30 pm.",
+      "lien": "/fr-fr/blogs/stores/milan"
+    },
+    {
+      "texte": "Beijing Beijing Taikoo Li SanlitunUnit N4 - 16 & 27 – North side, 11 Sanlitun Rd, Chaoyang District, BeijingOpen every d",
+      "lien": "/fr-fr/blogs/stores/beijing"
+    },
+    {
+      "texte": "Copenhagen Copenhagen Højbro Plads 5/7, 1200 Copenhagen, DenmarkOpen Monday through Saturday, from 10 a.m. to 6 p.m. Clo",
+      "lien": "/fr-fr/blogs/stores/copenhague"
+    },
+    {
+      "texte": "Hamburg Hamburg Neuer Wall 71, 20354, Hamburg, GermanyOpen Monday to Friday from 10:00 a.m. to 7:00 p.m. Saturday from 1",
+      "lien": "/fr-fr/blogs/stores/hamburg"
+    },
+    {
+      "texte": "Paris, Champs Elysées Paris, Champs Elysées 2 Rond-Point des Champs-Élysées Marcel-Dassault, 75008 Paris, FranceOpen eve",
+      "lien": "/fr-fr/blogs/stores/paris-champs-elysees"
+    },
+    {
+      "texte": "London London 74-76 Regent Street London W1B 5RL, Royaume-UniOuvert du lundi au samedi de 10h à 20h et le dimanche de 12",
+      "lien": "/fr-fr/blogs/stores/london"
+    },
+    {
+      "texte": "Séoul Séoul 22, Garosu-gil, Gangnam-gu, Seoul, Corée Ouvert tous les jours de 11h à 20h.",
+      "lien": "/fr-fr/blogs/stores/seoul"
+    },
+    {
+      "texte": "Paris, Le Bon Marché Paris, Le Bon Marché 24 rue de Sèvres 75007. Rez-de-chaussée, entrée au croisement de la Rue du Bac",
+      "lien": "/fr-fr/blogs/stores/le-bon-marche"
+    },
+    {
+      "texte": "Tokyo Tokyo 5 Chome, 3-18 Minamiaoyama Minato-ku, Tokyo 107-0062 Ouvert tous les jours de 11h00 à 19h00.",
+      "lien": "/fr-fr/blogs/stores/tokyo"
+    },
+    {
+      "texte": "Paris, Richelieu Paris, Richelieu Richelieu Store, 69 rue de richelieu, 75002Open daily from 10:00am to 7:30pm. Concierg",
+      "lien": "/fr-fr/blogs/stores/paris-richelieu"
+    },
+    {
+      "texte": "New York New York 487 Broadway 10013Open Monday to Saturday from 11:00am to 7:00pm and Sunday from 12:00pm to 6:00pm.",
+      "lien": "/fr-fr/blogs/stores/new-york"
+    }
+  ]
+}

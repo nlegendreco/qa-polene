@@ -1,0 +1,22 @@
+{
+  "page": "connexion",
+  "projet": "preprod · iphone",
+  "date": "2026-10-16",
+  "titres": [
+    "h2 Login"
+  ],
+  "boutons": [
+    "(sans nom)",
+    "Submit"
+  ],
+  "liens": [
+    {
+      "texte": "Forgot your password?",
+      "lien": "/fr-fr/account/login"
+    },
+    {
+      "texte": "Create account",
+      "lien": "/fr-fr/account/register"
+    }
+  ]
+}

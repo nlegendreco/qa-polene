@@ -1,0 +1,70 @@
+{
+  "page": "pied-de-page",
+  "projet": "preprod · iphone",
+  "date": "2026-10-16",
+  "boutons": [
+    "CONFIRM"
+  ],
+  "liens": [
+    {
+      "texte": "Privacy Policy",
+      "lien": "/policies/privacy-policy"
+    },
+    {
+      "texte": "Brand",
+      "lien": "/fr-fr/pages/about-the-brand"
+    },
+    {
+      "texte": "Store locations",
+      "lien": "/fr-fr/blogs/stores"
+    },
+    {
+      "texte": "Craftsmanship",
+      "lien": "/fr-fr/pages/craftsmanship"
+    },
+    {
+      "texte": "Sustainable projects",
+      "lien": "/fr-fr/blogs/innovative-materials"
+    },
+    {
+      "texte": "Careers",
+      "lien": "carriere.polene-paris.com/l/en/"
+    },
+    {
+      "texte": "Shipping & taxes",
+      "lien": "support.polene-paris.com/hc/en-sg/articles/360010107620-What-are-the-delivery-fees-and-times"
+    },
+    {
+      "texte": "Help & questions",
+      "lien": "support.polene-paris.com/hc"
+    },
+    {
+      "texte": "Terms of service",
+      "lien": "/fr-fr/policies/terms-of-service"
+    },
+    {
+      "texte": "Legal mentions",
+      "lien": "/fr-fr/policies/legal-notice"
+    },
+    {
+      "texte": "Refund policy",
+      "lien": "/fr-fr/policies/refund-policy"
+    },
+    {
+      "texte": "Facebook",
+      "lien": "www.facebook.com/poleneparis"
+    },
+    {
+      "texte": "Instagram",
+      "lien": "www.instagram.com/polene_paris/"
+    },
+    {
+      "texte": "Youtube",
+      "lien": "www.youtube.com/@polene-paris"
+    },
+    {
+      "texte": "TikTok",
+      "lien": "www.tiktok.com/@polene_paris"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "page": "uat-accessibilite",
+  "projet": "preprod · iphone",
+  "date": "2026-10-16",
+  "titres": [
+    "h3 UAT — Media collection teaser",
+    "h2 UAT — Blog text",
+    "h3 Mokki",
+    "h2 UAT — Split screen media"
+  ],
+  "boutons": [
+    "Pause video",
+    "Add to Wishlist",
+    "Add to cart - Notify me Preorder now Coming soon — Sign up Added to cart"
+  ],
+  "liens": [
+    {
+      "texte": "DISCOVER",
+      "lien": "/collections/all"
+    },
+    {
+      "texte": "Mokki - Textured Taupe",
+      "lien": "/fr-fr/products/mokki-textured-taupe"
+    },
+    {
+      "texte": "UAT — Split screen media Deux vidéos en autoplay, un seul contrôle. DISCOVER",
+      "lien": "/collections/all"
+    }
+  ]
+}

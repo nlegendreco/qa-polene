@@ -1,0 +1,34 @@
+{
+  "page": "panier-vide",
+  "projet": "preprod · desktop-chrome",
+  "date": "2026-10-16",
+  "titres": [
+    "h2 Your shopping cart is empty",
+    "h2 100% secure payments",
+    "h3 Assistance",
+    "h2 Search for specific products"
+  ],
+  "boutons": [
+    "Assistance",
+    "Close",
+    "Search"
+  ],
+  "liens": [
+    {
+      "texte": "Discover polène selection",
+      "lien": "/fr-fr/collections/all"
+    },
+    {
+      "texte": "Login",
+      "lien": "/fr-fr/account/login"
+    },
+    {
+      "texte": "Contact us form",
+      "lien": "/fr-fr/cart"
+    },
+    {
+      "texte": "Contact us by email",
+      "lien": "mailto:support@polene-paris.com"
+    }
+  ]
+}

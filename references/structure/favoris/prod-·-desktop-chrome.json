@@ -1,0 +1,23 @@
+{
+  "page": "favoris",
+  "projet": "prod · desktop-chrome",
+  "date": "2026-10-16",
+  "titres": [
+    "h2 Vos favoris",
+    "h2 Rechercher des modèles spécifiques"
+  ],
+  "boutons": [
+    "Fermer",
+    "Recherche"
+  ],
+  "liens": [
+    {
+      "texte": "Se connecter",
+      "lien": "/account/login"
+    },
+    {
+      "texte": "Créer un compte",
+      "lien": "/account/register"
+    }
+  ]
+}

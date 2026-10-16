@@ -81,7 +81,18 @@ export async function preparer(page: Page) {
     window.scrollTo({ top: 0, behavior: 'instant' });
   });
   await page.locator('body').press('Shift');
-  await page.waitForTimeout(1_000);
+  // Contenu chargé après coup (articles de La Maison, page par page, 19 articles en 5 s le 16 octobre 2026) : on
+  // attend que la page ne change plus (même nombre d'éléments pendant 1,5 s), 15 s au plus.
+  await page.evaluate(async () => {
+    const taille = () => document.querySelectorAll('main *').length;
+    let avant = taille(), stable = 0;
+    for (const fin = Date.now() + 15_000; stable < 3 && Date.now() < fin;) {
+      await new Promise(r => setTimeout(r, 500));
+      const maintenant = taille();
+      stable = maintenant === avant ? stable + 1 : 0;
+      avant = maintenant;
+    }
+  });
 }
 
 export async function ouvrir(page: Page, chemin: string, statut = 200) {

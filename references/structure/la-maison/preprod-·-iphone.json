@@ -1,0 +1,45 @@
+{
+  "page": "la-maison",
+  "projet": "preprod · iphone",
+  "date": "2026-10-16",
+  "titres": [],
+  "boutons": [],
+  "liens": [
+    {
+      "texte": "All",
+      "lien": "/fr-fr/pages/la-maison"
+    },
+    {
+      "texte": "News",
+      "lien": "/fr-fr/blogs/news"
+    },
+    {
+      "texte": "Editorials",
+      "lien": "/fr-fr/blogs/editorials"
+    },
+    {
+      "texte": "Savoir-Faire",
+      "lien": "/fr-fr/blogs/news/savoir-faire"
+    },
+    {
+      "texte": "Bags",
+      "lien": "/fr-fr/blogs/bags"
+    },
+    {
+      "texte": "lepopee-blog",
+      "lien": "/fr-fr/blogs/lepopee-blog"
+    },
+    {
+      "texte": "Innovative materials",
+      "lien": "/fr-fr/blogs/innovative-materials"
+    },
+    {
+      "texte": "Jewellery",
+      "lien": "/fr-fr/blogs/jewellery"
+    },
+    {
+      "texte": "La Maison",
+      "lien": "/fr-fr/blogs/la-maison"
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "page": "sections-3-blog",
+  "projet": "preprod · desktop-chrome",
+  "date": "2026-10-16",
+  "titres": [
+    "h3 Lorem Ipsum",
+    "h2 Polène Again",
+    "h3 Featured media frieze",
+    "h2 Lorem ipsum",
+    "h2 Search for specific products"
+  ],
+  "boutons": [
+    "Previous",
+    "Next",
+    "Stop automatic slide rotation",
+    "View item 1",
+    "View item 2",
+    "View item 3",
+    "View item 4",
+    "Play video",
+    "Mute",
+    "Fullscreen",
+    "Close",
+    "Search"
+  ],
+  "liens": [
+    {
+      "texte": "Voir la collection, Lorem Ipsum",
+      "lien": "/fr-fr/collections/collaboration-polene-roisin-pierce"
+    },
+    {
+      "texte": "Lorem Ipsum",
+      "lien": "/fr-fr/collections/collaboration-polene-roisin-pierce"
+    },
+    {
+      "texte": "Voir l'article",
+      "lien": "/fr-fr/collections/osmo"
+    },
+    {
+      "texte": "Polène Again Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industr",
+      "lien": "/fr-fr/products/osmo-smooth-cognac"
+    },
+    {
+      "texte": "Sections 1",
+      "lien": "/fr-fr/blogs/editorials/sections"
+    },
+    {
+      "texte": "Sections 2",
+      "lien": "/fr-fr/blogs/editorials/sections-2"
+    }
+  ]
+}

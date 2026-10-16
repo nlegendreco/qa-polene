@@ -1,0 +1,85 @@
+{
+  "page": "blog-boutiques",
+  "projet": "prod · iphone",
+  "date": "2026-10-16",
+  "titres": [
+    "h3 Costa Mesa",
+    "h3 Singapour",
+    "h3 Tokyo, Ginza Six",
+    "h3 Osaka, Hankyu Umeda",
+    "h3 Milan",
+    "h3 Pékin",
+    "h3 Copenhague",
+    "h3 Hambourg",
+    "h3 Paris, Champs Elysées",
+    "h3 Londres",
+    "h3 Séoul",
+    "h3 Paris, Le Bon Marché",
+    "h3 Tokyo, Omotesando",
+    "h3 Paris, Richelieu",
+    "h3 New York"
+  ],
+  "boutons": [],
+  "liens": [
+    {
+      "texte": "Costa Mesa Costa Mesa South Coast Plaza, 3333 Bristol St, Costa Mesa, CA 92626Ouvert du lundi au vendredi de 10h à 20h, ",
+      "lien": "/blogs/stores/costa-mesa"
+    },
+    {
+      "texte": "Singapour Singapour Marina Bay Sands, B2-108A2 Bayfront Avenue Singapour 018972Ouvert du Vendredi au Samedi de 10h30 à 2",
+      "lien": "/blogs/stores/singapour"
+    },
+    {
+      "texte": "Tokyo, Ginza Six Tokyo, Ginza Six Ginza Six – Rez-de-chaussée6 Chome-10-1 Ginza, Chuo City, Tokyo 104-0061, JaponOuvert ",
+      "lien": "/blogs/stores/tokyo-ginza-six"
+    },
+    {
+      "texte": "Osaka, Hankyu Umeda Osaka, Hankyu Umeda Hankyu Umeda Main Store8-7 Kakudacho, Kita Ward, Osaka, 530-8350, JaponOuvert du",
+      "lien": "/blogs/stores/hankyu-umeda-osaka"
+    },
+    {
+      "texte": "Milan Milan Via Alessandro Manzoni, 37 20121 Milano MI, Italie Ouvert tous les jours, de 10h30 à 19h30",
+      "lien": "/blogs/stores/milan"
+    },
+    {
+      "texte": "Pékin Pékin Taikoo Li SanlitunUnité N4 - 16 & 27 - Quartier Nord, n°11 rue Sanlitun, district de Chaoyang, PékinOuvert t",
+      "lien": "/blogs/stores/beijing"
+    },
+    {
+      "texte": "Copenhague Copenhague Højbro Plads 5/7, 1200 Copenhague, DanemarkOuvert du lundi au samedi de 10h à 18h. Fermé le dimanc",
+      "lien": "/blogs/stores/copenhague"
+    },
+    {
+      "texte": "Hambourg Hambourg Neuer Wall 71, 20354, Hambourg, AllemagneOuvert du lundi au vendredi de 10h à 19h. Le samedi de 10h à ",
+      "lien": "/blogs/stores/hamburg"
+    },
+    {
+      "texte": "Paris, Champs Elysées Paris, Champs Elysées 2 Rond Point des Champs-Élysées Marcel-Dassault, 75008 ParisOuvert tous les ",
+      "lien": "/blogs/stores/paris-champs-elysees"
+    },
+    {
+      "texte": "Londres Londres 74-76 Regent Street London W1B 5RL, Royaume-UniOuvert du lundi au samedi de 10h à 20h et le dimanche de ",
+      "lien": "/blogs/stores/london"
+    },
+    {
+      "texte": "Séoul Séoul 22, Garosu-gil, Gangnam-gu, Seoul, CoréeOuvert tous les jours de 11h à 20h.",
+      "lien": "/blogs/stores/seoul"
+    },
+    {
+      "texte": "Paris, Le Bon Marché Paris, Le Bon Marché 24 rue de Sèvres 75007. Rez-de-chaussée, entrée au croisement de la Rue du Bac",
+      "lien": "/blogs/stores/le-bon-marche"
+    },
+    {
+      "texte": "Tokyo, Omotesando Tokyo, Omotesando 5 Chome, 3-18 Minamiaoyama Minato-ku, Tokyo 107-0062 Ouvert tous les jours de 11h00 ",
+      "lien": "/blogs/stores/tokyo"
+    },
+    {
+      "texte": "Paris, Richelieu Paris, Richelieu Boutique Richelieu, 69 rue de richelieu, 75002Ouvert tous les jours de 10h00 à 19h30.C",
+      "lien": "/blogs/stores/paris-richelieu"
+    },
+    {
+      "texte": "New York New York 487 Broadway 10013Ouvert du lundi au samedi de 11h à 19h et le dimanche de 12h à 18h.",
+      "lien": "/blogs/stores/new-york"
+    }
+  ]
+}

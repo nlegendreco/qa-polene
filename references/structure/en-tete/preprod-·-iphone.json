@@ -1,0 +1,388 @@
+{
+  "page": "en-tete",
+  "projet": "preprod · iphone",
+  "date": "2026-10-16",
+  "boutons": [
+    "Open main menu",
+    "Search",
+    "Back to Bags",
+    "Bags by category",
+    "Limited Edition",
+    "Back to Jewellery",
+    "Jewellery by collection",
+    "Back to Accessories",
+    "Interior decorations",
+    "Collaboration",
+    "Leather Stationery",
+    "Savoir-Faire",
+    "Back to Savoir-Faire",
+    "Bags",
+    "Jewellery",
+    "Stores",
+    "Back to Stores",
+    "Customer service",
+    "Back to Customer service",
+    "Country/Currency France",
+    "Back to main menu",
+    "Europe",
+    "Americas",
+    "Middle East",
+    "Asia & Oceania",
+    "International",
+    "Select Language français",
+    "English",
+    "한국어",
+    "日本語",
+    "Deutsch",
+    "Nederlands",
+    "Español",
+    "Italiano",
+    "Français"
+  ],
+  "liens": [
+    {
+      "texte": "Polène logo - Back to home page",
+      "lien": "/fr-fr"
+    },
+    {
+      "texte": "N Wishlist",
+      "lien": "/fr-fr/pages/wishlist"
+    },
+    {
+      "texte": "N Shopping cart, items: N",
+      "lien": "/fr-fr/cart"
+    },
+    {
+      "texte": "New In",
+      "lien": "/fr-fr/collections/new-bags"
+    },
+    {
+      "texte": "(sans texte)",
+      "lien": "/fr-fr/collections/boky"
+    },
+    {
+      "texte": "Bags",
+      "lien": "/fr-fr/collections/handbags"
+    },
+    {
+      "texte": "view all",
+      "lien": "/fr-fr/collections/handbags"
+    },
+    {
+      "texte": "Cyme",
+      "lien": "/fr-fr/collections/cyme"
+    },
+    {
+      "texte": "Numéro Neuf",
+      "lien": "/fr-fr/collections/numero-neuf"
+    },
+    {
+      "texte": "Mokki",
+      "lien": "/fr-fr/collections/mokki"
+    },
+    {
+      "texte": "Numéro Dix",
+      "lien": "/fr-fr/collections/numero-dix"
+    },
+    {
+      "texte": "Numéro Un",
+      "lien": "/fr-fr/collections/numero-un"
+    },
+    {
+      "texte": "Shuldo",
+      "lien": "/fr-fr/collections/shuldo"
+    },
+    {
+      "texte": "Tonca",
+      "lien": "/fr-fr/collections/tonca"
+    },
+    {
+      "texte": "Béri",
+      "lien": "/fr-fr/collections/beri"
+    },
+    {
+      "texte": "Nodde",
+      "lien": "/fr-fr/collections/nodde"
+    },
+    {
+      "texte": "Neyu",
+      "lien": "/fr-fr/collections/neyu"
+    },
+    {
+      "texte": "Osmo",
+      "lien": "/fr-fr/collections/osmo"
+    },
+    {
+      "texte": "Tsubi",
+      "lien": "/fr-fr/collections/tsubi"
+    },
+    {
+      "texte": "Solé",
+      "lien": "/fr-fr/collections/sole"
+    },
+    {
+      "texte": "New in",
+      "lien": "/fr-fr/collections/new-bags"
+    },
+    {
+      "texte": "Summer bags",
+      "lien": "/fr-fr/collections/summer-bags"
+    },
+    {
+      "texte": "Belt bags",
+      "lien": "/fr-fr/collections/belt-bags"
+    },
+    {
+      "texte": "Handbags",
+      "lien": "/fr-fr/collections/category-handbags"
+    },
+    {
+      "texte": "Crossbody",
+      "lien": "/fr-fr/collections/crossbody"
+    },
+    {
+      "texte": "Shoulder bags",
+      "lien": "/fr-fr/collections/shoulder-bags"
+    },
+    {
+      "texte": "Tote bags",
+      "lien": "/fr-fr/collections/tote-bags"
+    },
+    {
+      "texte": "Mini bags",
+      "lien": "/fr-fr/collections/mini-bags"
+    },
+    {
+      "texte": "Pouch",
+      "lien": "/fr-fr/collections/category-pouch"
+    },
+    {
+      "texte": "Béri Lif",
+      "lien": "/fr-fr/collections/beri-lif"
+    },
+    {
+      "texte": "Jewellery",
+      "lien": "/fr-fr/collections/jewellery"
+    },
+    {
+      "texte": "view all",
+      "lien": "/fr-fr/collections/jewellery"
+    },
+    {
+      "texte": "New in",
+      "lien": "/fr-fr/collections/new-jewellery"
+    },
+    {
+      "texte": "Earrings",
+      "lien": "/fr-fr/collections/earrings"
+    },
+    {
+      "texte": "Bracelets",
+      "lien": "/fr-fr/collections/bracelets"
+    },
+    {
+      "texte": "Rings",
+      "lien": "/fr-fr/collections/rings"
+    },
+    {
+      "texte": "Necklaces",
+      "lien": "/fr-fr/collections/necklaces"
+    },
+    {
+      "texte": "Rozo",
+      "lien": "/fr-fr/collections/rozo"
+    },
+    {
+      "texte": "Éole",
+      "lien": "/fr-fr/collections/eole"
+    },
+    {
+      "texte": "Eroz",
+      "lien": "/fr-fr/collections/eroz"
+    },
+    {
+      "texte": "Ormé",
+      "lien": "/fr-fr/collections/orme"
+    },
+    {
+      "texte": "Naé",
+      "lien": "/fr-fr/collections/nae"
+    },
+    {
+      "texte": "Téré",
+      "lien": "/fr-fr/collections/tere"
+    },
+    {
+      "texte": "Accessories",
+      "lien": "/fr-fr/collections/small-leather-goods"
+    },
+    {
+      "texte": "view all",
+      "lien": "/fr-fr/collections/small-leather-goods"
+    },
+    {
+      "texte": "Wallets",
+      "lien": "/fr-fr/collections/wallets"
+    },
+    {
+      "texte": "Card holder & purse",
+      "lien": "/fr-fr/collections/card-holder-and-purse"
+    },
+    {
+      "texte": "Pouch",
+      "lien": "/fr-fr/collections/pouch"
+    },
+    {
+      "texte": "Keyrings & jewellery bags",
+      "lien": "/fr-fr/collections/keyrings-jewellery-bags"
+    },
+    {
+      "texte": "Belts",
+      "lien": "/fr-fr/collections/belts"
+    },
+    {
+      "texte": "New in",
+      "lien": "/fr-fr/collections/new-accessories"
+    },
+    {
+      "texte": "view all",
+      "lien": "/fr-fr/collections/interior-decorations"
+    },
+    {
+      "texte": "Baskets",
+      "lien": "/fr-fr/collections/baskets"
+    },
+    {
+      "texte": "Sculptures",
+      "lien": "/fr-fr/collections/sculpture"
+    },
+    {
+      "texte": "Jinya Zhao",
+      "lien": "/fr-fr/collections/uzlo-jinya-zhao"
+    },
+    {
+      "texte": "Leather Stationery",
+      "lien": "/fr-fr/collections/leather-stationery"
+    },
+    {
+      "texte": "QA Collection",
+      "lien": "/fr-fr/collections/qa-collection"
+    },
+    {
+      "texte": "QA Collection Infinite Scroll",
+      "lien": "/fr-fr/collections/qa-collection-infinite-scroll"
+    },
+    {
+      "texte": "QA Collection Load More",
+      "lien": "/fr-fr/collections/qa-collection-load-more"
+    },
+    {
+      "texte": "QA Collection Title",
+      "lien": "/fr-fr/collections/qa-collection-title"
+    },
+    {
+      "texte": "QA Collection Empty",
+      "lien": "/fr-fr/collections/qa-collection-empty"
+    },
+    {
+      "texte": "QA Collection Out of Stock",
+      "lien": "/fr-fr/collections/qa-collection-out-of-stock"
+    },
+    {
+      "texte": "The House of Polène",
+      "lien": "/fr-fr/pages/about-the-brand"
+    },
+    {
+      "texte": "Design",
+      "lien": "/fr-fr/blogs/bags/design"
+    },
+    {
+      "texte": "Materials",
+      "lien": "/fr-fr/blogs/bags/materials"
+    },
+    {
+      "texte": "Manufacture",
+      "lien": "/fr-fr/blogs/bags/manufacturing"
+    },
+    {
+      "texte": "The Artisans of Ubrique",
+      "lien": "/fr-fr/blogs/bags/hors-champ"
+    },
+    {
+      "texte": "Design",
+      "lien": "/fr-fr/blogs/jewellery/design"
+    },
+    {
+      "texte": "Manufacture",
+      "lien": "/fr-fr/blogs/jewellery/confection"
+    },
+    {
+      "texte": "Packaging",
+      "lien": "/fr-fr/blogs/jewellery/packaging"
+    },
+    {
+      "texte": "Shipping & taxes",
+      "lien": "support.polene-paris.com/hc/en-us/articles/360010107620-What-are-the-delivery-fees-and-times"
+    },
+    {
+      "texte": "Help & questions",
+      "lien": "support.polene-paris.com/hc/en-au"
+    },
+    {
+      "texte": "Wishlist",
+      "lien": "/fr-fr/pages/wishlist"
+    },
+    {
+      "texte": "Cart N Shopping cart, items: N",
+      "lien": "/fr-fr/cart"
+    },
+    {
+      "texte": "Account",
+      "lien": "/account"
+    },
+    {
+      "texte": "France",
+      "lien": "pp-sap-ww.myshopify.com/"
+    },
+    {
+      "texte": "United Kingdom",
+      "lien": "polene-dev-sap.myshopify.com/"
+    },
+    {
+      "texte": "Germany",
+      "lien": "pp-sap-ww.myshopify.com/"
+    },
+    {
+      "texte": "Spain",
+      "lien": "es.polene-paris.com/"
+    },
+    {
+      "texte": "Italy",
+      "lien": "it.polene-paris.com/"
+    },
+    {
+      "texte": "Denmark",
+      "lien": "dk.polene-paris.com/"
+    },
+    {
+      "texte": "Sweden",
+      "lien": "euro.polene-paris.com/"
+    },
+    {
+      "texte": "Belgium",
+      "lien": "euro.polene-paris.com/"
+    },
+    {
+      "texte": "Poland",
+      "lien": "euro.polene-paris.com/"
+    },
+    {
+      "texte": "Switzerland",
+      "lien": "euro.polene-paris.com/"
+    },
+    {
+      "texte": "Rest of Europe",
+      "lien": "euro.polene-paris.com/"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "page": "mot-de-passe-oublie",
+  "projet": "prod · desktop-chrome",
+  "date": "2026-10-16",
+  "titres": [
+    "h2 Réinitialiser son mot de passe",
+    "h2 Rechercher des modèles spécifiques"
+  ],
+  "boutons": [
+    "Soumettre",
+    "Fermer",
+    "Recherche"
+  ],
+  "liens": [
+    {
+      "texte": "Annuler",
+      "lien": "/account"
+    }
+  ]
+}

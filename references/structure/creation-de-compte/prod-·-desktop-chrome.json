@@ -1,0 +1,25 @@
+{
+  "page": "creation-de-compte",
+  "projet": "prod · desktop-chrome",
+  "date": "2026-10-16",
+  "titres": [
+    "h2 Créer un compte",
+    "h2 Rechercher des modèles spécifiques"
+  ],
+  "boutons": [
+    "(sans nom)",
+    "Créer",
+    "Fermer",
+    "Recherche"
+  ],
+  "liens": [
+    {
+      "texte": "Politique de confidentialité",
+      "lien": "/policies/privacy-policy"
+    },
+    {
+      "texte": "Se connecter",
+      "lien": "/account/login"
+    }
+  ]
+}

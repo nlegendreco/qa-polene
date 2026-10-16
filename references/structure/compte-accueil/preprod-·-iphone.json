@@ -1,0 +1,60 @@
+{
+  "page": "compte-accueil",
+  "projet": "preprod · iphone",
+  "date": "2026-10-16",
+  "titres": [
+    "h1 My Account",
+    "h2 Welcome QA",
+    "h2 Your latest order #T19581",
+    "h2 Need Assistance?"
+  ],
+  "boutons": [
+    "Chat with us"
+  ],
+  "liens": [
+    {
+      "texte": "Log out",
+      "lien": "/customer_identity/logout"
+    },
+    {
+      "texte": "Overview",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Orders",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Profile",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Addresses",
+      "lien": "/fr-fr/account/addresses"
+    },
+    {
+      "texte": "Wishlist",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Alert back in stock",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Assistance",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "Edit profile",
+      "lien": "/fr-fr/account"
+    },
+    {
+      "texte": "see order details Order T19581",
+      "lien": "/fr-fr/account/orders/1387481f1ea903d7762c28df656415af"
+    },
+    {
+      "texte": "Contact us by email",
+      "lien": "mailto:contact@polene-paris.com"
+    }
+  ]
+}

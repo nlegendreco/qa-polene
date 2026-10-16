@@ -1,0 +1,25 @@
+{
+  "page": "creation-de-compte",
+  "projet": "preprod · desktop-chrome",
+  "date": "2026-10-16",
+  "titres": [
+    "h2 Create your account",
+    "h2 Search for specific products"
+  ],
+  "boutons": [
+    "(sans nom)",
+    "Create",
+    "Close",
+    "Search"
+  ],
+  "liens": [
+    {
+      "texte": "Privacy Policy",
+      "lien": "/policies/privacy-policy"
+    },
+    {
+      "texte": "Sign in",
+      "lien": "/fr-fr/account/login"
+    }
+  ]
+}

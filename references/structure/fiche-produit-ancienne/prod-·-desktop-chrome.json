@@ -1,0 +1,164 @@
+{
+  "page": "fiche-produit-ancienne",
+  "projet": "prod · desktop-chrome",
+  "date": "2026-10-16",
+  "titres": [
+    "h1 Cyme Mini",
+    "h2 Edition Camel Grainé",
+    "h3 Details",
+    "h2 Le savoir-faire d'Ubrique",
+    "h2 Rechercher des modèles spécifiques"
+  ],
+  "boutons": [
+    "Ajouter au panier <prix>",
+    "Zoom sur l'image",
+    "Ajouter aux favoris",
+    "Faire défiler vers les couleurs précédentes",
+    "Faire défiler vers les couleurs suivantes",
+    "Ajouter au panier - Être prévenu(e) Précommander maintenant Bientôt disponible — Inscrivez-vous Ajouté au panier",
+    "Description",
+    "Dimensions & portés",
+    "Matériaux",
+    "Livraisons & retours",
+    "Fermer",
+    "Recherche"
+  ],
+  "liens": [
+    {
+      "texte": "Sacs",
+      "lien": "/collections/all"
+    },
+    {
+      "texte": "Cyme",
+      "lien": "/collections/cyme"
+    },
+    {
+      "texte": "Consulter les tarifs de livraison.",
+      "lien": "support.polene-paris.com/hc/fr/articles/360010107620-Frais-de-livraison"
+    },
+    {
+      "texte": "Effectuer un retour.",
+      "lien": "/a/return"
+    },
+    {
+      "texte": "Cyme Mini - Prune Grainé, 1 sur 30",
+      "lien": "/products/cyme-mini-textured-plum"
+    },
+    {
+      "texte": "Cyme Mini - Bleu Abysse Grainé, 2 sur 30",
+      "lien": "/products/cyme-mini-textured-deep-blue"
+    },
+    {
+      "texte": "Cyme Mini - Marron Glacé Grainé, 3 sur 30",
+      "lien": "/products/cyme-mini-textured-candied-chestnut"
+    },
+    {
+      "texte": "Cyme Mini - Clairière Grainé, 4 sur 30",
+      "lien": "/products/cyme-mini-textured-glade"
+    },
+    {
+      "texte": "Cyme Mini - Camel Grainé, 5 sur 30",
+      "lien": "/products/cyme-mini-textured-camel"
+    },
+    {
+      "texte": "Cyme Mini - Cognac Grainé, 6 sur 30",
+      "lien": "/products/cyme-mini-textured-cognac"
+    },
+    {
+      "texte": "Cyme Mini - Racine Grainé, 7 sur 30",
+      "lien": "/products/cyme-mini-textured-root"
+    },
+    {
+      "texte": "Cyme Mini - Taupe Grainé, 8 sur 30",
+      "lien": "/products/cyme-mini-textured-taupe"
+    },
+    {
+      "texte": "Cyme Mini - Noir Grainé Coutures Écrues, 9 sur 30",
+      "lien": "/products/cyme-mini-textured-black-ecru-stitching"
+    },
+    {
+      "texte": "Cyme Mini - Noir Grainé, 10 sur 30",
+      "lien": "/products/cyme-mini-textured-black"
+    },
+    {
+      "texte": "Cyme Mini - Ébène Grainé, 11 sur 30",
+      "lien": "/products/cyme-mini-textured-ebony"
+    },
+    {
+      "texte": "Cyme Mini - Cerise Noire Grainé, 12 sur 30",
+      "lien": "/products/cyme-mini-textured-black-cherry"
+    },
+    {
+      "texte": "Cyme Mini - Argile Rouge Grainé, 13 sur 30",
+      "lien": "/products/cyme-mini-textured-red-clay"
+    },
+    {
+      "texte": "Cyme Mini - Vert Fumé Grainé, 14 sur 30",
+      "lien": "/products/cyme-mini-textured-smoky-green"
+    },
+    {
+      "texte": "Cyme Mini - Ocre Grainé, 15 sur 30",
+      "lien": "/products/cyme-mini-textured-ocher"
+    },
+    {
+      "texte": "Cyme Mini - Brume Grainé, 16 sur 30",
+      "lien": "/products/cyme-mini-textured-mist"
+    },
+    {
+      "texte": "Cyme Mini - Raphia Ébène, 17 sur 30",
+      "lien": "/products/cyme-mini-raffia-ebony"
+    },
+    {
+      "texte": "Cyme Mini - Raphia, 18 sur 30",
+      "lien": "/products/cyme-mini-raffia"
+    },
+    {
+      "texte": "Cyme Mini - Raphia Laurier, 19 sur 30",
+      "lien": "/products/cyme-mini-raffia-laurel"
+    },
+    {
+      "texte": "Cyme Mini - Sable Grainé, 20 sur 30",
+      "lien": "/products/cyme-mini-textured-sand"
+    },
+    {
+      "texte": "Cyme Mini - Galet Grainé, 21 sur 30",
+      "lien": "/products/cyme-mini-textured-stone"
+    },
+    {
+      "texte": "Cyme Mini - Galet Mérinos, 22 sur 30",
+      "lien": "/products/cyme-mini-merino-stone"
+    },
+    {
+      "texte": "Cyme Mini - Ébène Mérinos, 23 sur 30",
+      "lien": "/products/cyme-mini-merino-ebony"
+    },
+    {
+      "texte": "Cyme Mini - Ecru Mérinos, 24 sur 30",
+      "lien": "/products/cyme-mini-merino-ecru"
+    },
+    {
+      "texte": "Cyme Mini - Tissé Noir, 25 sur 30",
+      "lien": "/products/cyme-mini-black-canvas"
+    },
+    {
+      "texte": "Cyme Mini - Tissé Cognac, 26 sur 30",
+      "lien": "/products/cyme-mini-cognac-canvas"
+    },
+    {
+      "texte": "Cyme Mini - Terracotta Grainé, 27 sur 30",
+      "lien": "/products/cyme-mini-textured-terracotta"
+    },
+    {
+      "texte": "Cyme Mini - Olive Fumée Grainé, 28 sur 30",
+      "lien": "/products/cyme-mini-textured-smoky-olive"
+    },
+    {
+      "texte": "Cyme Mini - Tilleul Grainé, 29 sur 30",
+      "lien": "/products/cyme-mini-textured-linden"
+    },
+    {
+      "texte": "Cyme Mini - Ecume Grainé, 30 sur 30",
+      "lien": "/products/cyme-mini-textured-sea-foam"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "page": "article-confection",
+  "projet": "prod · desktop-chrome",
+  "date": "2026-10-16",
+  "titres": [
+    "h1 confection",
+    "h2 fabriqué par des artisans en Italie",
+    "h4 La fonte à cire perdue",
+    "h4 La soudure & la gravure",
+    "h4 Le polissage",
+    "h4 La galvanisation",
+    "h4 Découvrez next:",
+    "h2 Rechercher des modèles spécifiques"
+  ],
+  "boutons": [
+    "Fermer",
+    "Recherche"
+  ],
+  "liens": [
+    {
+      "texte": "Sacs",
+      "lien": "/blogs/bags"
+    },
+    {
+      "texte": "Bijoux",
+      "lien": "/blogs/jewellery/design"
+    }
+  ]
+}

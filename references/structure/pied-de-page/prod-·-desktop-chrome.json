@@ -1,0 +1,62 @@
+{
+  "page": "pied-de-page",
+  "projet": "prod · desktop-chrome",
+  "date": "2026-10-16",
+  "boutons": [
+    "VALIDER"
+  ],
+  "liens": [
+    {
+      "texte": "Politique de confidentialité",
+      "lien": "/policies/privacy-policy"
+    },
+    {
+      "texte": "Marque",
+      "lien": "/pages/about-the-brand"
+    },
+    {
+      "texte": "Boutiques",
+      "lien": "/blogs/stores"
+    },
+    {
+      "texte": "Carrières",
+      "lien": "/blogs/rh/careers"
+    },
+    {
+      "texte": "Livraison & taxes",
+      "lien": "support.polene-paris.com/hc/articles/360010107620"
+    },
+    {
+      "texte": "Effectuer un retour",
+      "lien": "/a/return"
+    },
+    {
+      "texte": "Aide & questions",
+      "lien": "support.polene-paris.com/hc"
+    },
+    {
+      "texte": "Mentions légales",
+      "lien": "/policies/legal-notice"
+    },
+    {
+      "texte": "Conditions générales de vente en ligne",
+      "lien": "/policies/terms-of-sale"
+    },
+    {
+      "texte": "Facebook",
+      "lien": "www.facebook.com/poleneparis"
+    },
+    {
+      "texte": "Instagram",
+      "lien": "www.instagram.com/polene_paris/"
+    },
+    {
+      "texte": "Youtube",
+      "lien": "www.youtube.com/@polene-paris"
+    },
+    {
+      "texte": "TikTok",
+      "lien": "www.tiktok.com/@polene_paris"
+    }
+  ]
+}

@@ -1,0 +1,173 @@
+{
+  "page": "fiche-produit-nouvelle",
+  "projet": "prod · desktop-chrome",
+  "date": "2026-10-16",
+  "titres": [
+    "h1 Cyme Mini",
+    "h2 Edition Camel Grainé",
+    "h1 Cyme Mini",
+    "h2 Edition Camel Grainé",
+    "h3 Sélectionner une couleur",
+    "h3 Conçu avec minutie",
+    "h3 Envoyé avec soin",
+    "h2 Le savoir-faire d'Ubrique",
+    "h2 Rechercher des modèles spécifiques"
+  ],
+  "boutons": [
+    "Ajouter au panier Ajouté au panier",
+    "Ajouter aux favoris",
+    "Zoom sur l'image",
+    "(sans nom)",
+    "Vue 3D",
+    "Fermer la fenêtre",
+    "Précédent",
+    "Suivant",
+    "Cyme Mini - Camel Grainé, 1 sur 4",
+    "Cyme Mini - Camel Grainé, 2 sur 4",
+    "Cyme Mini - Camel Grainé, 3 sur 4",
+    "Cyme Mini - Camel Grainé, 4 sur 4",
+    "Découvrir tout (N)",
+    "Tout",
+    "Cuir Grainé",
+    "Végétal",
+    "Textile",
+    "Description",
+    "Détails",
+    "Matières",
+    "Livraisons & retours",
+    "Conçu avec minutie",
+    "Envoyé avec soin",
+    "Fermer",
+    "Recherche"
+  ],
+  "liens": [
+    {
+      "texte": "Sacs",
+      "lien": "/collections/all"
+    },
+    {
+      "texte": "Cyme",
+      "lien": "/collections/cyme"
+    },
+    {
+      "texte": "Prune Grainé",
+      "lien": "/products/cyme-mini-textured-plum"
+    },
+    {
+      "texte": "Bleu Abysse Grainé",
+      "lien": "/products/cyme-mini-textured-deep-blue"
+    },
+    {
+      "texte": "Marron Glacé Grainé",
+      "lien": "/products/cyme-mini-textured-candied-chestnut"
+    },
+    {
+      "texte": "Clairière Grainé",
+      "lien": "/products/cyme-mini-textured-glade"
+    },
+    {
+      "texte": "Camel Grainé",
+      "lien": "/products/cyme-mini-textured-camel"
+    },
+    {
+      "texte": "Cognac Grainé",
+      "lien": "/products/cyme-mini-textured-cognac"
+    },
+    {
+      "texte": "Racine Grainé",
+      "lien": "/products/cyme-mini-textured-root"
+    },
+    {
+      "texte": "Taupe Grainé",
+      "lien": "/products/cyme-mini-textured-taupe"
+    },
+    {
+      "texte": "Noir Grainé Coutures Écrues",
+      "lien": "/products/cyme-mini-textured-black-ecru-stitching"
+    },
+    {
+      "texte": "Noir Grainé",
+      "lien": "/products/cyme-mini-textured-black"
+    },
+    {
+      "texte": "Ébène Grainé",
+      "lien": "/products/cyme-mini-textured-ebony"
+    },
+    {
+      "texte": "Cerise Noire Grainé",
+      "lien": "/products/cyme-mini-textured-black-cherry"
+    },
+    {
+      "texte": "Argile Rouge Grainé",
+      "lien": "/products/cyme-mini-textured-red-clay"
+    },
+    {
+      "texte": "Vert Fumé Grainé",
+      "lien": "/products/cyme-mini-textured-smoky-green"
+    },
+    {
+      "texte": "Ocre Grainé",
+      "lien": "/products/cyme-mini-textured-ocher"
+    },
+    {
+      "texte": "Brume Grainé",
+      "lien": "/products/cyme-mini-textured-mist"
+    },
+    {
+      "texte": "Raphia Ébène",
+      "lien": "/products/cyme-mini-raffia-ebony"
+    },
+    {
+      "texte": "Raphia",
+      "lien": "/products/cyme-mini-raffia"
+    },
+    {
+      "texte": "Raphia Laurier",
+      "lien": "/products/cyme-mini-raffia-laurel"
+    },
+    {
+      "texte": "Sable Grainé",
+      "lien": "/products/cyme-mini-textured-sand"
+    },
+    {
+      "texte": "Galet Grainé",
+      "lien": "/products/cyme-mini-textured-stone"
+    },
+    {
+      "texte": "Galet Mérinos",
+      "lien": "/products/cyme-mini-merino-stone"
+    },
+    {
+      "texte": "Ébène Mérinos",
+      "lien": "/products/cyme-mini-merino-ebony"
+    },
+    {
+      "texte": "Ecru Mérinos",
+      "lien": "/products/cyme-mini-merino-ecru"
+    },
+    {
+      "texte": "Tissé Noir",
+      "lien": "/products/cyme-mini-black-canvas"
+    },
+    {
+      "texte": "Tissé Cognac",
+      "lien": "/products/cyme-mini-cognac-canvas"
+    },
+    {
+      "texte": "Terracotta Grainé",
+      "lien": "/products/cyme-mini-textured-terracotta"
+    },
+    {
+      "texte": "Olive Fumée Grainé",
+      "lien": "/products/cyme-mini-textured-smoky-olive"
+    },
+    {
+      "texte": "Tilleul Grainé",
+      "lien": "/products/cyme-mini-textured-linden"
+    },
+    {
+      "texte": "Ecume Grainé",
+      "lien": "/products/cyme-mini-textured-sea-foam"
+    }
+  ]
+}

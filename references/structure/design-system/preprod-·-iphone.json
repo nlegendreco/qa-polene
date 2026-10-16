@@ -1,0 +1,67 @@
+{
+  "page": "design-system",
+  "projet": "preprod · iphone",
+  "date": "2026-10-16",
+  "titres": [
+    "h1 Design system",
+    "h2 Design system",
+    "h2 Typography",
+    "h3 Headings",
+    "h1 Heading H1",
+    "h2 Heading H2",
+    "h3 Heading H3",
+    "h3 Titles",
+    "h2 Title Large",
+    "h3 Title Medium",
+    "h4 Title Small",
+    "h3 Body Text",
+    "h3 Labels",
+    "h3 Specialized Text",
+    "h2 Buttons",
+    "h3 Primary Buttons",
+    "h3 Secondary Buttons",
+    "h2 Form Elements",
+    "h3 Input Fields",
+    "h3 Phone Input",
+    "h3 Checkboxes",
+    "h3 Radio Buttons",
+    "h2 Colors",
+    "h3 Color Palette",
+    "h3 Text Colors",
+    "h2 UI Components",
+    "h3 Lines & Dividers",
+    "h3 Loader",
+    "h3 Price Display",
+    "h2 States & Variations",
+    "h3 Text Alignments",
+    "h3 Text Decorations",
+    "h2 Layout Helpers",
+    "h3 Flex Layout",
+    "h2 Error States",
+    "h3 Input Errors"
+  ],
+  "boutons": [
+    "Primary Button",
+    "Primary Black",
+    "Primary Centred",
+    "Primary Disabled"
+  ],
+  "liens": [
+    {
+      "texte": "Secondary Button",
+      "lien": "#"
+    },
+    {
+      "texte": "With Arrow Right",
+      "lien": "#"
+    },
+    {
+      "texte": "With Arrow Left",
+      "lien": "#"
+    },
+    {
+      "texte": "Small Size",
+      "lien": "#"
+    }
+  ]
+}
