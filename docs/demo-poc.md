@@ -67,7 +67,7 @@ Ne pas publier le zip ni l'envoyer hors de l'équipe.
 4. **Les régressions détectées** (`regressions`) : ouvrir « Prix masqué » sur iPhone et montrer le comparateur (côte à côte, curseur, différence en rouge). Le prix ne change que quelques dizaines de pixels sur une page entière.
 5. **Les tests visuels** (`visuel`) : 12 pages conformes à la référence validée par la QA.
 6. **Ce que les tests ont déjà trouvé** : les constats remontés à l'équipe (section « Constats » de [CLAUDE.md](../CLAUDE.md)), notamment les cases newsletter et SMS pré-cochées au checkout et le questionnaire présent en double dans la page.
-7. **En direct, si on veut** : `npx playwright test --project "prod · iphone" --headed` ouvre le navigateur et déroule le parcours sous les yeux de l'équipe. Aucune commande n'est passée (prod). Attention : ce lancement remplace les rapports de `resultats/tnr/`, pas l'archive.
+7. **En direct, si on veut** : `npx playwright test parcours-achat --project "prod · iphone" --headed` ouvre le navigateur et déroule le parcours sous les yeux de l'équipe (sans `parcours-achat`, ce sont les centaines de tests de la suite actuelle qui partent). Aucune commande n'est passée (prod). Attention : ce lancement remplace les rapports de `resultats/tnr/`, pas l'archive.
 
 ## Limites à annoncer
 
