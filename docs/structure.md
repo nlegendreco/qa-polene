@@ -18,7 +18,9 @@ Ce qui change sans que personne ne touche au site, pour qu'un échec veuille dir
 - **dans les textes** : prix (`<prix>`, les euros de la préprod suivent le taux de change), nombres entre parenthèses (`Coloris (N)`), nombres de produits (`• N`, `N produits`), compteurs du panier et des favoris de l'en-tête ;
 - **éléments masqués** (`display: none`) : la version ordinateur ou mobile cachée d'un bloc. Les menus et fenêtres fermés, eux, sont relevés (ils sont dans la page, cachés autrement).
 
-Conséquence : un produit qui disparaît d'une collection ou un article retiré d'un blog ne sont pas vus ici (les collections sont vérifiées par `tests/structure-collections.spec.ts`). En prod, une page éditoriale modifiée par l'équipe hors MEP (accueil d'une nouvelle campagne, fiche dont le stock change le bouton) fait échouer le test : c'est un vrai changement, à reprendre.
+- **le contenu de l'accueil** (20 octobre 2026, QA) : éditorial, il change à chaque campagne. Seuls l'en-tête et le pied de page y sont relevés ; le reste est vérifié par les pages de sections (sections affichées, images, erreurs) et par le test visuel.
+
+Conséquence : un produit qui disparaît d'une collection ou un article retiré d'un blog ne sont pas vus ici (les collections sont vérifiées par `tests/structure-collections.spec.ts`). En prod, une page modifiée par l'équipe hors MEP (fiche dont le stock change le bouton, page éditoriale) fait échouer le test : c'est un vrai changement, à reprendre.
 
 ## Pages
 

@@ -26,9 +26,12 @@ test('Structure · En-tête et pied de page @tnr @structure @home', async ({ pag
 });
 
 for (const [env, pages] of [['preprod', PAGES_PREPROD], ['prod', PAGES_PROD]] as const) {
-  // Même nom de page dans les deux environnements (Accueil, Panier vide…) : un groupe par environnement.
+  // Même nom de page dans les deux environnements (Panier vide, Recherche…) : un groupe par environnement.
   test.describe(env === 'prod' ? 'Prod' : 'Préprod', () => {
-    for (const p of pages) {
+    // Accueil : contenu éditorial, qui change à chaque campagne (QA, 20 octobre 2026). Seuls son en-tête et son pied de
+    // page sont relevés (test ci-dessus) ; le reste de l'accueil est vérifié par les pages de sections (sections
+    // affichées, images, erreurs) et le test visuel.
+    for (const p of pages.filter(p => p.etiquette !== '@home')) {
       test(`Structure · ${p.nom} @tnr @structure ${p.etiquette}`, async ({ page, qaEnv }, testInfo) => {
         conditions(testInfo, env, qaEnv.name, SUJET);
         await etape(page, testInfo, `1. Ouvrir la page ${p.nom}`, () => ouvrir(page, p.chemin, p.statut));
