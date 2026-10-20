@@ -102,8 +102,10 @@ export interface DonneesRapport {
   workers: number;
   reessais: number;
   commande: string;
-  /** Chemin du rapport Playwright, relatif au Rapport Polène. */
+  /** Chemin du rapport Playwright, relatif au Rapport Polène ; vide pour un lancement rangé (il n'est plus là). */
   rapportPlaywright: string;
   tests: Test[];
   historique: Lancement[];
+  /** Date à laquelle les pièces jointes des tests réussis ont été retirées (lancement rangé de plus de 30 jours). */
+  allege?: string;
 }

@@ -171,7 +171,8 @@
       <span>Généré le ${esc(dateLongue(R.genereLe))}</span>
       <span>${esc(R.commande)}</span>
       <span>Playwright ${esc(R.playwright)} · ${pluriel(R.workers, 'navigateur', 'navigateurs')} en parallèle · ${R.reessais ? pluriel(R.reessais, 'second essai', 'essais supplémentaires') + ' en cas d\'échec' : 'aucun second essai'}</span>
-      <a href="${esc(R.rapportPlaywright)}/index.html">Rapport Playwright détaillé</a>
+      ${R.rapportPlaywright ? `<a href="${esc(R.rapportPlaywright)}/index.html">Rapport Playwright détaillé</a>` : '<span>Lancement rangé : le rapport Playwright ne garde que le dernier lancement</span>'}
+      ${R.allege ? `<span>Captures des tests réussis retirées le ${esc(dateLongue(R.allege))} (lancement de plus de 30 jours) ; tests en échec complets</span>` : ''}
       <span style="margin-left:auto">© Polène · QA automatisée</span>
     </footer>`;
 
@@ -592,7 +593,7 @@
           ${trace ? (lienTrace
             ? `<a class="bouton bouton--plein" href="${esc(lienTrace)}" target="_blank" rel="noopener">Ouvrir la trace</a>`
             : `<a class="bouton" href="${esc(trace.chemin)}" download data-info="Pour l'ouvrir ici, lancer : npm run rapport:polene">Télécharger la trace</a>`) : ''}
-          <a class="bouton" href="${esc(lienPlaywright)}" target="_blank" rel="noopener">Rapport Playwright</a>
+          ${R.rapportPlaywright ? `<a class="bouton" href="${esc(lienPlaywright)}" target="_blank" rel="noopener">Rapport Playwright</a>` : ''}
         </div>
       </div>
       ${historique.length > 1 ? `<p class="capitales" style="display:flex;align-items:center;gap:12px;margin:18px 0 36px">Derniers lancements ${points(t.cle, 20)}</p>` : ''}

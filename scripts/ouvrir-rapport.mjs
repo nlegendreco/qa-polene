@@ -1,6 +1,7 @@
 // Ouvre les Rapports Polène dans le navigateur, servis en local (nécessaire pour la trace Playwright).
-// Usage : npm run rapport:polene              → sommaire de toutes les séries de resultats/
-//         npm run rapport:polene -- visuel    → resultats/visuel/ (aussi : tnr, regressions, demo-echec)
+// Usage : npm run rapport:polene              → sommaire de toutes les séries de resultats/, rangé comme les
+//                                               catalogues (par type de test, par page), avec les lancements précédents
+//         npm run rapport:polene -- visuel    → resultats/visuel/ (aussi : tnr, page-pdp…, une clé du catalogue)
 //         npm run rapport:polene -- archives/2026-10-07-poc               → sommaire d'une archive
 //         npm run rapport:polene -- archives/2026-10-07-poc/regressions   → une série de l'archive
 import { createReadStream, existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
@@ -9,8 +10,16 @@ import { exec } from 'node:child_process';
 import path from 'node:path';
 
 const PROJET = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
-const ORDRE = ['tnr', 'visuel', 'regressions', 'demo-echec'];
+// Sommaire rangé comme les catalogues de data/catalogue.json : par type de test, par page, puis les autres séries.
+const catalogue = JSON.parse(readFileSync(path.join(PROJET, 'data', 'catalogue.json'), 'utf8'));
+const ORDRE = [...catalogue.types.map(t => t.cle), ...catalogue.pages.map(p => `page-${p.cle}`)];
 const estSerie = dossier => existsSync(path.join(dossier, 'rapport-polene', 'index.html'));
+const lancementsRanges = serie => {
+  const dossier = path.join(racine, serie, 'lancements');
+  return existsSync(dossier)
+    ? readdirSync(dossier).filter(nom => existsSync(path.join(dossier, nom, 'donnees.js'))).sort().reverse()
+    : [];
+};
 
 // Racine servie (resultats/ ou une archive) et page à ouvrir : le sommaire ou le rapport d'une série.
 const argument = process.argv[2] ?? '';
@@ -56,6 +65,12 @@ const serveur = createServer((requete, reponse) => {
   const chemin = decodeURIComponent(new URL(requete.url, 'http://localhost').pathname);
   if (chemin === '/') {
     reponse.writeHead(200, { 'Content-Type': TYPES['.html'] }).end(sommaire());
+    return;
+  }
+  // Lancements précédents d'une série : page générée, une carte par lancement rangé.
+  const precedents = chemin.match(/^\/([^/]+)\/lancements\/?$/);
+  if (precedents && series.includes(precedents[1])) {
+    reponse.writeHead(200, { 'Content-Type': TYPES['.html'] }).end(pageLancements(precedents[1]));
     return;
   }
   let fichier = path.join(racine, chemin);
@@ -117,10 +132,16 @@ function verdict(R) {
   return { statut: 'reussi', titre: `${t.reussi} / ${executes} réussis` };
 }
 
-function carte(nom) {
-  const texte = readFileSync(path.join(racine, nom, 'rapport-polene', 'donnees.js'), 'utf8');
+/** Carte d'un rapport : `dossier` est <série>/rapport-polene (dernier lancement) ou <série>/lancements/<date-heure>. */
+function carte(dossier, { serie } = {}) {
+  const texte = readFileSync(path.join(racine, dossier, 'donnees.js'), 'utf8');
   const R = JSON.parse(texte.slice(texte.indexOf('{'), texte.lastIndexOf('}') + 1));
   const { statut, titre } = verdict(R);
+  const anciens = serie ? lancementsRanges(serie).length : 0;
+  // Nom actuel du catalogue plutôt que celui gardé dans un rapport plus ancien que le catalogue.
+  const type = catalogue.types.find(t => t.cle === serie);
+  const page = catalogue.pages.find(p => `page-${p.cle}` === serie);
+  R.titre = type?.nom ?? (page ? `Page · ${page.nom}` : R.titre);
   const commandes = R.tests.flatMap(t => t.annotations.filter(a => a.type === 'Commande de test')).length;
   const details = [
     R.environnements.join(', '),
@@ -128,22 +149,54 @@ function carte(nom) {
     duree(R.lancement.duree),
     commandes ? pluriel(commandes, 'commande de test', 'commandes de test') : '',
   ].filter(Boolean).map(detail => `<span>${esc(detail)}</span>`).join(' · ');
+  const lien = `/${dossier.split('/').map(encodeURIComponent).join('/')}/`;
   return `
-    <a class="carte carte--${statut}" href="${encodeURIComponent(nom)}/rapport-polene/">
-      <span class="capitales">${esc(R.titre)}</span>
-      <strong class="verdict"><span class="puce" aria-hidden="true"></span>${esc(titre)}</strong>
-      <span class="details">${details}</span>
-      <span class="date">${esc(dateLongue(R.lancement.date))}</span>
-    </a>`;
+    <div class="carte carte--${statut}">
+      <a class="carte__lien" href="${lien}">
+        <span class="capitales">${esc(R.titre)}</span>
+        <strong class="verdict"><span class="puce" aria-hidden="true"></span>${esc(titre)}</strong>
+        <span class="details">${details}</span>
+        <span class="date">${esc(dateLongue(R.lancement.date))}${R.allege ? ' · captures des tests réussis retirées' : ''}</span>
+      </a>
+      ${anciens ? `<a class="carte__anciens" href="/${encodeURIComponent(serie)}/lancements/">${pluriel(anciens, 'lancement précédent', 'lancements précédents')} ›</a>` : ''}
+    </div>`;
 }
 
 function sommaire() {
-  const logo = readFileSync(path.join(PROJET, 'src', 'rapport', 'page', 'logo-polene.svg'), 'utf8');
+  const groupes = [
+    { titre: 'Par type de test', aide: 'npm run type -- <nom>', series: series.filter(s => catalogue.types.some(t => t.cle === s)) },
+    { titre: 'Par page', aide: 'npm run page -- <nom>', series: series.filter(s => catalogue.pages.some(p => `page-${p.cle}` === s)) },
+    { titre: 'Autres séries', aide: 'essais (SERIE=…) et anciennes séries', series: series.filter(s => !ORDRE.includes(s)) },
+  ].filter(g => g.series.length);
+  const contenu = groupes.map(g => `
+    <section>
+      <h2>${esc(g.titre)} <span class="capitales">${esc(g.aide)}</span></h2>
+      <div class="grille">${g.series.map(s => carte(`${s}/rapport-polene`, { serie: s })).join('')}</div>
+    </section>`).join('');
+  return gabarit(titreRacine(), contenu);
+}
+
+function pageLancements(serie) {
+  const derniers = [`${serie}/rapport-polene`, ...lancementsRanges(serie).map(nom => `${serie}/lancements/${nom}`)];
+  const texte = readFileSync(path.join(racine, serie, 'rapport-polene', 'donnees.js'), 'utf8');
+  const nom = JSON.parse(texte.slice(texte.indexOf('{'), texte.lastIndexOf('}') + 1)).titre;
+  const contenu = `
+    <p><a href="/">‹ Sommaire</a></p>
+    <p class="aide">Le plus récent en premier. Après 30 jours, un lancement garde ses tests en échec complets (captures, vidéo, trace) et seulement le statut de ses tests réussis.</p>
+    <div class="grille">${derniers.map(d => carte(d)).join('')}</div>`;
+  return gabarit(`${nom} · tous les lancements`, contenu);
+}
+
+function titreRacine() {
   // Archive nommée <date>-<nom> par npm run archiver : « Archive poc · 7 octobre 2026 ».
   const archive = path.basename(racine).match(/^(\d{4}-\d{2}-\d{2})-(.+)$/);
-  const titre = path.basename(racine) === 'resultats' ? 'Derniers lancements'
+  return path.basename(racine) === 'resultats' ? 'Derniers lancements'
     : archive ? `Archive ${archive[2]} · ${new Date(`${archive[1]}T12:00:00`).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`
     : path.basename(racine);
+}
+
+function gabarit(titre, contenu) {
+  const logo = readFileSync(path.join(PROJET, 'src', 'rapport', 'page', 'logo-polene.svg'), 'utf8');
   return `<!doctype html>
 <html lang="fr">
 <head>
@@ -162,9 +215,15 @@ function sommaire() {
     main { max-width: 1232px; margin: 0 auto; padding: 40px 16px 64px; }
     h1 { font: 300 clamp(30px, 4vw, 46px)/1.05 'Polène Primary', 'Cormorant Garamond', serif; margin: 0 0 8px; }
     .capitales { font: 500 11.5px/1.3 Jost, system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--gris); }
-    .grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-top: 32px; }
-    .carte { display: flex; flex-direction: column; gap: 10px; padding: 20px; background: #f9f8f6; border-top: 3px solid var(--couleur); color: inherit; text-decoration: none; }
+    h2 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; font: 300 28px/1.1 'Polène Primary', 'Cormorant Garamond', serif; margin: 48px 0 0; padding-bottom: 10px; border-bottom: 1px solid var(--trait); }
+    a { color: inherit; }
+    .aide { color: #4d4d4d; max-width: 720px; }
+    .grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-top: 24px; }
+    .carte { display: flex; flex-direction: column; background: #f9f8f6; border-top: 3px solid var(--couleur); }
     .carte:hover { background: #edeae7; }
+    .carte__lien { flex: 1; display: flex; flex-direction: column; gap: 10px; padding: 20px; color: inherit; text-decoration: none; }
+    .carte__anciens { padding: 10px 20px 14px; border-top: 1px solid var(--trait); font: 500 11.5px/1.3 Jost, system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; text-decoration: none; }
+    .carte__anciens:hover { text-decoration: underline; }
     .carte--reussi { --couleur: var(--ok); } .carte--instable { --couleur: var(--instable); } .carte--echec { --couleur: var(--echec); } .carte--ignore { --couleur: var(--ignore); }
     .verdict { display: flex; align-items: baseline; gap: 8px; font: 300 24px/1.15 'Polène Primary', 'Cormorant Garamond', serif; }
     .puce { flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--couleur); }
@@ -178,7 +237,7 @@ function sommaire() {
   <main>
     <p class="capitales">QA automatisée</p>
     <h1>${esc(titre)}</h1>
-    <div class="grille">${series.map(carte).join('')}</div>
+    ${contenu}
   </main>
 </body>
 </html>`;

@@ -1,0 +1,87 @@
+{
+  "_note": "Catalogues de lancement (scripts/lancer.mjs) : par type de test (npm run type -- <cle>) et par page (npm run page -- <cle>). Chaque entrée a sa série dans resultats/ (le nom de la clé, page-<clé> pour une page) et sa carte dans le sommaire.",
+  "types": [
+    {
+      "cle": "tnr",
+      "nom": "Tout le TNR",
+      "description": "Tous les tests de non-régression (hors visuel et démos), prod et préprod, 4 appareils",
+      "commandesPreprod": true
+    },
+    {
+      "cle": "parcours",
+      "nom": "Parcours",
+      "description": "Tests qui traversent plusieurs pages : parcours d'achat, précommande jusqu'au checkout, titre long, alerte de retour en stock",
+      "grep": "@journey",
+      "commandesPreprod": true
+    },
+    {
+      "cle": "fonctionnel",
+      "nom": "Fonctionnel",
+      "description": "Ce que fait chaque page : états produit, fiche, galerie, collections, cartes, recherche, favoris, panier, checkout, en-tête, espace client",
+      "grep": "@tnr",
+      "grepInvert": "@journey|@controles|@accessibilite|@structure"
+    },
+    {
+      "cle": "controles",
+      "nom": "Contrôles des pages",
+      "description": "Sections présentes et dans l'ordre, images chargées, ni erreur JS ni page plus large que l'écran (pages de sections et pages réelles)",
+      "grep": "@controles"
+    },
+    {
+      "cle": "accessibilite",
+      "nom": "Accessibilité",
+      "description": "axe comparé au relevé de chaque page, et bouton pause / lecture au clavier",
+      "grep": "@accessibilite",
+      "projets": ["prod · desktop-chrome", "prod · iphone", "preprod · desktop-chrome", "preprod · iphone"]
+    },
+    {
+      "cle": "structure",
+      "nom": "Structure des pages",
+      "description": "Titres, boutons et liens de chaque page comparés à la référence, en-tête et pied de page compris",
+      "grep": "@structure",
+      "projets": ["prod · desktop-chrome", "prod · iphone", "preprod · desktop-chrome", "preprod · iphone"]
+    },
+    {
+      "cle": "donnees",
+      "nom": "Données préprod",
+      "description": "État prévu des produits et collections QA de la préprod, Chrome seul",
+      "variables": { "QA_ENVS": "preprod" },
+      "projets": ["preprod · donnees"]
+    },
+    {
+      "cle": "visuel",
+      "nom": "Tests visuels",
+      "description": "Accueil, les deux fiches et le panier comparés à la référence en pixels, prod, 4 appareils",
+      "grep": "@visuel",
+      "variables": { "VISUEL": "1", "QA_ENVS": "prod" },
+      "options": ["--workers", "2", "--retries", "1"]
+    },
+    {
+      "cle": "regressions",
+      "nom": "Démo · régressions injectées",
+      "description": "4 défauts injectés en prod, les 8 tests doivent échouer",
+      "grep": "@regressions",
+      "variables": { "REGRESSIONS": "1", "QA_ENVS": "prod" },
+      "projets": ["prod · desktop-chrome", "prod · iphone"]
+    },
+    {
+      "cle": "demo-echec",
+      "nom": "Démo · échec volontaire",
+      "description": "Bouton « Ajouter au panier » masqué en prod, les 2 tests doivent échouer",
+      "grep": "@demo-echec",
+      "variables": { "DEMO_ECHEC": "1", "QA_ENVS": "prod" },
+      "projets": ["prod · desktop-chrome", "prod · iphone"]
+    }
+  ],
+  "pages": [
+    { "cle": "home", "nom": "Accueil, en-tête et pied de page" },
+    { "cle": "plp", "nom": "Collections et cartes produit" },
+    { "cle": "pdp", "nom": "Fiche produit" },
+    { "cle": "cart", "nom": "Panier" },
+    { "cle": "checkout", "nom": "Checkout" },
+    { "cle": "search", "nom": "Recherche" },
+    { "cle": "account", "nom": "Espace client, connexion et favoris" },
+    { "cle": "content", "nom": "Pages éditoriales (blogs, articles, Savoir-faire, 404)" },
+    { "cle": "sections", "nom": "Pages de sections du thème (sections, UAT, design system)" }
+  ]
+}

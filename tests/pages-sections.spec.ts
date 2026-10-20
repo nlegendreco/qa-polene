@@ -59,7 +59,7 @@ const ERREURS_CONNUES = [
 
 for (const pageSections of pages) {
   const statut = pageSections.statut ?? 200;
-  test(`Sections · ${pageSections.nom} @tnr ${pageSections.etiquette ?? '@sections'}`, async ({ page, qaEnv }, testInfo) => {
+  test(`Sections · ${pageSections.nom} @tnr @controles ${pageSections.etiquette ?? '@sections'}`, async ({ page, qaEnv }, testInfo) => {
     const enProd = pageSections.cheminProd !== undefined;
     test.skip(qaEnv.name === 'prod' && !enProd, 'Page de la préprod uniquement');
     const chemin = qaEnv.name === 'prod' ? pageSections.cheminProd! : pageSections.produitFixe ? `products/${produitFixe(pageSections.produitFixe).handle}` : pageSections.chemin ?? '';

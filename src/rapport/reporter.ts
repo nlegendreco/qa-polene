@@ -1,6 +1,8 @@
 import type { FullConfig, FullResult, Reporter, Suite, TestCase, TestError, TestResult, TestStep } from '@playwright/test/reporter';
 import { createHash } from 'node:crypto';
-import { copyFileSync, cpSync, existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import {
+  copyFileSync, cpSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync,
+} from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { environments } from '../environments';
@@ -13,8 +15,11 @@ import type {
  * Il reprend ce que montre le rapport Playwright (étapes, captures, vidéo, trace, comparaison visuelle,
  * essais successifs) et ajoute un tableau de bord avec l'historique des lancements.
  *
- * Tout est rangé dans le dossier de la série (resultats/<série>/) : rapport-polene/, à côté de playwright-report/
- * et test-results/. L'historique (historique.json) est à côté du rapport, pour survivre à son remplacement.
+ * Tout est rangé dans le dossier de la série (resultats/<série>/) : rapport-polene/ (dernier lancement), à côté de
+ * playwright-report/ et test-results/. L'historique (historique.json) est à côté du rapport. Chaque nouveau lancement
+ * range le rapport précédent dans lancements/<date-heure>/ (demande QA du 20 octobre 2026 : garder les rapports pour
+ * retrouver un bug ancien). Au-delà de 30 jours, un lancement rangé perd les pièces jointes de ses tests réussis
+ * (captures surtout) ; les tests en échec restent complets. Les archives (npm run archiver) ne sont jamais allégées.
  */
 
 const ANSI = /\u001b\[[0-9;]*m/g;
@@ -29,12 +34,18 @@ const APPAREILS: Record<string, string> = {
   'donnees': 'Données préprod',
 };
 
-const NOMS_RAPPORTS: Record<string, string> = {
-  'tnr': 'Parcours et non-régression',
-  'visuel': 'Tests visuels',
-  'regressions': 'Démo · régressions injectées',
-  'demo-echec': 'Démo · échec volontaire',
-};
+/** Titre du rapport d'une série : nom de l'entrée du catalogue (data/catalogue.json), sinon le nom de la série. */
+function nomSerie(serie: string, racine: string): string {
+  try {
+    const catalogue = JSON.parse(readFileSync(path.join(racine, 'data', 'catalogue.json'), 'utf8')) as
+      { types: { cle: string; nom: string }[]; pages: { cle: string; nom: string }[] };
+    const type = catalogue.types.find(t => t.cle === serie);
+    const page = catalogue.pages.find(p => `page-${p.cle}` === serie);
+    return type?.nom ?? (page ? `Page · ${page.nom}` : serie);
+  } catch {
+    return serie;
+  }
+}
 
 const EXTENSIONS: Record<string, string> = {
   'image/png': 'png', 'image/jpeg': 'jpg', 'video/webm': 'webm', 'application/zip': 'zip',
@@ -43,7 +54,9 @@ const EXTENSIONS: Record<string, string> = {
 
 /** Au-delà, une pièce jointe texte n'est pas recopiée dans la page (elle reste téléchargeable). */
 const TEXTE_MAX = 200_000;
-const HISTORIQUE_MAX = 40;
+const HISTORIQUE_MAX = 200;
+/** Âge à partir duquel un lancement rangé perd les pièces jointes de ses tests réussis ou ignorés. */
+const JOURS_COMPLETS = 30;
 
 interface Options {
   /** Série lancée (tnr, visuel, regressions, demo-echec), qui donne le titre du rapport. */
@@ -80,11 +93,17 @@ export default class RapportPolene implements Reporter {
     const racine = this.config.configFile ? path.dirname(this.config.configFile) : process.cwd();
     const serie = path.resolve(racine, this.dossierSerie);
     const sortie = path.join(serie, 'rapport-polene');
+    // Aucun test joué (--list, filtre qui ne retient rien) : le dernier rapport et l'historique restent tels quels.
+    if (this.suite.allTests().every(t => !t.results.length)) {
+      console.log('\n  Aucun test joué : Rapport Polène inchangé.\n');
+      return;
+    }
     // Sécurité : on ne remplace qu'un ancien Rapport Polène, jamais un autre dossier.
     if (existsSync(sortie) && !existsSync(path.join(sortie, 'donnees.js'))) {
       console.error(`Rapport Polène non écrit : le dossier ${path.relative(racine, sortie)} existe et ne contient pas de rapport Polène.`);
       return;
     }
+    ranger(sortie, path.join(serie, 'lancements'));
     rmSync(sortie, { recursive: true, force: true });
     mkdirSync(path.join(sortie, 'donnees'), { recursive: true });
 
@@ -107,7 +126,7 @@ export default class RapportPolene implements Reporter {
 
     const envs = [...new Set(tests.map(t => t.env).filter(Boolean))];
     const donnees: DonneesRapport = {
-      titre: NOMS_RAPPORTS[this.serie] ?? this.serie,
+      titre: nomSerie(this.serie, racine),
       genereLe: new Date().toISOString(),
       lancement,
       environnements: envs.map(e => environments[e as keyof typeof environments]?.label ?? e),
@@ -115,7 +134,8 @@ export default class RapportPolene implements Reporter {
       playwright: this.config.version,
       workers: this.config.workers,
       reessais: Math.max(...this.config.projects.map(p => p.retries), 0),
-      commande: process.env.npm_lifecycle_event ? `npm run ${process.env.npm_lifecycle_event}` : 'npx playwright test',
+      commande: process.env.QA_COMMANDE
+        ?? (process.env.npm_lifecycle_event ? `npm run ${process.env.npm_lifecycle_event}` : 'npx playwright test'),
       rapportPlaywright: '../playwright-report',
       tests,
       historique: nouvelHistorique,
@@ -136,6 +156,7 @@ export default class RapportPolene implements Reporter {
       if (existsSync(visualiseur)) cpSync(visualiseur, path.join(sortie, 'trace'), { recursive: true });
     }
 
+    alleger(path.join(serie, 'lancements'));
     console.log(`\n  Rapport Polène : npm run rapport:polene -- ${this.serie}\n`);
   }
 
@@ -352,6 +373,80 @@ function dedoublonner(annotations: Annotation[]): Annotation[] {
     vues.add(cle);
     return true;
   });
+}
+
+// ---------- Lancements rangés (resultats/<série>/lancements/<date-heure>/) ----------
+
+function lireDonnees(dossier: string): DonneesRapport | undefined {
+  try {
+    const texte = readFileSync(path.join(dossier, 'donnees.js'), 'utf8');
+    return JSON.parse(texte.slice(texte.indexOf('{'), texte.lastIndexOf('}') + 1)) as DonneesRapport;
+  } catch {
+    return undefined;
+  }
+}
+
+function ecrireDonnees(dossier: string, donnees: DonneesRapport) {
+  writeFileSync(path.join(dossier, 'donnees.js'), `window.RAPPORT = ${JSON.stringify(donnees)};\n`);
+}
+
+/** « 2026-10-20_14h05m32 », heure de Paris : nom du dossier d'un lancement rangé. */
+function nomLancement(iso: string): string {
+  const p = Object.fromEntries(new Intl.DateTimeFormat('fr-FR', {
+    timeZone: 'Europe/Paris', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit',
+  }).formatToParts(new Date(iso)).map(x => [x.type, x.value]));
+  return `${p.year}-${p.month}-${p.day}_${p.hour}h${p.minute}m${p.second}`;
+}
+
+/**
+ * Range le rapport du lancement précédent dans lancements/ avant qu'il soit remplacé. Son rapport Playwright, lui,
+ * est remplacé par Playwright : le lien disparaît du rapport rangé. Un rapport sans aucun test joué n'est pas gardé.
+ */
+function ranger(rapport: string, lancements: string) {
+  const donnees = existsSync(rapport) ? lireDonnees(rapport) : undefined;
+  if (!donnees) return;
+  const { reussi, echec, instable, interrompu } = donnees.lancement.totaux;
+  if (!(reussi + echec + instable + interrompu)) return;
+  const cible = path.join(lancements, nomLancement(donnees.lancement.date));
+  if (existsSync(cible)) return;
+  mkdirSync(lancements, { recursive: true });
+  ecrireDonnees(rapport, { ...donnees, rapportPlaywright: '' });
+  renameSync(rapport, cible);
+}
+
+/**
+ * Lancements rangés de plus de JOURS_COMPLETS jours : les tests réussis ou ignorés perdent leurs pièces jointes
+ * (captures d'étape, textes joints) ; les tests en échec, instables ou interrompus gardent tout (captures, vidéo,
+ * trace). Le statut et la durée de chaque test restent. Fait une fois par lancement (champ `allege`).
+ */
+function alleger(lancements: string) {
+  if (!existsSync(lancements)) return;
+  const limite = Date.now() - JOURS_COMPLETS * 24 * 3600 * 1000;
+  for (const nom of readdirSync(lancements)) {
+    const dossier = path.join(lancements, nom);
+    const date = nom.match(/^(\d{4})-(\d{2})-(\d{2})_(\d{2})h(\d{2})/);
+    if (!date || new Date(`${date[1]}-${date[2]}-${date[3]}T${date[4]}:${date[5]}:00`).getTime() > limite) continue;
+    const donnees = lireDonnees(dossier);
+    if (!donnees || donnees.allege) continue;
+    const gardes = new Set<string>();
+    const retires = new Set<string>();
+    for (const test of donnees.tests) {
+      const complet = !['reussi', 'ignore'].includes(test.statut);
+      for (const piece of test.essais.flatMap(e => e.pieces)) {
+        if (!piece.chemin) continue;
+        if (complet) {
+          gardes.add(piece.chemin);
+        } else {
+          retires.add(piece.chemin);
+          piece.chemin = undefined;
+          piece.texte = undefined;
+        }
+      }
+    }
+    for (const chemin of retires) if (!gardes.has(chemin)) rmSync(path.join(dossier, chemin), { force: true });
+    donnees.allege = new Date().toISOString();
+    ecrireDonnees(dossier, donnees);
+  }
 }
 
 function empreinte(valeur: string | Buffer): string {

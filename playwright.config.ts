@@ -22,10 +22,13 @@ const envs = requestedEnvs.filter(name => {
 });
 
 // Série lancée : chaque série range tout dans resultats/<série>/ (Rapport Polène, rapport Playwright,
-// fichiers bruts, historique), remplacé à chaque lancement de la série. SERIE=<nom> pour un essai qui ne doit
-// pas remplacer le dernier lancement.
+// fichiers bruts, historique). Le Rapport Polène de chaque lancement est gardé (lancements/, voir
+// src/rapport/reporter.ts) ; le rapport Playwright et les fichiers bruts ne gardent que le dernier.
+// SERIE=<nom> pour un essai rangé à part. Catalogues par type de test et par page : scripts/lancer.mjs.
 const serie = process.env.SERIE || (process.env.DEMO_ECHEC ? 'demo-echec' : process.env.VISUEL ? 'visuel' : process.env.REGRESSIONS ? 'regressions' : 'tnr');
 const dossierResultats = `resultats/${serie}`;
+// --list ne lance rien : sans rapport, il ne remplace pas le dernier rapport Playwright de la série.
+const listeSeule = process.argv.includes('--list');
 
 const excludedTags = [
   !process.env.DEMO_ECHEC && '@demo-echec',
@@ -94,7 +97,7 @@ export default defineConfig({
   retries: 0,
   // Les démos (échec POC 1.6, régressions injectées POC 2.5) et les tests visuels ne tournent que si on les demande.
   grepInvert: excludedTags.length ? new RegExp(excludedTags.join('|')) : undefined,
-  reporter: [
+  reporter: listeSeule ? [['list']] : [
     ['list'],
     ['html', { outputFolder: `${dossierResultats}/playwright-report`, open: 'never' }],
     // Rapport Polène : tableau de bord et détail des tests, en français (npm run rapport:polene).
