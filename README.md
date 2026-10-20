@@ -21,9 +21,12 @@ Sans `PREPROD_PASSWORD`, seuls les tests de prod sont lancés (un avertissement 
 | `npm test` | Lance tous les tests (prod + préprod) sur les 4 appareils |
 | `npm run test:prod` | Prod uniquement |
 | `npm run test:preprod` | Préprod uniquement |
+| `npm run catalogue` | Affiche les deux catalogues de lancement : par type de test et par page. Voir [docs/catalogue.md](docs/catalogue.md) |
+| `npm run type -- <nom>` | Lance un type de test (`parcours`, `fonctionnel`, `controles`, `accessibilite`, `structure`, `donnees`, `visuel`…) |
+| `npm run page -- <nom>` | Lance tout ce qui touche une page (`home`, `plp`, `pdp`, `cart`, `checkout`, `search`, `account`, `content`, `sections`), sans commande |
 | `npm run test:donnees` | Préprod : vérifie que les produits fixes sont dans leur état prévu (rupture, précommande…), sans commande. Voir [docs/produits-fixes.md](docs/produits-fixes.md) |
-| `npm run rapport:polene` | Ouvre le **sommaire** des derniers lancements : une carte par série avec son verdict, qui mène à son Rapport Polène |
-| `npm run rapport:polene -- visuel` | Ouvre directement le Rapport Polène d'une série (`tnr`, `visuel`, `regressions`, `demo-echec`) |
+| `npm run rapport:polene` | Ouvre le **sommaire** : une carte par série avec son verdict (par type de test, par page, autres), qui mène à son Rapport Polène et à ses lancements précédents |
+| `npm run rapport:polene -- visuel` | Ouvre directement le Rapport Polène d'une série (`tnr`, `visuel`, `page-pdp`…) |
 | `npm run rapport` | Ouvre le rapport Playwright d'origine du parcours (détail technique) |
 | `npm run test:demo-echec` | Démo d'un échec volontaire (bouton « Ajouter au panier » masqué) |
 | `npm run test:visuel` | Tests visuels (prod) : compare 4 pages (accueil, fiche produit nouvelle et ancienne, panier) × 4 appareils à la référence |
@@ -40,24 +43,21 @@ Pour regarder le navigateur pendant le test : ajouter `--headed`.
 
 ### Où sont les résultats
 
-Chaque série range tout dans un seul dossier, `resultats/<série>/` (hors Git), remplacé à chaque lancement de la série :
+Chaque série range tout dans un seul dossier, `resultats/<série>/` (hors Git) :
 
 ```
 resultats/
-  tnr/            npm test, test:prod, test:preprod (parcours d'achat, structure des collections, données préprod)
-  donnees/        npm run test:donnees
-  visuel/         npm run test:visuel
-  accessibilite/  npm run test:accessibilite
-  structure/      npm run test:structure
-  regressions/    npm run test:regressions
-  demo-echec/     npm run test:demo-echec
-    rapport-polene/      le Rapport Polène
-    playwright-report/   le rapport Playwright d'origine
-    test-results/        fichiers bruts (captures, vidéos, traces)
-    historique.json      les 40 derniers lancements, pour les graphiques
+  tnr/            npm test, test:prod, test:preprod, npm run type -- tnr
+  parcours/, fonctionnel/, controles/, accessibilite/, structure/, donnees/, visuel/…   npm run type -- <nom>
+  page-pdp/, page-cart/…                                                             npm run page -- <nom>
+    rapport-polene/      le Rapport Polène du dernier lancement
+    lancements/          les Rapports Polène des lancements précédents (allégés après 30 jours, échecs gardés)
+    playwright-report/   le rapport Playwright d'origine (dernier lancement)
+    test-results/        fichiers bruts (captures, vidéos, traces ; dernier lancement)
+    historique.json      les 200 derniers lancements, pour les graphiques
 ```
 
-Pour un essai qui ne doit pas remplacer le dernier lancement d'une série : `SERIE=essai npx playwright test …` écrit dans `resultats/essai/`.
+Pour un essai rangé à part : `SERIE=essai npx playwright test …` écrit dans `resultats/essai/`. Un `--list` (liste des tests sans les lancer) n'écrit aucun rapport.
 
 ## Ce que fait le parcours d'achat (`tests/parcours-achat.spec.ts`)
 
@@ -93,9 +93,9 @@ Chaque lancement produit deux rapports :
 
 Le rapport reprend la charte de polene-paris.com : logo, polices du site (Canela, Sackers, chargées depuis le site, il faut donc une connexion internet ; sinon des polices proches s'affichent), beiges et formes du thème. Les textes sont un peu plus grands et plus marqués que sur le site pour la lecture, et les graphiques ont leurs propres couleurs (bleu pour les durées, cognac et rose prune pour les raisons d'échec).
 
-Le rapport est servi en local (la trace en a besoin) : laisser la fenêtre du terminal ouverte, Ctrl+C pour arrêter. L'historique des lancements est gardé dans `resultats/<série>/historique.json` (hors Git).
+Le rapport est servi en local (la trace en a besoin) : laisser la fenêtre du terminal ouverte, Ctrl+C pour arrêter. L'historique des lancements est gardé dans `resultats/<série>/historique.json` (hors Git), et le Rapport Polène de chaque lancement dans `resultats/<série>/lancements/` (lien « lancements précédents » du sommaire, règles dans [docs/catalogue.md](docs/catalogue.md)).
 
-**Le rapport Playwright d'origine** (`npm run rapport`) reste disponible pour le détail technique, avec un lien depuis chaque fiche du Rapport Polène.
+**Le rapport Playwright d'origine** (`npm run rapport`) reste disponible pour le détail technique, avec un lien depuis chaque fiche du Rapport Polène. Il ne garde que le dernier lancement de la série.
 
 ## Les tests visuels (`tests/visuel.spec.ts`, POC 2)
 
