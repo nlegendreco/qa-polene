@@ -1,6 +1,8 @@
 # Produits fixes de la préprod
 
 > Phase 1 de la roadmap (« une préprod déterministe »). **Liste validée par la QA le 7 octobre 2026.**
+>
+> **21 octobre 2026 (accord QA) : seuls P02 (bague Eroz) et P08 (Cyme Mini camel) restent** dans `data/produits-fixes.json` et dans `npm run test:donnees`. Les tests s'en servent parce qu'ils existent aussi en prod (galerie, vue 3D, en-tête, checkout, favoris). Les autres cas (P01, P03 à P07, P09) sont couverts depuis le 9 octobre par les copies QA ([plan-donnees-qa.md](plan-donnees-qa.md)), qu'aucun test ne remplace par les vrais produits : leurs contrôles sont retirés. La suite de ce document décrit la liste d'origine.
 
 Les tests préprod ont besoin de produits dont l'état ne bouge pas : un produit toujours en rupture, un toujours en précommande, etc. Sans eux, un test « rupture » échoue le jour où quelqu'un remet le produit en stock, et on ne sait pas si c'est un bug ou un changement de données.
 

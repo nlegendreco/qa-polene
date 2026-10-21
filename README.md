@@ -29,7 +29,7 @@ Sans `PREPROD_PASSWORD`, seuls les tests de prod sont lancés (un avertissement 
 | `npm run rapport:polene -- visuel` | Ouvre directement le Rapport Polène d'une série (`tnr`, `visuel`, `page-pdp`…) |
 | `npm run rapport` | Ouvre le rapport Playwright d'origine du parcours (détail technique) |
 | `npm run test:demo-echec` | Démo d'un échec volontaire (bouton « Ajouter au panier » masqué) |
-| `npm run test:visuel` | Tests visuels (prod) : compare 4 pages (accueil, fiche produit nouvelle et ancienne, panier) × 4 appareils à la référence |
+| `npm run test:visuel` | Tests visuels (prod) : compare l'accueil, la fiche produit (nouvelle et ancienne) et le panier × 4 appareils, le menu « Sacs » ouvert (ordinateurs) et le menu mobile ouvert (téléphones) à la référence |
 | `npm run test:visuel:maj` | Sauvegarde la référence actuelle dans `archives/references/<date>/`, puis la reprend (après une MEP validée, avec l'accord de tout le monde) |
 | `npm run test:regressions` | Démo : 4 régressions injectées (desktop Chrome + iPhone), chacune **doit** échouer |
 | `npm run test:accessibilite` | Accessibilité (prod et préprod, Chrome ordinateur et iPhone) : axe sur 51 pages, comparé au relevé de chaque page (seul un problème absent du relevé échoue), et bouton pause / lecture au clavier. Voir [docs/accessibilite.md](docs/accessibilite.md) |
