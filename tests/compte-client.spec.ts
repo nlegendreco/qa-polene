@@ -86,38 +86,9 @@ async function ouvrirCommandes(page: Page): Promise<string[]> {
 
 const titre = (page: Page, nom: RegExp) => page.locator('main').getByRole('heading', { name: nom }).first();
 
-/** Pages simples de l'espace client : chemin et titre attendu. */
-const VUES = [
-  { nom: 'Accueil du compte', chemin: 'account', titre: /^Welcome|^Bienvenue/i },
-  { nom: 'Profil', chemin: 'account?view=profile', titre: /Your Profile|Votre profil/i },
-  { nom: 'Favoris', chemin: 'account?view=wishlist', titre: /Your favorites|Vos favoris/i },
-  // État vide et alerte remplie (ACCOUNT-18) : test « alerte de retour en stock » plus bas, qui pose une alerte.
-  { nom: 'Alertes de retour en stock', chemin: 'account?view=back-in-stock', titre: /Your Alerts|Vos alertes/i },
-  { nom: 'Assistance', chemin: 'account?view=assistance', titre: /Need Assistance|Besoin d.aide/i },
-];
-
-for (const vue of VUES) {
-  test(`Espace client · ${vue.nom} @tnr @account`, async ({ page, qaEnv }, testInfo) => {
-    conditions(qaEnv, testInfo);
-    const erreursJs = suivreErreursJs(page);
-    await etape(page, testInfo, `1. Ouvrir ${vue.nom.toLowerCase()} (client connecté)`, async () => {
-      await ouvrir(page, vue.chemin);
-      await expect(titre(page, vue.titre)).toBeVisible();
-    });
-    if (vue.chemin === 'account' || vue.chemin === 'account?view=profile') {
-      await etape(page, testInfo, '2. Vérifier que le compte affiché est celui du client de test', async () => {
-        await expect(page.locator('main'), 'L\'adresse du compte de test doit être affichée').toContainText(emailCompte(), { ignoreCase: true });
-        if (vue.chemin === 'account?view=profile') {
-          for (const champ of [/First name|Prénom/i, /Last name|Nom/i]) await expect(page.locator('main').getByRole('textbox', { name: champ }).first()).toBeVisible();
-        }
-      });
-    }
-    const numero = vue.chemin === 'account' || vue.chemin === 'account?view=profile' ? 3 : 2;
-    await etape(page, testInfo, `${numero}. Vérifier la page : section, menu, ni erreur ni débordement`, async () => {
-      await verifierPage(page, testInfo, erreursJs);
-    });
-  });
-}
+// Accueil, profil, favoris, alertes et assistance : ouverts et contrôlés (section, menu, erreurs, largeur) par le test
+// « menu » ; l'adresse du compte de test est vérifiée par « accueil et profil ». Jusqu'au 21 octobre 2026, un test
+// simple par page le faisait aussi, en double (« Espace client · Profil »…).
 
 test('Espace client · Adresses : liste, ajout, modification @tnr @account', async ({ page, qaEnv }, testInfo) => {
   conditions(qaEnv, testInfo);
@@ -230,21 +201,26 @@ const ENTREES_MENU = [
 test('Espace client · menu : chaque entrée ouvre sa page et devient l\'entrée active @tnr @account', async ({ page, qaEnv }, testInfo) => {
   conditions(qaEnv, testInfo);
   const entreeMenu = (nom: RegExp) => page.locator('main nav').getByRole('menuitem', { name: nom }).first();
+  // Chaque page ouverte passe aussi les contrôles communs (section, menu complet, ni erreur ni débordement).
+  const erreursJs = suivreErreursJs(page);
 
   await etape(page, testInfo, '1. Ouvrir l\'accueil du compte : « Overview » est l\'entrée active, « Log out » est proposé', async () => {
     await ouvrir(page, 'account');
     await expect(entreeMenu(/^(Overview|Aperçu)$/i), '« Overview » doit être l\'entrée active').toHaveAttribute('aria-current', 'page');
     // Fiche TNR ACCOUNT-01 : la déconnexion est dans le menu (lue, jamais cliquée : elle fermerait la session de test).
     await expect(page.locator('main a.customer-navigation__link[href*="logout"]').first(), 'Le menu doit proposer « Log out »').toBeAttached();
+    await verifierPage(page, testInfo, erreursJs);
   });
 
   for (const [i, entree] of ENTREES_MENU.entries()) {
-    await etape(page, testInfo, `${i + 2}. Cliquer « ${entree.nom.source.replace(/[\^$()\\]/g, '').split('|')[0]} » : sa page s'ouvre, l'entrée devient active`, async () => {
+    await etape(page, testInfo, `${i + 2}. Cliquer « ${entree.nom.source.replace(/[\^$()\\]/g, '').split('|')[0]} » : sa page s'ouvre sans erreur, l'entrée devient active`, async () => {
+      erreursJs.length = 0;
       await entreeMenu(entree.nom).click();
       await expect(page, `L'entrée doit ouvrir ${entree.chemin.source}`).toHaveURL(entree.chemin);
       await expect(titre(page, entree.titre), 'La page doit afficher son titre').toBeVisible();
       await expect(entreeMenu(entree.nom), 'L\'entrée cliquée doit être l\'entrée active').toHaveAttribute('aria-current', 'page');
       expect(await page.locator('main nav [aria-current="page"]').count(), 'Une seule entrée active à la fois').toBe(1);
+      await verifierPage(page, testInfo, erreursJs);
     });
   }
 });
@@ -257,6 +233,7 @@ test('Espace client · accueil et profil : nom, dernière commande, assistance, 
   await etape(page, testInfo, '1. Profil : civilité, prénom, nom, téléphone, date de naissance et newsletter, sans enregistrer', async () => {
     await ouvrir(page, 'account?view=profile');
     await expect(titre(page, /Your Profile|Votre profil/i)).toBeVisible();
+    await expect(main, 'Le profil doit être celui du compte de test (son adresse email)').toContainText(emailCompte(), { ignoreCase: true });
     const civilite = main.getByRole('combobox').first();
     await expect(civilite, 'La civilité du compte de test doit être choisie').not.toHaveValue('');
     prenom = await main.getByRole('textbox', { name: /First name|Prénom/i }).first().inputValue();
@@ -277,6 +254,7 @@ test('Espace client · accueil et profil : nom, dernière commande, assistance, 
   await etape(page, testInfo, '2. Accueil : « Welcome » avec le prénom, lien vers le profil', async () => {
     await ouvrir(page, 'account');
     await expect(titre(page, /^Welcome|^Bienvenue/i), `L'accueil doit saluer le client par son prénom (« ${prenom} »)`).toHaveText(new RegExp(`^(Welcome|Bienvenue) ${prenom}$`, 'i'));
+    await expect(main, 'L\'accueil doit montrer l\'adresse email du compte de test').toContainText(emailCompte(), { ignoreCase: true });
     await expect(main.getByRole('link', { name: /Edit profile|Modifier (le|mon) profil/i }), 'Lien vers le profil').toHaveAttribute('href', /account\?view=profile/);
   });
 
