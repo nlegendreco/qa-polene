@@ -7,7 +7,7 @@ import { appelShopify } from '../src/shopify';
 /**
  * Santé des données préprod (roadmap phase 1.5) : avant le TNR, on vérifie que chaque produit fixe
  * est toujours dans l'état prévu. Si quelqu'un a remis en stock le produit en rupture, ce test le dit
- * (« P04 Rupture totale n'est plus en rupture ») au lieu de laisser échouer un test du panier sans explication.
+ * (« QA02 Rupture : … n'est plus en rupture ») au lieu de laisser échouer un test du panier sans explication.
  *
  * Préprod uniquement, sur un seul navigateur (projet « preprod · donnees ») : ce sont les données qui sont
  * vérifiées, pas l'affichage sur chaque appareil. Aucun ajout au panier, aucune commande.
@@ -104,9 +104,6 @@ for (const produit of PRODUITS_FIXES) {
       } else {
         expect.soft(json.variants.some(v => v.available), `${nom} n'a plus de stock : aucune variante n'est achetable`).toBe(true);
       }
-      if (produit.nouveaute !== undefined) {
-        expect.soft(json.tags.includes('LABEL:NEW'), `${nom} : le tag LABEL:NEW (étiquette « Nouveauté ») ${produit.nouveaute ? 'a été retiré' : 'a été ajouté'}`).toBe(produit.nouveaute);
-      }
       if (produit.tags) {
         // Tags remis chaque nuit par une automatisation de la préprod (data/donnees-qa.json) : notés, pas en échec.
         const toleres = json.tags.filter(t => !produit.tags!.includes(t) && DONNEES_QA.tagsToleres?.includes(t));
@@ -115,9 +112,6 @@ for (const produit of PRODUITS_FIXES) {
         const manquants = produit.tags.filter(t => !json.tags.includes(t));
         expect.soft(enTrop, `${nom} : tag(s) en trop, ajouté(s) par quelqu'un ou par une automatisation : ${enTrop.join(', ')}. Il peut entrer dans de vraies collections. Remise en état : npm run donnees:qa`).toEqual([]);
         expect.soft(manquants, `${nom} : tag(s) retiré(s) : ${manquants.join(', ')}. Remise en état : npm run donnees:qa`).toEqual([]);
-      }
-      if (produit.prixMaximumEuros !== undefined) {
-        expect.soft(prixMinimum, `${nom} : le prix (${formatCents(prixMinimum)}) dépasse ${produit.prixMaximumEuros} €`).toBeLessThanOrEqual(produit.prixMaximumEuros * 100);
       }
       if (produit.prixDollars !== undefined) {
         // Le prix en euros de /fr-fr/ suit le taux de change du jour : on contrôle le prix de la boutique, en dollars,

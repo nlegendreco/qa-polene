@@ -17,12 +17,8 @@ export interface ProduitFixe {
   etat: EtatProduit;
   /** Produit à tailles : tailles qu'on doit pouvoir acheter, et celles qui doivent être épuisées. */
   tailles?: { disponibles: string[]; indisponibles: string[] };
-  /** Étiquette « Nouveauté » (tag LABEL:NEW). */
-  nouveaute?: boolean;
   /** Nombre minimum de coloris proposés par « Découvrir tout ». */
   colorisMinimum?: number;
-  /** Prix maximum, en euros, pour le cas « petit prix ». */
-  prixMaximumEuros?: number;
   /** Tags exacts attendus (produits QA : `qa-fixture` et ceux du cas, rien d'autre). */
   tags?: string[];
   /** Produit QA en précommande : date d'expédition prévue (métachamp `preorder.date` de toutes les variantes), « 2030-12-31 ». */
@@ -85,7 +81,7 @@ const datePreorder = (champs?: { namespace: string; key: string; value: string }
   champs?.find(m => m.namespace === 'preorder' && m.key === 'date')?.value;
 
 export const PRODUITS_QA: ProduitFixe[] =DONNEES_QA.produits.map(p => ({
-  // Les tags exacts couvrent aussi l'étiquette « Nouveauté » (LABEL:NEW) : pas de champ `nouveaute`, sinon double message.
+  // Les tags exacts couvrent aussi l'étiquette « Nouveauté » (LABEL:NEW).
   id: p.id, role: p.cas, handle: p.handle, etat: p.etat, tags: tagsQa(p),
   datePrecommande: datePreorder(p.metafieldsVariantes?.['*']),
   ...(p.prix ? { prixDollars: Math.round(Number(p.prix) * 100) } : {}),
