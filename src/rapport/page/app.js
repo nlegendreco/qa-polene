@@ -74,6 +74,11 @@
   const parId = new Map(R.tests.map(t => [t.id, t]));
   const parCle = new Map(R.tests.map(t => [t.cle, t]));
   const historique = R.historique ?? [];
+  // Même test en prod et en préprod (structure, accessibilité…) : l'environnement entre dans le libellé, sinon les deux
+  // se confondent (« Les plus longs », tableau par appareil).
+  const plusieursEnvs = new Set(R.tests.map(t => t.env).filter(Boolean)).size > 1;
+  const nomEnv = env => (env === 'prod' ? 'Prod' : env === 'preprod' ? 'Préprod' : env);
+  const ouTourne = t => [plusieursEnvs && t.env ? nomEnv(t.env) : '', t.appareil].filter(Boolean).join(' · ');
   const totaux = { reussi: 0, echec: 0, instable: 0, ignore: 0, interrompu: 0 };
   R.tests.forEach(t => { totaux[t.statut]++; });
   const nbTests = R.tests.length;
@@ -248,13 +253,14 @@
   /** Tableau test × appareil : la vue « tout va bien ? » en un coup d'œil. */
   function matrice() {
     const appareils = R.appareils;
-    const titres = [...new Set(R.tests.map(t => `${t.fichier}|${t.titre}`))];
+    // Une ligne par test et par environnement (une seule par test si le lancement n'en a qu'un).
+    const titres = [...new Set(R.tests.map(t => `${t.fichier}|${t.titre}|${plusieursEnvs ? t.env ?? '' : ''}`))];
     const lignes = titres.map(cle => {
-      const [fichier, titre] = cle.split('|');
-      const cellules = appareils.map(a => R.tests.find(t => t.titre === titre && t.fichier === fichier && t.appareil === a));
+      const [fichier, titre, env] = cle.split('|');
+      const cellules = appareils.map(a => R.tests.find(t => t.titre === titre && t.fichier === fichier && t.appareil === a && (!env || t.env === env)));
       const pire = Math.min(...cellules.filter(Boolean).map(t => STATUTS[t.statut].ordre));
-      return { fichier, titre, cellules, pire };
-    }).sort((a, b) => a.pire - b.pire || a.titre.localeCompare(b.titre, 'fr'));
+      return { fichier, titre, env, cellules, pire };
+    }).sort((a, b) => a.pire - b.pire || a.titre.localeCompare(b.titre, 'fr') || a.env.localeCompare(b.env));
     return `
       <section>
         <div class="titre-section"><h2>Par test et par appareil</h2><p class="discret">Cliquer sur une case pour voir le détail</p></div>
@@ -262,7 +268,7 @@
           <thead><tr><th scope="col">Test</th>${appareils.map(a => `<th scope="col" class="cellule">${esc(a)}</th>`).join('')}</tr></thead>
           <tbody>${lignes.map(l => `
             <tr>
-              <th scope="row"><a href="#/test/${encodeURIComponent((l.cellules.find(Boolean)).id)}">${esc(l.titre)}</a><div class="mini">${esc(l.fichier)}</div></th>
+              <th scope="row"><a href="#/test/${encodeURIComponent((l.cellules.find(Boolean)).id)}">${esc(l.titre)}</a><div class="mini">${l.env ? `${esc(nomEnv(l.env))} · ` : ''}${esc(l.fichier)}</div></th>
               ${l.cellules.map(t => t ? `<td class="cellule"><a href="#/test/${encodeURIComponent(t.id)}" data-info="${esc(`${t.appareil} · ${libelleStatut(t.statut)} · ${duree(t.duree)}${t.essais.length > 1 ? ` · ${t.essais.length} essais` : ''}`)}">${puce(t.statut)}<small>${esc(duree(t.duree))}</small></a></td>` : '<td class="cellule discret">—</td>').join('')}
             </tr>`).join('')}
           </tbody>
@@ -400,7 +406,7 @@
       ? `<div class="barres">${surveiller.map(e => {
         const test = parCle.get(e.cle);
         const [projet, ...titre] = e.cle.split(' › ');
-        const libelle = test ? `${test.titre} · ${test.appareil}` : `${titre.join(' › ')} · ${projet}`;
+        const libelle = test ? `${test.titre} · ${ouTourne(test)}` : `${titre.join(' › ')} · ${projet}`;
         return `<${test ? `a href="#/test/${encodeURIComponent(test.id)}"` : 'div'} class="barre"><div class="barre__libelle"><span>${esc(libelle)}</span><span class="second">${e.problemes} sur ${e.lances}</span></div>${points(e.cle, 10)}</${test ? 'a' : 'div'}>`;
       }).join('')}</div>`
       : `<div class="vide">${DEMO ? 'Sans objet pour une démo.' : recents.length < 2 ? 'Il faut au moins deux lancements pour repérer les tests fragiles.' : 'Aucun test n\'a échoué ou hésité sur les derniers lancements.'}</div>`;
@@ -431,7 +437,7 @@
           const h = reperes.get(t.cle);
           const ecart = h ? Math.round(((t.duree - h) / h) * 100) : null;
           return {
-            libelle: `${t.titre} · ${t.appareil}`,
+            libelle: `${t.titre} · ${ouTourne(t)}`,
             valeur: t.duree,
             repere: h,
             texte: `${duree(t.duree)}${ecart != null && Math.abs(ecart) >= 20 ? ` · ${ecart > 0 ? '+' : ''}${ecart} % par rapport à d'habitude` : ''}`,
@@ -587,7 +593,7 @@
             ${t.etiquettes.map(e => `<span class="etiquette">${esc(e)}</span>`).join('')}
             <span class="mini" style="margin:0">${esc(t.fichier)}:${t.ligne}</span>
           </div>
-          ${memeTest.length > 1 ? `<div class="autres-appareils" aria-label="Même test sur les autres appareils">${memeTest.map(x => `<a href="#/test/${encodeURIComponent(x.id)}" class="${x.id === t.id ? 'actif' : ''}">${puce(x.statut)}${esc(x.appareil)}</a>`).join('')}</div>` : ''}
+          ${memeTest.length > 1 ? `<div class="autres-appareils" aria-label="Même test sur les autres appareils">${memeTest.map(x => `<a href="#/test/${encodeURIComponent(x.id)}" class="${x.id === t.id ? 'actif' : ''}">${puce(x.statut)}${esc(ouTourne(x))}</a>`).join('')}</div>` : ''}
         </div>
         <div class="actions">
           ${trace ? (lienTrace

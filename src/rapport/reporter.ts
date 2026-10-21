@@ -47,6 +47,21 @@ function nomSerie(serie: string, racine: string): string {
   }
 }
 
+/**
+ * Nom d'un test dans le rapport et dans l'historique (sans les étiquettes). Les tests déclarés pour chaque fiche du
+ * Roll Out (`pourChaqueFiche`, groupes « Ancienne fiche » et « Nouvelle fiche ») portent le même nom : la fiche y est
+ * ajoutée, sinon leurs résultats se mélangeaient dans l'historique (avant le 21 octobre 2026). Les autres groupes
+ * servent seulement à ranger le code et n'entrent pas dans le nom.
+ */
+function titreDuTest(test: TestCase): string {
+  const sansEtiquettes = (texte: string) => texte.replace(/\s*@[\w-]+/g, '').trim();
+  const fiches: string[] = [];
+  for (let groupe: Suite | undefined = test.parent; groupe?.type === 'describe'; groupe = groupe.parent) {
+    if (/^(Ancienne|Nouvelle) fiche$/.test(groupe.title)) fiches.unshift(groupe.title);
+  }
+  return [...fiches, sansEtiquettes(test.title)].join(' › ');
+}
+
 const EXTENSIONS: Record<string, string> = {
   'image/png': 'png', 'image/jpeg': 'jpg', 'video/webm': 'webm', 'application/zip': 'zip',
   'text/plain': 'txt', 'text/markdown': 'md', 'application/json': 'json', 'text/html': 'html',
@@ -108,6 +123,10 @@ export default class RapportPolene implements Reporter {
     mkdirSync(path.join(sortie, 'donnees'), { recursive: true });
 
     const tests = this.suite.allTests().map(test => this.convertirTest(test, sortie, racine));
+    // Deux tests du même nom sur le même projet partageraient leur ligne d'historique (le second effacerait le premier).
+    const vues = new Set<string>();
+    const doublons = [...new Set(tests.filter(t => vues.size === vues.add(t.cle).size).map(t => t.cle))];
+    if (doublons.length) console.warn(`\n  Rapport Polène : ${doublons.length} tests portent le même nom qu'un autre, leur historique se mélange :\n${doublons.slice(0, 10).map(c => `    ${c}`).join('\n')}`);
     const fichierHistorique = path.join(serie, 'historique.json');
     const historique = this.lireHistorique(fichierHistorique);
 
@@ -135,7 +154,8 @@ export default class RapportPolene implements Reporter {
       workers: this.config.workers,
       reessais: Math.max(...this.config.projects.map(p => p.retries), 0),
       commande: process.env.QA_COMMANDE
-        ?? (process.env.npm_lifecycle_event ? `npm run ${process.env.npm_lifecycle_event}` : 'npx playwright test'),
+        // npx se présente aussi comme un script npm (« npx ») : ce n'en est pas un.
+        ?? (process.env.npm_lifecycle_event && process.env.npm_lifecycle_event !== 'npx' ? `npm run ${process.env.npm_lifecycle_event}` : 'npx playwright test'),
       rapportPlaywright: '../playwright-report',
       tests,
       historique: nouvelHistorique,
@@ -164,7 +184,7 @@ export default class RapportPolene implements Reporter {
     const projet = test.parent.project();
     const nomProjet = projet?.name ?? '';
     const [envNom, appareilCle] = nomProjet.split(' · ');
-    const titre = test.title.replace(/\s*@[\w-]+/g, '').trim();
+    const titre = titreDuTest(test);
     const fichier = path.relative(path.resolve(racine, 'tests'), test.location.file);
     const essais = test.results.map(r => this.convertirEssai(r, sortie));
     const dernier = essais.at(-1);
