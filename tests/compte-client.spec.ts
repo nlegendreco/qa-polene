@@ -466,7 +466,7 @@ test(`Espace client · alerte de retour en stock : inscription depuis la fiche, 
  * Elle donne au compte une commande pour les tests de l'espace client, et vérifie au passage le checkout connecté
  * (adresse email et adresse de livraison reprises du compte).
  */
-test('Espace client · Commande d\'un client connecté @journey @account', async ({ page, qaEnv, isMobile }, testInfo) => {
+test('Espace client · Commande d\'un client connecté @journey @account @commande-compte', async ({ page, qaEnv, isMobile }, testInfo) => {
   test.skip(!process.env.COMMANDE_COMPTE, 'Crée une commande : seulement avec COMMANDE_COMPTE=1 (accord QA)');
   test.skip(qaEnv.name !== 'preprod' || !qaEnv.completePurchase, 'Préprod uniquement');
   test.skip(!sessionPresente, `Pas de session client : lancer « npm run connexion:compte » (${SESSION})`);

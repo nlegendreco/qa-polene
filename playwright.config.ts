@@ -34,6 +34,9 @@ const excludedTags = [
   !process.env.DEMO_ECHEC && '@demo-echec',
   !process.env.VISUEL && '@visuel',
   !process.env.REGRESSIONS && '@regressions',
+  // Commande du compte de test (préprod) : seulement avec COMMANDE_COMPTE=1 ; sinon elle n'apparaît pas du tout,
+  // plutôt que de rester « ignorée » dans chaque rapport.
+  !process.env.COMMANDE_COMPTE && '@commande-compte',
 ].filter(Boolean);
 
 const projects: Project[] = [];
