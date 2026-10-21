@@ -37,8 +37,8 @@
       "sections": ["page", "design_system_f4yEF4"]
     },
     { "id": "R01", "nom": "Accueil", "chemin": "", "cheminProd": "", "etiquette": "@home", "role": "Sections réservées à l'accueil", "couvre": ["hero", "promoted-collections", "instagram", "blog-space"] },
-    { "id": "R02", "nom": "Fiche produit QA01", "produitFixe": "QA01", "cheminProd": "products/cyme-mini-textured-camel", "etiquette": "@pdp", "role": "Fiche produit et son écran partagé (prod : Cyme Mini camel, P08)", "couvre": ["product-main", "splitscreen-teaser"] },
-    { "id": "R03", "nom": "Collection QA", "chemin": "collections/qa-collection", "cheminProd": "collections/bags", "etiquette": "@plp", "role": "Page de collection (prod : Sacs)", "couvre": ["main-collection"] },
+    { "id": "R02", "nom": "Fiche produit", "produitFixe": "QA01", "cheminProd": "products/cyme-mini-textured-camel", "etiquette": "@pdp", "role": "Fiche produit et son écran partagé (préprod : QA01 ; prod : Cyme Mini camel, P08)", "couvre": ["product-main", "splitscreen-teaser"] },
+    { "id": "R03", "nom": "Collection", "chemin": "collections/qa-collection", "cheminProd": "collections/bags", "etiquette": "@plp", "role": "Page de collection (préprod : QA Collection ; prod : Sacs)", "couvre": ["main-collection"] },
     { "id": "R04", "nom": "Liste des collections", "chemin": "collections", "cheminProd": "collections", "etiquette": "@plp", "role": "Toutes les collections", "couvre": ["main-list-collections"] },
     { "id": "R05", "nom": "Panier vide", "chemin": "cart", "cheminProd": "cart", "etiquette": "@cart", "role": "Panier et favoris du panier (la notification d'ajout est vue par le parcours d'achat)", "couvre": ["main-cart", "wishlist-slider"] },
     { "id": "R06", "nom": "Recherche", "chemin": "search?q=sac", "cheminProd": "search?q=sac", "etiquette": "@search", "role": "Résultats de recherche", "couvre": ["main-search"] },

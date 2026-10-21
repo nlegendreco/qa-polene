@@ -1,6 +1,6 @@
 {
-  "page": "collection-qa",
-  "projet": "preprod · desktop-chrome",
+  "page": "collection",
+  "projet": "preprod · iphone",
   "date": "2026-10-16",
   "titres": [
     "h1 QA Collection",
@@ -11,8 +11,7 @@
     "h3 Materials (N)",
     "h3 Color (N)",
     "h3 Sizes (N)",
-    "h3 Size_new_test (N)",
-    "h2 Search for specific products"
+    "h3 Size_new_test (N)"
   ],
   "boutons": [
     "Previous",
@@ -26,10 +25,7 @@
     "Size_new_test (N)",
     "Clear",
     "Show products • N",
-    "Large grid view",
-    "Compact grid view",
-    "Back to top",
-    "Search"
+    "Back to top"
   ],
   "liens": [
     {
