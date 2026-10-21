@@ -2,8 +2,7 @@ import { test, expect, etape, pourChaqueFiche } from '../src/fixtures';
 import { ficheAffichee } from '../src/fiches';
 import { releverStructure, verifierStructure } from '../src/structure';
 import {
-  PAGES_COMPTE, PAGES_PREPROD, PAGES_PROD, SESSION_COMPTE, conditions, ficheProduit, ouvrir, ouvrirEspaceClient,
-  sessionCompte,
+  PAGES, PAGES_COMPTE, SESSION_COMPTE, conditions, ficheProduit, ouvrir, ouvrirEspaceClient, pageDeLEnv, sessionCompte,
 } from '../src/pages-testees';
 
 /**
@@ -25,20 +24,15 @@ test('Structure · En-tête et pied de page @tnr @structure @home', async ({ pag
     verifierStructure(testInfo, 'pied-de-page', await releverStructure(page, 'pied-de-page')));
 });
 
-for (const [env, pages] of [['preprod', PAGES_PREPROD], ['prod', PAGES_PROD]] as const) {
-  // Même nom de page dans les deux environnements (Panier vide, Recherche…) : un groupe par environnement.
-  test.describe(env === 'prod' ? 'Prod' : 'Préprod', () => {
-    // Accueil : contenu éditorial, qui change à chaque campagne (QA, 20 octobre 2026). Seuls son en-tête et son pied de
-    // page sont relevés (test ci-dessus) ; le reste de l'accueil est vérifié par les pages de sections (sections
-    // affichées, images, erreurs) et le test visuel.
-    for (const p of pages.filter(p => p.etiquette !== '@home')) {
-      test(`Structure · ${p.nom} @tnr @structure ${p.etiquette}`, async ({ page, qaEnv }, testInfo) => {
-        conditions(testInfo, env, qaEnv.name, SUJET);
-        await etape(page, testInfo, `1. Ouvrir la page ${p.nom}`, () => ouvrir(page, p.chemin, p.statut));
-        await etape(page, testInfo, '2. Comparer les titres, boutons et liens de la page à la référence', async () =>
-          verifierStructure(testInfo, p.cle, await releverStructure(page, 'contenu')));
-      });
-    }
+// Accueil : contenu éditorial, qui change à chaque campagne (QA, 20 octobre 2026). Seuls son en-tête et son pied de
+// page sont relevés (test ci-dessus) ; le reste de l'accueil est vérifié par les pages de sections (sections
+// affichées, images, erreurs) et le test visuel.
+for (const pageTestee of PAGES.filter(p => p.etiquette !== '@home')) {
+  test(`Structure · ${pageTestee.nom} @tnr @structure ${pageTestee.etiquette}`, async ({ page, qaEnv }, testInfo) => {
+    const p = pageDeLEnv(testInfo, pageTestee, qaEnv.name, SUJET);
+    await etape(page, testInfo, `1. Ouvrir la page ${p.nom}`, () => ouvrir(page, p.chemin, p.statut));
+    await etape(page, testInfo, '2. Comparer les titres, boutons et liens de la page à la référence', async () =>
+      verifierStructure(testInfo, p.cle, await releverStructure(page, 'contenu')));
   });
 }
 

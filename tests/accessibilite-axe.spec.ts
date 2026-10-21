@@ -4,7 +4,7 @@ import { CartPage } from '../src/pages/cart';
 import { CheckoutPage } from '../src/pages/checkout';
 import { verifierAccessibilite } from '../src/accessibilite';
 import {
-  PAGES_COMPTE, PAGES_PREPROD, PAGES_PROD, SESSION_COMPTE, conditions, ficheProduit, ouvrir, ouvrirEspaceClient, preparer,
+  PAGES, PAGES_COMPTE, SESSION_COMPTE, conditions, ficheProduit, ouvrir, ouvrirEspaceClient, pageDeLEnv, preparer,
   produitPanier, sessionCompte,
 } from '../src/pages-testees';
 
@@ -17,16 +17,11 @@ import {
 
 const SUJET = 'Accessibilité';
 
-for (const [env, pages] of [['preprod', PAGES_PREPROD], ['prod', PAGES_PROD]] as const) {
-  // Même nom de page dans les deux environnements (Accueil, Panier vide…) : un groupe par environnement.
-  test.describe(env === 'prod' ? 'Prod' : 'Préprod', () => {
-    for (const p of pages) {
-      test(`Accessibilité (axe) · ${p.nom} @tnr @accessibilite ${p.etiquette}`, async ({ page, qaEnv }, testInfo) => {
-        conditions(testInfo, env, qaEnv.name, SUJET);
-        await etape(page, testInfo, `1. Ouvrir la page ${p.nom}`, () => ouvrir(page, p.chemin, p.statut));
-        await etape(page, testInfo, '2. Relever l\'accessibilité et la comparer au relevé de la page', () => verifierAccessibilite(page, testInfo, p.cle));
-      });
-    }
+for (const pageTestee of PAGES) {
+  test(`Accessibilité (axe) · ${pageTestee.nom} @tnr @accessibilite ${pageTestee.etiquette}`, async ({ page, qaEnv }, testInfo) => {
+    const p = pageDeLEnv(testInfo, pageTestee, qaEnv.name, SUJET);
+    await etape(page, testInfo, `1. Ouvrir la page ${p.nom}`, () => ouvrir(page, p.chemin, p.statut));
+    await etape(page, testInfo, '2. Relever l\'accessibilité et la comparer au relevé de la page', () => verifierAccessibilite(page, testInfo, p.cle));
   });
 }
 

@@ -42,6 +42,18 @@ export const PAGES_PROD: PageTestee[] = pagesSections.filter(p => !p.produitFixe
   etiquette: p.etiquette ?? '@sections', statut: p.statut,
 }));
 
+/**
+ * Pages préprod et prod réunies par nom (Accueil, Panier vide… existent dans les deux) : un seul test par page, qui
+ * prend la version de son environnement (`pageDeLEnv`). Avant le 21 octobre 2026, chaque page avait un test par
+ * environnement, du même nom : l'historique du rapport gardait celui qui était ignoré à la place de celui qui jouait.
+ */
+export const PAGES: { nom: string; etiquette: string; preprod?: PageTestee; prod?: PageTestee }[] =
+  [...new Set([...PAGES_PREPROD, ...PAGES_PROD].map(p => p.nom))].map(nom => {
+    const preprod = PAGES_PREPROD.find(p => p.nom === nom);
+    const prod = PAGES_PROD.find(p => p.nom === nom);
+    return { nom, etiquette: (preprod ?? prod)!.etiquette, preprod, prod };
+  });
+
 /** Fiche produit de chaque environnement : QA01 en préprod, Cyme Mini camel (P08) en prod. */
 export const ficheProduit = (env: string) => env === 'preprod' ? `products/${produitFixe('QA01').handle}` : 'products/cyme-mini-textured-camel';
 /** Produit mis au panier pour ouvrir le checkout. */
@@ -64,6 +76,13 @@ export const PAGES_COMPTE: PageTestee[] = [
 export function conditions(testInfo: TestInfo, envVoulu: string | undefined, env: string, sujet: string) {
   if (envVoulu) test.skip(env !== envVoulu, `Page testée en ${envVoulu} seulement`);
   test.skip(!APPAREILS.includes(testInfo.project.name.split(' · ')[1]), `${sujet} : ${APPAREILS.join(' et ')} seulement (appels Shopify gardés pour les parcours critiques)`);
+}
+
+/** Version de la page dans l'environnement du test (voir PAGES) ; le test est ignoré si elle n'y existe pas. */
+export function pageDeLEnv(testInfo: TestInfo, page: (typeof PAGES)[number], env: string, sujet: string): PageTestee {
+  const version = env === 'prod' ? page.prod : page.preprod;
+  conditions(testInfo, version ? undefined : (page.preprod ? 'preprod' : 'prod'), env, sujet);
+  return version!;
 }
 
 /**
