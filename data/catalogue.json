@@ -51,7 +51,7 @@
     {
       "cle": "visuel",
       "nom": "Tests visuels",
-      "description": "Accueil, les deux fiches et le panier comparés à la référence en pixels, prod, 4 appareils",
+      "description": "Accueil, les deux fiches, le panier et le menu ouvert (« Sacs » sur ordinateur, menu mobile) comparés à la référence en pixels, prod, 4 appareils",
       "grep": "@visuel",
       "variables": { "VISUEL": "1", "QA_ENVS": "prod" },
       "options": ["--workers", "2", "--retries", "1"]

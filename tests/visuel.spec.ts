@@ -13,14 +13,20 @@ import { PAGES_VISUELLES, verifierPage } from '../src/visuel';
 test.use({ video: 'off', deviceScaleFactor: 1, fiche: 'nouvelle' });
 
 for (const pageVisuelle of PAGES_VISUELLES) {
-  test.describe(() => {
-    if (pageVisuelle.fiche) test.use({ fiche: pageVisuelle.fiche });
-    test(`Visuel · ${pageVisuelle.nom} @visuel @${pageVisuelle.typePage}`, async ({ page, qaEnv }, testInfo) => {
-      test.skip(qaEnv.name !== 'prod', 'Tests visuels en prod uniquement pour l\'instant');
-      testInfo.annotations.push({ type: 'Environnement', description: `${qaEnv.label} (${qaEnv.baseURL})` });
-      await verifierPage(page, testInfo, pageVisuelle, {
-        message: `La page « ${pageVisuelle.nom} » ne correspond plus à la référence : comparer attendu, obtenu et différence ci-dessous`,
-      });
+  const declarer = () => test(`Visuel · ${pageVisuelle.nom} @visuel @${pageVisuelle.typePage}`, async ({ page, qaEnv, isMobile }, testInfo) => {
+    test.skip(qaEnv.name !== 'prod', 'Tests visuels en prod uniquement pour l\'instant');
+    test.skip(pageVisuelle.appareils === 'ordinateur' && isMobile, `${pageVisuelle.nom} : ordinateurs seulement (menu au survol)`);
+    test.skip(pageVisuelle.appareils === 'telephone' && !isMobile, `${pageVisuelle.nom} : téléphones seulement`);
+    testInfo.annotations.push({ type: 'Environnement', description: `${qaEnv.label} (${qaEnv.baseURL})` });
+    await verifierPage(page, testInfo, pageVisuelle, {
+      message: `La page « ${pageVisuelle.nom}${pageVisuelle.fiche ? ` (${pageVisuelle.fiche} fiche)` : ''} » ne correspond plus à la référence : comparer attendu, obtenu et différence ci-dessous`,
     });
   });
+  // Même groupe que les autres tests des deux fiches (pourChaqueFiche) : « Ancienne fiche › Visuel · Fiche produit… ».
+  if (pageVisuelle.fiche) {
+    test.describe(pageVisuelle.fiche === 'ancienne' ? 'Ancienne fiche' : 'Nouvelle fiche', () => {
+      test.use({ fiche: pageVisuelle.fiche });
+      declarer();
+    });
+  } else declarer();
 }

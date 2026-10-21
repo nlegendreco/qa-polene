@@ -72,7 +72,80 @@ export interface PageVisuelle {
   ouvrir: (page: Page) => Promise<void>;
   /** Zones qui changent sans que ce soit un bug : recouvertes d'un aplat rose dans la capture. */
   zonesIgnorees?: (page: Page) => { libelle: string; zone: Locator }[];
+  /** Appareils concernés : un menu au survol n'existe que sur ordinateur, le menu « burger » que sur téléphone. */
+  appareils?: 'ordinateur' | 'telephone';
+  /** Action faite une fois la page stable, juste avant la capture (ouvrir un menu : le défilement le refermerait). */
+  deplier?: (page: Page) => Promise<void>;
+  /**
+   * Capture d'une partie seulement : la zone renvoyée, ou l'écran visible si elle renvoie undefined. Sans `cadre`,
+   * la page entière.
+   */
+  cadre?: (page: Page) => Promise<{ x: number; y: number; width: number; height: number } | undefined>;
 }
+
+const menuPrincipal = (page: Page) => page.getByRole('banner').getByRole('navigation', { name: /Menu principal|Main menu/i });
+const panneauOuvert = (page: Page) => page.locator('.header__menu-panel__wrapper').filter({ visible: true }).first();
+
+/** Attend que les images visibles d'une zone soient chargées et décodées (le menu ne les charge qu'à l'ouverture). */
+async function imagesDe(zone: Locator) {
+  await expect.poll(() => zone.locator('img').evaluateAll(images => images
+    .filter(i => i.getClientRects().length > 0)
+    .every(i => (i as HTMLImageElement).complete)), { message: 'Les images du menu doivent se charger', timeout: 15_000 }).toBe(true);
+  await zone.locator('img').evaluateAll(images => Promise.all(images.map(i => (i as HTMLImageElement).decode().catch(() => {}))));
+}
+
+/**
+ * Menus ouverts (demande QA du 21 octobre 2026 : le fonctionnement et le contenu du menu étaient testés, pas son
+ * aspect). Ouverts sur le panier vide, page légère et sans Roll Out : seul le menu est capturé. Photos de campagne
+ * masquées (elles changent à chaque saison), le reste doit être identique : textes, colonnes, alignements, couleurs.
+ */
+const MENUS_VISUELS: PageVisuelle[] = [
+  {
+    nom: 'Menu « Sacs » ouvert',
+    fichier: 'menu-sacs',
+    typePage: 'home',
+    appareils: 'ordinateur',
+    ouvrir: async page => { await page.goto('cart', { waitUntil: 'load' }); },
+    deplier: async page => {
+      await menuPrincipal(page).getByRole('link', { name: /^(Bags|Sacs)$/i }).first().hover();
+      await expect(panneauOuvert(page), 'Le panneau du menu « Sacs » doit s\'ouvrir au survol').toBeVisible();
+      await imagesDe(panneauOuvert(page));
+    },
+    // En-tête et panneau seulement : sous le panneau, c'est la page (suggestions du panier, qui changent).
+    cadre: async page => {
+      const panneau = (await panneauOuvert(page).boundingBox())!;
+      return { x: 0, y: 0, width: page.viewportSize()!.width, height: Math.ceil(panneau.y + panneau.height) };
+    },
+    zonesIgnorees: page => [
+      { libelle: 'Photos de campagne du panneau', zone: page.locator('.header__menu-panel__wrapper img') },
+    ],
+  },
+  {
+    nom: 'Menu mobile ouvert',
+    fichier: 'menu-mobile',
+    typePage: 'home',
+    appareils: 'telephone',
+    ouvrir: async page => { await page.goto('cart', { waitUntil: 'load' }); },
+    deplier: async page => {
+      await page.getByRole('banner').getByRole('button', { name: /Open main menu|Ouvrir le menu/i }).click();
+      await expect(menuPrincipal(page), 'Le menu mobile doit s\'ouvrir').toBeVisible();
+      await imagesDe(menuPrincipal(page));
+      // Fin de l'animation d'ouverture : le menu ne bouge plus.
+      await expect.poll(async () => {
+        const avant = await menuPrincipal(page).boundingBox();
+        await page.waitForTimeout(300);
+        return JSON.stringify(avant) === JSON.stringify(await menuPrincipal(page).boundingBox());
+      }, { message: 'Le menu mobile doit finir de s\'ouvrir' }).toBe(true);
+    },
+    // Le menu prend tout l'écran sous l'en-tête : capture de l'écran visible.
+    cadre: async () => undefined,
+    zonesIgnorees: page => [
+      { libelle: 'Photos de campagne (Bestsellers, Nouveautés)', zone: menuPrincipal(page).locator('img') },
+      // Le champ propose des recherches qui changent (« Mokki »…).
+      { libelle: 'Suggestion du champ de recherche', zone: menuPrincipal(page).locator('input') },
+    ],
+  },
+];
 
 export const PAGES_VISUELLES: PageVisuelle[] = [
   {
@@ -95,7 +168,8 @@ export const PAGES_VISUELLES: PageVisuelle[] = [
     ouvrir: async page => { await new ProductPage(page).goto(PRODUIT, { waitUntil: 'load' }); },
   },
   {
-    nom: 'Fiche produit Numéro Un (ancienne fiche)',
+    // Même nom que la nouvelle : la fiche est ajoutée au nom du test (groupe « Ancienne fiche », tests/visuel.spec.ts).
+    nom: 'Fiche produit Numéro Un',
     fichier: 'fiche-produit-ancienne',
     typePage: 'pdp',
     fiche: 'ancienne',
@@ -122,6 +196,7 @@ export const PAGES_VISUELLES: PageVisuelle[] = [
       { libelle: 'Bloc de recommandations « Polène suggère » / « Complétez votre panier »', zone: page.locator('product-recommendations') },
     ],
   },
+  ...MENUS_VISUELS,
 ];
 
 /**
@@ -141,12 +216,14 @@ export async function verifierPage(
   await test.step(`1. Ouvrir la page ${pageVisuelle.nom}`, async () => {
     await pageVisuelle.ouvrir(page);
     await stabiliserPage(page);
+    await pageVisuelle.deplier?.(page);
     await options.avantCapture?.(page);
   });
 
-  await test.step('2. Comparer la page entière à la référence', async () => {
+  await test.step(pageVisuelle.cadre ? '2. Comparer la zone à la référence' : '2. Comparer la page entière à la référence', async () => {
     await expect(page, options.message).toHaveScreenshot(`${pageVisuelle.fichier}.png`, {
-      fullPage: true,
+      fullPage: !pageVisuelle.cadre,
+      clip: await pageVisuelle.cadre?.(page),
       mask: zones.map(z => z.zone),
       timeout: 30_000,
     });
