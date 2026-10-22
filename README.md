@@ -29,6 +29,7 @@ Sans `PREPROD_PASSWORD`, seuls les tests de prod sont lancés (un avertissement 
 | `npm run test:donnees` | Préprod : vérifie que les produits fixes sont dans leur état prévu (rupture, précommande…), sans commande. Voir [docs/produits-fixes.md](docs/produits-fixes.md) |
 | `npm run rapport:polene` | Ouvre le **sommaire** : une carte par série avec son verdict (par type de test, par page, autres), qui mène à son Rapport Polène et à ses lancements précédents |
 | `npm run rapport:polene -- visuel` | Ouvre directement le Rapport Polène d'une série (`tnr`, `visuel`, `page-pdp`…) |
+| `npm run revue` | Ouvre la **revue des tests** : une fiche par test (étapes, derniers résultats sur chaque appareil), où la QA dit s'il est utile et pourquoi il échoue ; avis enregistrés dans `data/revue-tests.json`, voir [docs/revue-tests.md](docs/revue-tests.md) |
 | `npm run rapport` | Ouvre le rapport Playwright d'origine du parcours (détail technique) |
 | `npm run test:demo-echec` | Démo d'un échec volontaire (bouton « Ajouter au panier » masqué) |
 | `npm run test:visuel` | Tests visuels (prod) : compare l'accueil, la fiche produit (nouvelle et ancienne) et le panier × 4 appareils, le menu « Sacs » ouvert (ordinateurs) et le menu mobile ouvert (téléphones) à la référence |
