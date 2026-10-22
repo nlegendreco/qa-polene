@@ -186,7 +186,7 @@ Conventions :
 
 ## Suivi
 
-> Dernière mise à jour : 22 octobre 2026.
+> Dernière mise à jour : 22 octobre 2026 (dépôt déplacé vers `nlegendreco/qa-polene`).
 
 ### Avancement
 
@@ -226,7 +226,7 @@ Conventions :
 - [ ] Pages de sections, suites possibles : carrousel, compte à rebours (affiche « 00000000 » dans `sections-2`), captures pixel (contenu figé, lot C).
 - [ ] C4 (PLP breaks) : étudier à part (breaks reliés à de vraies collections et de vrais produits).
 - [ ] QA : vérifier que la date de précommande retardée sert seulement à Shipup (constat 25).
-- [ ] Décider s'il faut réécrire l'historique Git pour retirer l'email du premier commit (force push, irréversible : seulement avec confirmation).
+- [x] Historique Git réécrit le 22 octobre 2026 (demande QA, avant le partage aux collègues) : email de la QA retiré de `.env.example`, auteur `nlegendreco` (adresse masquée GitHub) sur tous les commits, mentions de co-auteur retirées. Dépôt partagé : `nlegendreco/qa-polene` ; l'ancien dépôt `nlegendree/polene-automatic-qa` garde l'ancien historique (à supprimer ou archiver par la QA). Copie de l'historique d'avant : `archives/2026-10-22-avant-reecriture.bundle` (hors Git).
 - [ ] Refaire une série de 10 passages visuels au seuil 0,2 (critère 2.2) avant la première MEP, en espaçant à cause de la limite Shopify.
 - [ ] QA : mesurer le temps pour accepter un changement visuel attendu (critère < 10 min), à la première MEP.
 - [ ] Discuter de l'organisation des profils clients (un profil par cas de test, convention de nommage, adresse email par profil).
