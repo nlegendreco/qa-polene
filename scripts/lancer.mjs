@@ -43,12 +43,14 @@ if (!entree) {
 const serie = genre === 'type' ? entree.cle : `page-${entree.cle}`;
 const variables = { ...entree.variables, ...process.env, SERIE: serie };
 const confirme = options.includes('--oui');
+// Projets du catalogue limités aux environnements lancés (QA_ENVS=prod) : Playwright refuse un projet qui n'existe pas.
+const envs = (variables.QA_ENVS ?? 'prod,preprod').split(',').map(e => e.trim());
 const args = [
   'test',
   ...(genre === 'page' ? ['--grep', `@${entree.cle}\\b`] : []),
   ...(entree.grep ? ['--grep', entree.grep] : []),
   ...(entree.grepInvert ? ['--grep-invert', entree.grepInvert] : []),
-  ...(entree.projets ?? []).flatMap(p => ['--project', p]),
+  ...(entree.projets ?? []).filter(p => envs.includes(p.split(' · ')[0])).flatMap(p => ['--project', p]),
   ...(entree.options ?? []),
   ...options.filter(o => o !== '--oui'),
 ];
