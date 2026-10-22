@@ -73,7 +73,8 @@ pourChaqueFiche(version => {
     });
 
     if (!isMobile) {
-      const zooms = page.getByRole('main').getByRole('button', { name: /^(Zoom on image|Zoom sur l.image)$/i }).filter({ visible: true });
+      // Préprod depuis le 21 octobre 2026 : le nom porte aussi la position et le produit (« Zoom on image, 1 of 2 : … »).
+      const zooms = page.getByRole('main').getByRole('button', { name: /^(Zoom on image|Zoom sur l.image)(,|$)/i }).filter({ visible: true });
       const pleinEcran = page.locator('.component-zoomable-image__fs-image-container.active');
       await etape(page, testInfo, '2. Ordinateur : les photos sont empilées, chacune peut être agrandie', async () => {
         expect(await zooms.count(), 'La fiche doit montrer au moins 2 photos agrandissables').toBeGreaterThanOrEqual(2);

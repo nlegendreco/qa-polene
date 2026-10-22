@@ -214,9 +214,11 @@ test('Espace client · menu : chaque entrée ouvre sa page et devient l\'entrée
 
   for (const [i, entree] of ENTREES_MENU.entries()) {
     await etape(page, testInfo, `${i + 2}. Cliquer « ${entree.nom.source.replace(/[\^$()\\]/g, '').split('|')[0]} » : sa page s'ouvre sans erreur, l'entrée devient active`, async () => {
-      erreursJs.length = 0;
       await entreeMenu(entree.nom).click();
       await expect(page, `L'entrée doit ouvrir ${entree.chemin.source}`).toHaveURL(entree.chemin);
+      // Remise à zéro une fois sur la nouvelle page : le clic interrompt les chargements de la page précédente, et
+      // Safari le signale par une erreur (« Load failed », include-customer.js) qui ne vient pas de la page ouverte.
+      erreursJs.length = 0;
       await expect(titre(page, entree.titre), 'La page doit afficher son titre').toBeVisible();
       await expect(entreeMenu(entree.nom), 'L\'entrée cliquée doit être l\'entrée active').toHaveAttribute('aria-current', 'page');
       expect(await page.locator('main nav [aria-current="page"]').count(), 'Une seule entrée active à la fois').toBe(1);
@@ -317,9 +319,10 @@ test('Espace client · suppression du compte : confirmation demandée, « Cancel
     await expect(page.locator('component-modal.active[data-ref="account-delete-modal"]'), 'La fenêtre doit se fermer').toHaveCount(0);
     await page.unroute('**/*', bloquerEnvois);
     // Seuls comptent les envois vers la boutique, hors mesures d'audience de Shopify (monorail…) ; les outils tiers
-    // (Forter, mesures) envoient aussi en POST.
+    // (Forter, mesures) envoient aussi en POST. `cart-identity` (application Polène, vu le 21 octobre 2026) relie le
+    // panier au client à chaque page, sans lien avec la suppression.
     const boutique = new URL(page.url()).hostname;
-    expect(envois.filter(u => new URL(u).hostname === boutique && !/monorail|\/api\/collect|web-pixels|\/fec\//.test(u)), 'Aucune demande ne doit partir vers la boutique').toEqual([]);
+    expect(envois.filter(u => new URL(u).hostname === boutique && !/monorail|\/api\/collect|web-pixels|\/fec\/|\/cart-identity/.test(u)), 'Aucune demande ne doit partir vers la boutique').toEqual([]);
     await ouvrir(page, 'account?view=profile');
     await expect(main, 'Le compte de test doit toujours exister').toContainText(emailCompte(), { ignoreCase: true });
   });

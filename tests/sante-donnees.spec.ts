@@ -126,7 +126,12 @@ for (const produit of PRODUITS_FIXES) {
     });
 
     await etape(page, testInfo, '3. Vérifier l\'état affiché sur la fiche', async () => {
-      const attendu = BOUTON_ATTENDU[produit.etat];
+      let attendu = BOUTON_ATTENDU[produit.etat];
+      // Produit à tailles entièrement épuisé (QA11) : la nouvelle fiche affiche « Choose your size » et ne propose
+      // « Notify me » que dans la fenêtre des tailles. La rupture elle-même est vérifiée par le catalogue (étape 2).
+      if (produit.etat === 'rupture' && json.variants.length > 1) {
+        attendu = { ...attendu, states: [...attendu.states, 'modal'], libelle: new RegExp(`${attendu.libelle.source}|Choose your size|Choisi\\w* (votre|une) taille`, 'i') };
+      }
       const bouton = await lireBouton(page);
       const conforme = attendu.states.includes(bouton.state) && attendu.libelle.test(bouton.libelle);
       expect.soft(conforme, `${nom} : la fiche devrait afficher l'état ${attendu.enClair}, elle affiche ${etatAffiche(bouton)}`).toBe(true);

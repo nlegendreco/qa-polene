@@ -95,7 +95,7 @@ test.describe('Rupture', () => {
     });
   });
 
-  test(`Rupture · carte de collection (${produit.id}) @tnr @plp`, async ({ page, qaEnv }, testInfo) => {
+  test(`Rupture · carte de collection (${produit.id}) @tnr @plp`, async ({ page, qaEnv, isMobile }, testInfo) => {
     test.skip(qaEnv.name !== 'preprod', 'Produits QA : préprod uniquement');
     const fiche = new ProductPage(page);
     const carte = page.getByRole('main').getByRole('listitem').filter({ has: page.locator(`a[href*="/products/${produit.handle}"]`) });
@@ -115,6 +115,15 @@ test.describe('Rupture', () => {
 
     await etape(page, testInfo, '3. Ouvrir la fenêtre « Être prévenu(e) » depuis la carte', async () => {
       await centrer(boutonCarte);
+      // Sur ordinateur, le lien de la carte recouvre le bouton tant que la souris n'est pas sur la carte (21 octobre
+      // 2026) : on survole la carte d'abord, comme un client, et on attend que le bouton passe au premier plan.
+      if (!isMobile) {
+        await carte.hover();
+        await expect.poll(() => boutonCarte.evaluate(e => {
+          const r = e.getBoundingClientRect();
+          return e.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2));
+        }), { message: 'Au survol de la carte, « Notify me » doit passer au premier plan' }).toBe(true);
+      }
       await boutonCarte.click();
       await expect(fiche.backInStockModal, 'La fenêtre d\'alerte de retour en stock doit s\'ouvrir depuis la carte').toBeVisible();
     });
