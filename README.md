@@ -7,6 +7,8 @@ Feuille de route : [roadmap-qa-polene.md](roadmap-qa-polene.md).
 ## Installation (une seule fois)
 
 ```bash
+git clone git@github.com:nlegendreco/qa-polene.git
+cd qa-polene
 npm install
 npx playwright install chromium webkit
 cp .env.example .env   # puis renseigner PREPROD_PASSWORD

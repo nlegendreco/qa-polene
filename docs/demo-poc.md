@@ -45,7 +45,7 @@ Passer par cette commande plutôt que double-cliquer sur un `index.html` : sinon
 
 L'archive n'est pas dans Git : les captures du checkout préprod montrent l'email du client de test, et l'ensemble pèse plusieurs centaines de Mo. Une copie zippée, `2026-10-07-poc.zip`, est déposée sur le drive interne de l'équipe. Pour la rouvrir sur un autre poste :
 
-1. récupérer le dépôt à la version des POC : `git clone …` puis `git checkout poc-valides`, et `npm install` ;
+1. récupérer le dépôt à la version des POC : `git clone git@github.com:nlegendreco/qa-polene.git` puis `git checkout poc-valides`, et `npm install` ;
 2. dézipper l'archive dans `archives/` ;
 3. `npm run rapport:polene -- archives/2026-10-07-poc`.
 
