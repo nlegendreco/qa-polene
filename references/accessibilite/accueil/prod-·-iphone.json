@@ -1,6 +1,13 @@
 {
   "page": "accueil",
   "projet": "prod · iphone",
-  "date": "2026-10-16",
-  "problemes": []
+  "date": "2026-10-22",
+  "problemes": [
+    {
+      "regle": "label-content-name-mismatch",
+      "impact": "grave",
+      "aide": "Le contenu textuel des éléments doit aussi se retrouver dans leur intitulé accessible",
+      "nombre": 1
+    }
+  ]
 }

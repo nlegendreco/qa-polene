@@ -1,7 +1,7 @@
 {
   "page": "fiche-produit-nouvelle",
   "projet": "preprod · desktop-chrome",
-  "date": "2026-10-16",
+  "date": "2026-10-22",
   "titres": [
     "h1 QA Numéro Un",
     "h2 Edition In Stock",
@@ -14,8 +14,9 @@
   "boutons": [
     "Add to cart Added to cart",
     "Add to Wishlist",
-    "Zoom on image",
-    "(sans nom)",
+    "Zoom on image, 1 of 3 : QA Numéro Un - In Stock",
+    "Zoom on image, 2 of 3 : QA Numéro Un - In Stock",
+    "Open image gallery : QA Numéro Un - In Stock",
     "3D View",
     "Close modal",
     "Previous",
@@ -30,6 +31,7 @@
     "Shipping & Return",
     "Golden data test",
     "Shipped with care",
+    "Zoom on image, 3 of 3 : QA Numéro Un - In Stock",
     "Close",
     "Search"
   ],
