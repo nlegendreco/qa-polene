@@ -53,7 +53,7 @@ function nomSerie(serie: string, racine: string): string {
  * ajoutée, sinon leurs résultats se mélangeaient dans l'historique (avant le 21 octobre 2026). Les autres groupes
  * servent seulement à ranger le code et n'entrent pas dans le nom.
  */
-function titreDuTest(test: TestCase): string {
+export function titreDuTest(test: TestCase): string {
   const sansEtiquettes = (texte: string) => texte.replace(/\s*@[\w-]+/g, '').trim();
   const fiches: string[] = [];
   for (let groupe: Suite | undefined = test.parent; groupe?.type === 'describe'; groupe = groupe.parent) {

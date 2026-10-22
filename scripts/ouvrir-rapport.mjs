@@ -4,10 +4,12 @@
 //         npm run rapport:polene -- visuel    → resultats/visuel/ (aussi : tnr, page-pdp…, une clé du catalogue)
 //         npm run rapport:polene -- archives/2026-10-07-poc               → sommaire d'une archive
 //         npm run rapport:polene -- archives/2026-10-07-poc/regressions   → une série de l'archive
+//         npm run revue                       → revue des tests par la QA (scripts/revue.mjs), avec les rapports
 import { createReadStream, existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { exec } from 'node:child_process';
 import path from 'node:path';
+import { CAUSES, PERTINENCES, donneesRevue, enregistrerAvis } from './revue.mjs';
 
 const PROJET = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 // Sommaire rangé comme les catalogues de data/catalogue.json : par type de test, par page, puis les autres séries.
@@ -21,8 +23,9 @@ const lancementsRanges = serie => {
     : [];
 };
 
-// Racine servie (resultats/ ou une archive) et page à ouvrir : le sommaire ou le rapport d'une série.
-const argument = process.argv[2] ?? '';
+// Racine servie (resultats/ ou une archive) et page à ouvrir : le sommaire, le rapport d'une série ou la revue.
+const revue = process.argv[2] === '--revue';
+const argument = revue ? '' : process.argv[2] ?? '';
 let racine, serie = '';
 if (!argument) {
   racine = path.join(PROJET, 'resultats');
@@ -67,6 +70,10 @@ const serveur = createServer((requete, reponse) => {
     reponse.writeHead(200, { 'Content-Type': TYPES['.html'] }).end(sommaire());
     return;
   }
+  if (revue && chemin.startsWith('/revue/')) {
+    servirRevue(chemin, requete, reponse);
+    return;
+  }
   // Lancements précédents d'une série : page générée, une carte par lancement rangé.
   const precedents = chemin.match(/^\/([^/]+)\/lancements\/?$/);
   if (precedents && series.includes(precedents[1])) {
@@ -99,10 +106,53 @@ const serveur = createServer((requete, reponse) => {
 
 // PORT=9555 pour un port fixe, OUVRIR=0 pour ne pas ouvrir le navigateur (CI, contrôle automatique).
 serveur.listen(Number(process.env.PORT ?? 0), '127.0.0.1', () => {
-  const adresse = `http://127.0.0.1:${serveur.address().port}/${serie ? `${encodeURIComponent(serie)}/rapport-polene/` : ''}`;
-  console.log(`Rapport Polène : ${adresse}  (Ctrl+C pour arrêter)`);
+  const adresse = `http://127.0.0.1:${serveur.address().port}/${revue ? 'revue/' : serie ? `${encodeURIComponent(serie)}/rapport-polene/` : ''}`;
+  console.log(`${revue ? 'Revue des tests' : 'Rapport Polène'} : ${adresse}  (Ctrl+C pour arrêter)`);
   if (process.env.OUVRIR !== '0') exec(`open "${adresse}"`);
 });
+
+// ---------- Revue des tests (npm run revue) ----------
+
+// Noms des tests de la dernière liste envoyée à la page : un avis n'est enregistré que pour un test connu.
+let titresConnus = new Set();
+
+function servirRevue(chemin, requete, reponse) {
+  if (chemin === '/revue/' && requete.method === 'GET') {
+    const choix = JSON.stringify({ pertinences: PERTINENCES, causes: CAUSES }).replace(/</g, '\\u003c');
+    const fichier = nom => readFileSync(path.join(PROJET, 'src', 'rapport', 'revue', nom), 'utf8');
+    const contenu = `
+      <p class="aide">Pour chaque test : est-il utile, et s'il échoue, pourquoi. Les liens des résultats ouvrent le détail dans le Rapport Polène. Les avis servent ensuite de liste de travail : tests à retirer, à corriger, bugs à remonter.</p>
+      <style>${fichier('revue.css')}</style>
+      <div id="revue"></div>
+      <script type="application/json" id="choix">${choix}</script>
+      <script>${fichier('revue.js')}</script>`;
+    reponse.writeHead(200, { 'Content-Type': TYPES['.html'] }).end(gabarit('Revue des tests', contenu, 'Revue des tests · Polène'));
+    return;
+  }
+  if (chemin === '/revue/donnees.json' && requete.method === 'GET') {
+    const tests = donneesRevue(racine);
+    titresConnus = new Set(tests.map(t => t.titre));
+    reponse.writeHead(200, { 'Content-Type': TYPES['.json'] }).end(JSON.stringify(tests));
+    return;
+  }
+  if (chemin === '/revue/avis' && requete.method === 'POST') {
+    let corps = '';
+    requete.on('data', morceau => {
+      corps += morceau;
+      if (corps.length > 20_000) requete.destroy();
+    });
+    requete.on('end', () => {
+      try {
+        const avis = enregistrerAvis(JSON.parse(corps), titresConnus);
+        reponse.writeHead(200, { 'Content-Type': TYPES['.json'] }).end(JSON.stringify(avis));
+      } catch (erreur) {
+        reponse.writeHead(400, { 'Content-Type': TYPES['.txt'] }).end(erreur.message);
+      }
+    });
+    return;
+  }
+  reponse.writeHead(404).end('Introuvable');
+}
 
 // ---------- Sommaire : une carte par série, avec son verdict ----------
 
@@ -195,14 +245,14 @@ function titreRacine() {
     : path.basename(racine);
 }
 
-function gabarit(titre, contenu) {
+function gabarit(titre, contenu, onglet = 'Sommaire QA · Polène') {
   const logo = readFileSync(path.join(PROJET, 'src', 'rapport', 'page', 'logo-polene.svg'), 'utf8');
   return `<!doctype html>
 <html lang="fr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sommaire QA · Polène</title>
+  <title>${esc(onglet)}</title>
   <link rel="icon" href="https://www.polene-paris.com/cdn/shop/files/polene-favicon.png?crop=center&height=32&width=32">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@400;500&display=swap">
   <style>

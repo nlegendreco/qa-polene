@@ -1,0 +1,58 @@
+/* Page de revue des tests : charte du Rapport Polène (voir src/rapport/page/app.css). */
+:root { --ok-texte: #0a5c45; --echec-texte: #a8203c; --instable-texte: #7a5208; --fond-doux: #f9f8f6; --beige: #edeae7; }
+code { font: 14px ui-monospace, 'SF Mono', Menlo, monospace; }
+.bilan { margin-top: 24px; padding: 20px; background: var(--fond-doux); }
+.bilan p { margin: 8px 0 0; }
+.progression { height: 6px; background: var(--beige); }
+.progression span { display: block; height: 100%; background: var(--ok); transition: width .3s ease; }
+.filtres { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: flex-end; margin: 24px 0 8px; padding-bottom: 16px; border-bottom: 1px solid var(--trait); }
+.filtres label { display: flex; flex-direction: column; gap: 4px; font: 500 11.5px/1.3 Jost, system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--gris); }
+.filtres select, .filtres input[type=search] { font: 500 17px 'Cormorant Garamond', Georgia, serif; color: #000; background: #fff; border: 0; border-bottom: 1px solid #000; border-radius: 0; padding: 4px 0; min-width: 140px; }
+.filtres .recherche { flex: 1; min-width: 180px; }
+.filtres .recherche input { width: 100%; }
+.filtres .case { flex-direction: row; align-items: center; gap: 8px; }
+.fiche { margin-top: 24px; border-top: 3px solid var(--couleur); background: #fff; outline: 1px solid var(--trait); }
+.fiche--reussi { --couleur: var(--ok); } .fiche--echec { --couleur: var(--echec); } .fiche--instable { --couleur: var(--instable); } .fiche--jamais { --couleur: var(--ignore); }
+.fiche--revue .fiche__tete { background: var(--fond-doux); }
+.fiche__tete { padding: 16px 20px 12px; border-bottom: 1px solid var(--trait); text-align: left; }
+.fiche__tete h2 { display: block; margin: 6px 0; padding: 0; border: 0; font: 300 24px/1.15 'Polène Primary', 'Cormorant Garamond', serif; }
+.fiche__tete .capitales { margin: 0; overflow-wrap: anywhere; }
+.etat { display: inline-flex; align-items: center; gap: 6px; font: 500 11.5px/1.3 Jost, system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; }
+.fiche__corps { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 0 32px; padding: 4px 20px 20px; }
+.fiche__corps section { min-width: 0; }
+.fiche__corps h3 { margin: 16px 0 6px; font-weight: 500; }
+.fiche__corps p { margin: 6px 0; }
+.etapes { margin: 6px 0; padding-left: 22px; }
+.etapes li { margin: 2px 0; }
+.constats { margin: 8px 0; padding-left: 18px; color: var(--instable-texte); }
+.contexte { margin: 10px 0; color: #4d4d4d; }
+.contexte summary { cursor: pointer; font: 500 11.5px/1.3 Jost, system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; }
+.executions { list-style: none; margin: 0; padding: 0; }
+.executions li a, .executions li > span { display: flex; align-items: center; gap: 8px; padding: 4px 0; text-decoration: none; color: inherit; }
+.executions li a:hover span { text-decoration: underline; }
+.executions small { margin-left: auto; color: var(--gris); font-size: 15px; white-space: nowrap; }
+.erreur { color: var(--echec-texte); font-size: 16px; overflow-wrap: anywhere; }
+.puce { flex: none; display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; color: #fff; }
+.puce .icone { width: 10px; height: 10px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.puce--reussi { background: var(--ok); } .puce--echec { background: var(--echec); } .puce--instable { background: var(--instable); color: #000; }
+.puce--interrompu, .puce--ignore, .puce--jamais { background: var(--ignore); }
+.avis { grid-column: 1 / -1; margin: 16px 0 0; padding: 16px 0 0; border: 0; border-top: 1px solid var(--trait); }
+.avis legend { padding: 0; }
+.groupe { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
+.groupe p { flex-basis: 100%; margin: 0; }
+.choix input { position: absolute; opacity: 0; }
+.choix span { display: inline-block; padding: 6px 14px; border: 1px solid rgba(0,0,0,.25); border-radius: 999px; font: 500 12px/1.3 Jost, system-ui, sans-serif; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
+.choix input:checked + span { background: #000; border-color: #000; color: #fff; }
+.choix input:focus-visible + span { outline: 2px solid #2f5da8; outline-offset: 2px; }
+.commentaire { display: flex; flex-direction: column; gap: 4px; margin-top: 14px; font: 500 11.5px/1.3 Jost, system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--gris); }
+.commentaire textarea { font: 500 17px/1.35 'Cormorant Garamond', Georgia, serif; color: #000; border: 1px solid rgba(0,0,0,.25); border-radius: 0; padding: 8px; resize: vertical; text-transform: none; letter-spacing: 0; }
+.analyse { margin-top: 12px; padding: 10px 12px; background: var(--fond-doux); border-left: 3px solid #2f5da8; }
+.analyse h3 { margin: 0 0 4px !important; }
+.pied { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px; margin-top: 6px; }
+.enregistre { min-height: 1.3em; margin: 0; color: var(--ok-texte); font-size: 15px; }
+.effacer { border: 0; background: none; padding: 0; color: var(--gris); font: 500 11.5px/1.3 Jost, system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; text-decoration: underline; cursor: pointer; }
+@media (max-width: 760px) {
+  .fiche__corps { grid-template-columns: minmax(0, 1fr); padding: 4px 16px 16px; }
+  .fiche__tete { padding: 14px 16px 10px; }
+  .filtres select { min-width: 0; }
+}

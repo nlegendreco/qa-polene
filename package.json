@@ -21,6 +21,7 @@
     "test:structure": "node scripts/lancer.mjs type structure",
     "test:structure:maj": "STRUCTURE_MAJ=1 node scripts/lancer.mjs type structure",
     "rapport:polene": "node scripts/ouvrir-rapport.mjs",
+    "revue": "node scripts/ouvrir-rapport.mjs --revue",
     "rapport": "playwright show-report resultats/tnr/playwright-report",
     "archiver": "node scripts/archiver-rapport.mjs",
     "typecheck": "tsc"
