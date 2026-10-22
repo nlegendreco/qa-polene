@@ -79,16 +79,19 @@ export const test = base.extend<Fixtures>({
       button => button.click(),
       { noWaitAfter: true },
     );
-    // Bandeau cookies natif de Shopify (« Consentement aux cookies », vu en préprod le 21 octobre 2026), en bas à
-    // droite sur ordinateur : il n'est pas neutralisé par le cookie de Consentmo. On refuse, les outils de mesure sont
-    // de toute façon bloqués pendant les tests.
-    await page.addLocatorHandler(
-      page.locator('#shopify-pc__banner'),
-      async bandeau => {
-        await bandeau.getByRole('button', { name: /^(Refuser|Decline|Reject)/i }).click({ timeout: 3_000 }).catch(() => {});
-      },
-      { noWaitAfter: true },
-    );
+    // Bandeau cookies natif de Shopify (« Consentement aux cookies », préprod le 21 octobre 2026, prod le 22 à la
+    // place de Consentmo), en bas à droite sur ordinateur : masqué dès l'ouverture de chaque page. Cliquer « Refuser »
+    // ne suffisait pas : le bandeau restait dans les captures, les relevés d'axe et de structure tant qu'aucune action
+    // n'était jouée.
+    await page.addInitScript(() => {
+      const masquer = () => {
+        const style = document.createElement('style');
+        style.textContent = '#shopify-pc__banner { display: none !important; }';
+        document.documentElement.append(style);
+      };
+      if (document.documentElement) masquer();
+      else document.addEventListener('DOMContentLoaded', masquer, { once: true });
+    });
     // Préprod : fenêtre « It looks like you're in France… » qui propose une autre boutique et recouvre la page
     // (theme-geo-suggestion, puis theme-store-redirect-modal depuis le 7 octobre 2026). On la ferme.
     await page.addLocatorHandler(
