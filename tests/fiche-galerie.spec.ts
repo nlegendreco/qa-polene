@@ -212,8 +212,10 @@ pourChaqueFiche(version => {
 
       await expect(interrupteur, 'La vue 3D doit proposer le sac ouvert ou fermé').toBeVisible();
       const avant = await interrupteur.isChecked();
-      // Case à cocher dessinée en interrupteur « Fermé · Ouvert » : son dessin est au-dessus, c'est lui qu'on touche.
-      await interrupteur.click({ force: true });
+      // Case à cocher dessinée en interrupteur « Fermé · Ouvert ». Clic envoyé à l'élément sans passer par la souris :
+      // 3D ouverte, le navigateur dessine sans arrêt et le défilement ou l'attente d'après-clic de Playwright dépassaient
+      // 15 s dès que deux navigateurs tournaient (22 octobre 2026, Android prod et Chrome préprod ; vert seul).
+      await interrupteur.dispatchEvent('click');
       await expect(interrupteur, 'L\'interrupteur doit passer à l\'autre état').toBeChecked({ checked: !avant });
       const capture = await page.screenshot({ timeout: 5_000 }).catch(() => null);
       if (capture) await testInfo.attach('📸 Vue 3D ouverte', { body: capture, contentType: 'image/png' });
@@ -222,7 +224,7 @@ pourChaqueFiche(version => {
       const fermer = (await fenetre.count())
         ? fenetre.getByRole('button', { name: /^(Close|Fermer)/i }).first()
         : page.getByRole('main').getByRole('button', { name: /^(Close|Fermer)\s*(3D View|Vue 3D)?$/i }).filter({ visible: true }).first();
-      await fermer.click();
+      await fermer.dispatchEvent('click');
       await expect(lecteur, 'La vue 3D doit se fermer').toBeHidden();
     });
   });
