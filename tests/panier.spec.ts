@@ -17,7 +17,7 @@ import { verifierLargeur } from '../src/controles';
  *
  * Fiche de la précommande : une par appareil (FICHE_PAR_APPAREIL, src/fixtures.ts), les deux à chaque lancement.
  */
-test.use({ fiche: ficheDeLAppareil });
+test.use({ fiche: ficheDeLAppareil, ficheDeRepli: true });
 
 const MENTION_PRECOMMANDE = /Pre-?order|Précommand/i;
 

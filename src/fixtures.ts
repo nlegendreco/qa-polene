@@ -45,7 +45,15 @@ type Fixtures = {
    * hasard. Posée par `pourChaqueFiche` ou `test.use({ fiche: 'nouvelle' })`.
    */
   fiche: Fiche | undefined;
+  /**
+   * Si le Roll Out ne sert plus `fiche`, prendre l'autre au lieu d'ignorer le test. Pour les tests qui passent
+   * seulement par la fiche (`ficheDeLAppareil` : parcours d'achat, panier, favoris), pas pour ceux qui la testent.
+   */
+  ficheDeRepli: boolean;
 };
+
+/** Fiche réellement servie à un contexte (l'autre que `fiche` quand le repli a joué). */
+const ficheDuContexte = new WeakMap<object, Fiche>();
 
 export const test = base.extend<Fixtures>({
   qaEnv: async ({}, use, testInfo) => {
@@ -55,24 +63,34 @@ export const test = base.extend<Fixtures>({
   },
 
   fiche: [undefined, { option: true }],
+  ficheDeRepli: [false, { option: true }],
 
-  context: async ({ context, qaEnv, fiche }, use, testInfo) => {
+  context: async ({ context, qaEnv, fiche, ficheDeRepli }, use, testInfo) => {
     // Bandeau cookies (Consentmo) : on pose directement le choix pour qu'il n'apparaisse jamais.
     await context.addCookies([
       { name: 'cookieconsent_status', value: 'allow', domain: qaEnv.cookieDomain, path: '/' },
     ]);
     await context.route(isBlocked, route => route.abort('blockedbyclient'));
     if (fiche) {
-      const tirages = await preparerFiche(context, qaEnv, fiche);
-      // Le Roll Out ne sert plus cette fiche (il a pris fin, ou une seule fiche reste en ligne) : rien à tester.
+      let servie = fiche;
+      let tirages = await preparerFiche(context, qaEnv, fiche);
+      // Le Roll Out ne sert plus cette fiche (il a pris fin, ou une seule fiche reste en ligne). Un test qui passe
+      // seulement par la fiche prend l'autre (en prod le 22 octobre 2026, le parcours d'achat ne tournait plus que sur
+      // 2 appareils) ; un test de la fiche elle-même n'a plus d'objet.
+      if (tirages === null && ficheDeRepli) {
+        servie = FICHES.find(f => f !== fiche)!;
+        tirages = await preparerFiche(context, qaEnv, servie);
+        if (tirages !== null) testInfo.annotations.push({ type: 'Fiche de repli', description: `Le Roll Out ne sert plus l'${NOM_FICHE[fiche]} : test joué sur l'${NOM_FICHE[servie]}` });
+      }
       testInfo.skip(tirages === null, `Le Roll Out ne sert plus l'${NOM_FICHE[fiche]} : test sans objet tant qu'elle n'est pas remise en ligne`);
-      testInfo.annotations.push({ type: 'Fiche produit', description: NOM_FICHE[fiche] });
+      testInfo.annotations.push({ type: 'Fiche produit', description: NOM_FICHE[servie] });
+      ficheDuContexte.set(context, servie);
     }
     await use(context);
   },
 
   page: async ({ page, fiche }, use, testInfo) => {
-    if (fiche) ficheVoulue.set(page, fiche);
+    if (fiche) ficheVoulue.set(page, ficheDuContexte.get(page.context()) ?? fiche);
     // Filet de sécurité si le bandeau cookies s'affiche malgré tout.
     await page.addLocatorHandler(
       page.locator('button[data-csm-button-type="accept"]'),
@@ -162,7 +180,7 @@ export const FICHE_PAR_APPAREIL: Record<string, Fiche> = {
   'android': 'nouvelle',
 };
 
-/** À appeler en tête de fichier : `test.use({ fiche: ficheDeLAppareil })`. */
+/** À appeler en tête de fichier : `test.use({ fiche: ficheDeLAppareil, ficheDeRepli: true })`. */
 export const ficheDeLAppareil = async ({}, use: (f: Fiche | undefined) => Promise<void>, testInfo: TestInfo) => {
   await use(FICHE_PAR_APPAREIL[testInfo.project.name.split(' · ')[1]]);
 };

@@ -32,6 +32,11 @@ export const ficheVoulue = new WeakMap<Page, Fiche>();
 
 /** Cookie gagnant par environnement et par fiche, pour les tests suivants du même worker. */
 const gagnants = new Map<string, Cookie>();
+/**
+ * Fiches que le Roll Out ne sert plus (tous les tirages ratés), par environnement : les tests suivants du même worker
+ * ne retirent pas. Sans ça, chaque test refaisait ses 12 tirages et la prod finissait par répondre 503 (22 octobre 2026).
+ */
+const absentes = new Set<string>();
 
 /** Fiche affichée par la page : l'ancienne a la liste d'onglets `ul.product-detail-list`, la nouvelle des accordéons. */
 export async function ficheAffichee(page: Page): Promise<Fiche> {
@@ -42,7 +47,8 @@ export async function ficheAffichee(page: Page): Promise<Fiche> {
 async function ficheServie(context: BrowserContext, qaEnv: QaEnvironment): Promise<Fiche | 'mot de passe'> {
   const url = new URL(TEMOIN, qaEnv.baseURL).href;
   let reponse = await context.request.get(url, { maxRedirects: 0 });
-  for (let essai = 1; reponse.status() === 429 && essai <= 3; essai++) {
+  // 429 (trop d'appels) ou 503 (service indisponible, vu en prod après une série de tirages) : on attend et on refait.
+  for (let essai = 1; [429, 503].includes(reponse.status()) && essai <= 3; essai++) {
     await new Promise(r => setTimeout(r, 20_000));
     reponse = await context.request.get(url, { maxRedirects: 0 });
   }
@@ -72,6 +78,7 @@ async function saisirMotDePasse(context: BrowserContext, qaEnv: QaEnvironment) {
 export async function preparerFiche(context: BrowserContext, qaEnv: QaEnvironment, fiche: Fiche): Promise<number | null> {
   const cle = `${qaEnv.name}-${fiche}`;
   const fichier = `.auth/fiche-${cle}.json`;
+  if (absentes.has(cle)) return null;
   const enMemoire = gagnants.get(cle);
   if (enMemoire) {
     await context.addCookies([enMemoire]);
@@ -105,5 +112,6 @@ export async function preparerFiche(context: BrowserContext, qaEnv: QaEnvironmen
       return tirage;
     }
   }
+  absentes.add(cle);
   return null;
 }

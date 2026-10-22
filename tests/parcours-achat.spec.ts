@@ -17,7 +17,7 @@ import { produitFixe } from '../src/produits-fixes';
  * Fiche produit : l'ancienne sur Chrome ordinateur et iPhone, la nouvelle sur Safari ordinateur et Android
  * (FICHE_PAR_APPAREIL, src/fixtures.ts) : les deux fiches du Roll Out à chaque lancement, toujours 4 commandes.
  */
-test.use({ fiche: ficheDeLAppareil });
+test.use({ fiche: ficheDeLAppareil, ficheDeRepli: true });
 
 test('Parcours d\'achat nominal @smoke @tnr @journey', async ({ page, qaEnv, isMobile }, testInfo) => {
   const header = new Header(page, isMobile);

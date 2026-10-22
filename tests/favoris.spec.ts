@@ -41,7 +41,7 @@ async function ouvrirFavoris(page: Page, chemin: string) {
 }
 
 // Cœur de la fiche : une fiche du Roll Out par appareil (FICHE_PAR_APPAREIL, src/fixtures.ts).
-test.use({ fiche: ficheDeLAppareil });
+test.use({ fiche: ficheDeLAppareil, ficheDeRepli: true });
 
 /** Rubriques comparées sans tenir compte de l'ordre des produits dans chacune. */
 const parRubrique = (rubriques: { cartes: { handle: string }[] }[]) => rubriques.map(r => r.cartes.map(c => c.handle).sort());
