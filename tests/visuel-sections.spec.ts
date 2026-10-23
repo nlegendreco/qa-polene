@@ -30,9 +30,10 @@ for (const s of SECTIONS) {
     const prix = section.locator('.price-label, .component-product-card__footer__details__label--price');
     if (await prix.count()) testInfo.annotations.push({ type: 'Zones ignorées (en rose)', description: 'prix (taux de change de la préprod)' });
     await test.step(`2. Comparer la section « ${s.nom} » à sa référence (préprod)`, async () => {
-      // L'en-tête fixe et son bandeau d'annonce (texte qui défile) passeraient par-dessus le haut de la section
-      // amenée à l'écran : cachés, sans changer la mise en page.
-      await page.addStyleTag({ content: '.shopify-section-group-header-group { visibility: hidden !important; }' });
+      // L'en-tête fixe et sa barre d'annonce passeraient par-dessus le haut de la section amenée à l'écran : retirés
+      // (ils sont en position fixe, la mise en page ne bouge pas). `visibility: hidden` ne suffisait pas : les liens
+      // du menu se remettent en `visible` et restaient dans les captures (23 octobre 2026).
+      await page.addStyleTag({ content: '.shopify-section-group-header-group { display: none !important; }' });
       await expect(section, `La section ${s.cle} doit être sur la page`).toHaveCount(1);
       await expect(section, `La section « ${s.nom} » ne correspond plus à sa référence : comparer attendu, obtenu et différence ci-dessous`)
         .toHaveScreenshot(nom, { mask: [prix], timeout: 30_000 });

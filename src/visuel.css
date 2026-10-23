@@ -7,6 +7,19 @@ iframe[title*="messaging"] {
   visibility: hidden !important;
 }
 
+/* Barre d'annonce au-dessus de l'en-tête (préprod, 23 octobre 2026 : texte d'essai, absente en prod) : elle décalait
+   toute la page de 30 px, et la préprod comparée à la prod ressortait entièrement en rouge. Retirée avec la place
+   que le thème lui réserve (variables posées par son script sur body), dans les deux environnements. */
+.section-announcement-bar {
+  display: none !important;
+}
+body {
+  --announcement-bar-height: 0px !important;
+  --header-top-pos: 0px !important;
+  --init-header-height: var(--header-height) !important;
+  --full-header-height: var(--header-height) !important;
+}
+
 /* Vidéos (ciel de la home…) : une image de vidéo n'est jamais dessinée deux fois pareil, surtout sous Safari.
    On les cache pour vérifier l'image fixe placée dessous et ce qui est posé dessus. */
 video {
