@@ -57,6 +57,12 @@
       if (t.statut === 'echec' && !['Écart visuel', 'Vérification en échec'].includes(t.categorie)) t.statut = 'interrompu';
     });
   }
+  // Carte assemblée du sommaire (scripts/ouvrir-rapport.mjs) : dernier résultat connu de chaque test, venu de plusieurs
+  // lancements. Pas d'historique ni de durée totale ; les tests jamais joués sont listés à part.
+  const VUE = Boolean(R.vue);
+  const jourMois = iso => new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+  const periode = !VUE ? '' : jourMois(R.vue.du) === jourMois(R.vue.au) ? `Résultats du ${jourMois(R.vue.au)}`
+    : `Résultats du ${jourMois(R.vue.du)} au ${jourMois(R.vue.au)}`;
   const libelleStatut = s => (DEMO && s === 'echec' ? 'Détecté' : DEMO && s === 'reussi' ? 'Non détecté' : DEMO && s === 'interrompu' ? 'Non vérifié' : STATUTS[s].libelle);
   // En démo, l'apparence suit le sens : « Détecté » (échec voulu) en vert avec une coche, « Non détecté » en rouge.
   const aspect = s => (DEMO && s === 'echec' ? 'reussi' : DEMO && s === 'reussi' ? 'echec' : s);
@@ -149,7 +155,7 @@
           <a href="#/tests" class="capitales ${actif === 'tests' ? 'actif' : ''}">Tests · ${nombre(nbTests)}${echecs && !DEMO ? ` · <span style="color:var(--echec-texte)">${nombre(echecs)} en échec</span>` : ''}</a>
         </nav>
         <a href="#/" class="logo" aria-label="Polène, tableau de bord"><svg aria-hidden="true"><use href="#logo-polene"/></svg></a>
-        <div class="entete__infos"><strong>${esc(R.titre)}</strong><span class="discret">${esc(dateLongue(R.lancement.date))}</span></div>
+        <div class="entete__infos"><strong>${esc(R.titre)}</strong><span class="discret">${esc(VUE ? periode : dateLongue(R.lancement.date))}</span></div>
       </div></header>`;
   }
 
@@ -161,6 +167,7 @@
       if (test) return afficher('tests', vueTest(test, params), () => brancherTest(test, params));
     }
     if (chemin === '/tests') return afficher('tests', vueTests(params), brancherTests);
+    if (chemin === '/jamais' && VUE) return afficher('tests', vueJamais());
     afficher('tableau', vueTableau(), brancherTableau);
   }
 
@@ -174,9 +181,10 @@
   const pied = () => `
     <footer class="pied">
       <span>Généré le ${esc(dateLongue(R.genereLe))}</span>
+      ${VUE ? '<span>Dernier résultat connu de chaque test, quel que soit le lancement qui l\'a produit (bouton « Voir son lancement » sur chaque test)</span>' : `
       <span>${esc(R.commande)}</span>
       <span>Playwright ${esc(R.playwright)} · ${pluriel(R.workers, 'navigateur', 'navigateurs')} en parallèle · ${R.reessais ? pluriel(R.reessais, 'second essai', 'essais supplémentaires') + ' en cas d\'échec' : 'aucun second essai'}</span>
-      ${R.rapportPlaywright ? `<a href="${esc(R.rapportPlaywright)}/index.html">Rapport Playwright détaillé</a>` : '<span>Lancement rangé : le rapport Playwright ne garde que le dernier lancement</span>'}
+      ${R.rapportPlaywright ? `<a href="${esc(R.rapportPlaywright)}/index.html">Rapport Playwright détaillé</a>` : '<span>Lancement rangé : le rapport Playwright ne garde que le dernier lancement</span>'}`}
       ${R.allege ? `<span>Captures des tests réussis retirées le ${esc(dateLongue(R.allege))} (lancement de plus de 30 jours) ; tests en échec complets</span>` : ''}
       <span style="margin-left:auto">© Polène · QA automatisée</span>
     </footer>`;
@@ -221,7 +229,7 @@
           <p class="capitales second" style="margin:0 0 14px">${esc(R.titre)} · ${esc(R.environnements.join(', ') || '—')}</p>
           <div class="verdict__titre">${puceBrute(statut, titre)}<h1>${esc(titre)}</h1></div>
           <p class="second">${esc(sous)}</p>
-          <p class="discret">${esc(dateLongue(R.lancement.date))} · durée ${esc(duree(R.lancement.duree))} · ${pluriel(R.appareils.length, 'appareil', 'appareils')} : ${esc(R.appareils.join(', '))}</p>
+          <p class="discret">${esc(VUE ? `Dernier résultat de chaque test, ${periode.toLowerCase()}${R.vue.jamais.length ? ` · ${pluriel(R.vue.jamais.length, 'jamais joué', 'jamais joués')}` : ''}` : `${dateLongue(R.lancement.date)} · durée ${duree(R.lancement.duree)}`)} · ${pluriel(R.appareils.length, 'appareil', 'appareils')} : ${esc(R.appareils.join(', '))}</p>
         </div>
         <div class="verdict__chiffre"><strong>${taux} %</strong><span class="capitales second">${DEMO ? 'de régressions détectées' : 'de tests réussis'}</span></div>
         <div class="verdict__barre">
@@ -245,7 +253,9 @@
           ? tuile('interrompu', 'Non vérifiés', nombre(totaux.interrompu), '#/tests?statut=interrompu')
           : tuile('instable', 'Instables', nombre(totaux.instable), '#/tests?statut=instable')}
         ${tuile('ignore', 'Ignorés', nombre(totaux.ignore), '#/tests?statut=ignore')}
-        <div class="tuile" style="--tuile:var(--temps)"><span class="tuile__titre capitales">Durée totale</span><strong>${esc(duree(R.lancement.duree))}</strong></div>
+        ${VUE
+          ? `<a class="tuile" href="#/jamais" style="--tuile:var(--trait-fort)"><span class="tuile__titre capitales">Jamais joués</span><strong>${nombre(R.vue.jamais.length)}</strong></a>`
+          : `<div class="tuile" style="--tuile:var(--temps)"><span class="tuile__titre capitales">Durée totale</span><strong>${esc(duree(R.lancement.duree))}</strong></div>`}
         ${commandes.length ? `<div class="tuile" style="--tuile:var(--donnee-2)"><span class="tuile__titre capitales">Commandes créées</span><strong>${nombre(commandes.length)}</strong></div>` : ''}
       </section>`;
   }
@@ -411,12 +421,32 @@
       }).join('')}</div>`
       : `<div class="vide">${DEMO ? 'Sans objet pour une démo.' : recents.length < 2 ? 'Il faut au moins deux lancements pour repérer les tests fragiles.' : 'Aucun test n\'a échoué ou hésité sur les derniers lancements.'}</div>`;
 
+    if (VUE) {
+      return `
+      <section class="grille-2">
+        <div class="carte"><h3>Pourquoi ça échoue</h3><p class="discret">Échecs et hésitations, par raison</p>${raisons}</div>
+        <div class="carte"><h3>Jamais joués</h3><p class="discret">Tests sans aucun résultat sur cet appareil</p>${listeJamais(6)}</div>
+      </section>`;
+    }
     return `
       <section class="grille-2">
         <div class="carte"><h3>Pourquoi ça échoue</h3><p class="discret">Échecs et hésitations de ce lancement, par raison</p>${raisons}</div>
         <div class="carte"><h3>À surveiller</h3><p class="discret">Tests en échec ou instables sur les 10 derniers lancements</p>${aSurveiller}</div>
       </section>`;
   }
+
+  /** Tests de la carte assemblée qui n'ont aucun résultat (jamais lancés depuis qu'ils existent sur cet appareil). */
+  function listeJamais(combien = Infinity) {
+    const jamais = R.vue.jamais;
+    if (!jamais.length) return '<div class="vide">Chaque test a au moins un résultat.</div>';
+    return `<div class="liste">${jamais.slice(0, combien).map(j => `
+      <div class="ligne-test">${puce('ignore')}<div><div class="ligne-test__titre">${esc(j.titre)}</div><div class="ligne-test__infos"><span>${esc(j.projet)}</span></div></div></div>`).join('')}</div>
+      ${jamais.length > combien ? `<p><a href="#/jamais">Voir les ${nombre(jamais.length)} tests jamais joués ›</a></p>` : ''}`;
+  }
+
+  const vueJamais = () => `
+    <div class="titre-section"><h1>Jamais joués</h1><p class="discret">${pluriel(R.vue.jamais.length, 'test', 'tests')} sans résultat : à lancer pour compléter la carte</p></div>
+    ${listeJamais()}`;
 
   function sectionLenteurs() {
     const lances = R.tests.filter(t => t.statut !== 'ignore');
@@ -431,7 +461,7 @@
     return `
       <section class="carte">
         <h3>Les plus longs</h3>
-        <p class="discret">Durée de ce lancement, comparée à la durée habituelle (médiane des 10 lancements précédents)</p>
+        <p class="discret">${VUE ? 'Durée du dernier passage de chaque test' : 'Durée de ce lancement, comparée à la durée habituelle (médiane des 10 lancements précédents)'}</p>
         <div class="legende" style="margin:0 0 14px"><span><i class="trait" style="background:var(--temps)"></i>Ce lancement</span>${avecRepere ? '<span><i class="trait" style="width:2px;height:12px;background:var(--encre)"></i>Durée habituelle</span>' : ''}</div>
         ${barres(plusLents.map(t => {
           const h = reperes.get(t.cle);
@@ -458,7 +488,7 @@
       </section>`;
   }
 
-  const vueTableau = () => [verdict(), tuiles(), matrice(), sectionHistorique(), sectionAnalyse(), sectionLenteurs(), sectionCommandes()].join('');
+  const vueTableau = () => [verdict(), tuiles(), matrice(), VUE ? '' : sectionHistorique(), sectionAnalyse(), sectionLenteurs(), sectionCommandes()].join('');
 
   function brancherTableau() {
     // Curseur vertical sur la courbe des durées.
@@ -600,6 +630,7 @@
             ? `<a class="bouton bouton--plein" href="${esc(lienTrace)}" target="_blank" rel="noopener">Ouvrir la trace</a>`
             : `<a class="bouton" href="${esc(trace.chemin)}" download data-info="Pour l'ouvrir ici, lancer : npm run rapport:polene">Télécharger la trace</a>`) : ''}
           ${R.rapportPlaywright ? `<a class="bouton" href="${esc(lienPlaywright)}" target="_blank" rel="noopener">Rapport Playwright</a>` : ''}
+          ${t.origine ? `<a class="bouton" href="${esc(t.origine.lien)}" data-info="${esc(`Série ${t.origine.serie}`)}">Voir son lancement · ${esc(dateCourte(t.origine.date))}</a>` : ''}
         </div>
       </div>
       ${historique.length > 1 ? `<p class="capitales" style="display:flex;align-items:center;gap:12px;margin:18px 0 36px">Derniers lancements ${points(t.cle, 20)}</p>` : ''}

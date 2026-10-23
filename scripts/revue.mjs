@@ -2,12 +2,10 @@
 // son dernier résultat sur chaque appareil, et l'avis de la QA (utile ou non, pourquoi il échoue, commentaire).
 // Les avis sont enregistrés dans data/revue-tests.json (versionné) : c'est la liste de travail des corrections.
 // Servi par scripts/ouvrir-rapport.mjs, qui sert aussi les rapports (liens vers le détail de chaque résultat).
-import { execFileSync } from 'node:child_process';
-import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
+import { PROJET, derniersResultats as tousLesDerniers, listerTests } from './resultats.mjs';
 
-const PROJET = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 const FICHIER_AVIS = path.join(PROJET, 'data', 'revue-tests.json');
 
 export const PERTINENCES = {
@@ -31,57 +29,24 @@ const TYPES = [
 const typeDe = etiquettes => TYPES.find(([e]) => etiquettes.includes(e))?.[1] ?? 'Fonctionnel';
 const PAGES = ['@home', '@plp', '@pdp', '@cart', '@checkout', '@search', '@account', '@content', '@sections', '@journey'];
 
-/** Liste des tests telle que Playwright la voit (visuels compris, démos exclues), par le rapporteur src/rapport/liste.ts. */
-function listerTests() {
-  const dossier = mkdtempSync(path.join(tmpdir(), 'revue-'));
-  const sortie = path.join(dossier, 'liste.json');
-  try {
-    execFileSync('npx', ['playwright', 'test', '--list', '--reporter=./src/rapport/liste.ts'], {
-      cwd: PROJET, stdio: 'ignore', env: { ...process.env, VISUEL: '1', LISTE_TESTS: sortie },
-    });
-    return JSON.parse(readFileSync(sortie, 'utf8')).filter(t => !t.projet.endsWith('connexion'));
-  } finally {
-    rmSync(dossier, { recursive: true, force: true });
-  }
-}
-
 /**
- * Dernier résultat de chaque test sur chaque projet, toutes séries de resultats/ confondues (essais et lancements
- * rangés compris : un lancement de la prod seule range le précédent, qui garde les résultats de la préprod).
+ * Dernier résultat de chaque test sur chaque projet, toutes séries confondues (lancements rangés et essais archivés
+ * compris : un lancement de la prod seule range le précédent, qui garde les résultats de la préprod).
  */
 function derniersResultats(racine) {
   const resultats = new Map();
-  if (!existsSync(racine)) return resultats;
-  const rapports = readdirSync(racine).flatMap(serie => {
-    const lancements = path.join(racine, serie, 'lancements');
-    return [
-      { serie, dossier: `${serie}/rapport-polene` },
-      ...(existsSync(lancements) ? readdirSync(lancements).map(nom => ({ serie, dossier: `${serie}/lancements/${nom}` })) : []),
-    ];
-  });
-  for (const { serie, dossier } of rapports) {
-    const fichier = path.join(racine, dossier, 'donnees.js');
-    if (!existsSync(fichier)) continue;
-    const texte = readFileSync(fichier, 'utf8');
-    const R = JSON.parse(texte.slice(texte.indexOf('{'), texte.lastIndexOf('}') + 1));
-    for (const t of R.tests) {
-      if (t.projet.endsWith('connexion')) continue;
-      const cle = `${t.projet} › ${t.titre}`;
-      const deja = resultats.get(cle);
-      // Le plus récent l'emporte, même ignoré : un test ignoré ne tourne pas sur cet appareil (ou plus sur cette fiche).
-      if (deja && deja.date > R.lancement.date) continue;
-      const essai = t.essais.at(-1);
-      resultats.set(cle, {
-        statut: t.statut,
-        date: R.lancement.date,
-        serie,
-        lien: `/${dossier.split('/').map(encodeURIComponent).join('/')}/#/test/${encodeURIComponent(t.id)}`,
-        erreur: essai?.erreurs[0]?.resume ?? '',
-        raison: t.statut === 'ignore' ? t.annotations.find(a => a.type === 'skip')?.description ?? '' : '',
-        constats: t.annotations.filter(a => /^Constat/.test(a.type)).map(a => `${a.type} : ${a.description}`),
-        etapes: (essai?.etapes ?? []).filter(e => e.categorie === 'test.step').map(e => e.titre),
-      });
-    }
+  for (const [cle, { test: t, date, serie, url }] of tousLesDerniers(racine)) {
+    const essai = t.essais.at(-1);
+    resultats.set(cle, {
+      statut: t.statut,
+      date,
+      serie,
+      lien: `${url}#/test/${encodeURIComponent(t.id)}`,
+      erreur: essai?.erreurs[0]?.resume ?? '',
+      raison: t.statut === 'ignore' ? t.annotations.find(a => a.type === 'skip')?.description ?? '' : '',
+      constats: t.annotations.filter(a => /^Constat/.test(a.type)).map(a => `${a.type} : ${a.description}`),
+      etapes: (essai?.etapes ?? []).filter(e => e.categorie === 'test.step').map(e => e.titre),
+    });
   }
   return resultats;
 }

@@ -1,18 +1,21 @@
 // Ouvre les Rapports Polène dans le navigateur, servis en local (nécessaire pour la trace Playwright).
-// Usage : npm run rapport:polene              → sommaire de toutes les séries de resultats/, rangé comme les
-//                                               catalogues (par type de test, par page), avec les lancements précédents
-//         npm run rapport:polene -- visuel    → resultats/visuel/ (aussi : tnr, page-pdp…, une clé du catalogue)
+// Usage : npm run rapport:polene              → sommaire rangé comme les catalogues : tout le TNR, par type de test,
+//                                               par page, démos. Chaque carte (sauf les démos) assemble le dernier
+//                                               résultat connu de chacun de ses tests, quel que soit le lancement
+//                                               qui l'a produit (resultats/ et essais archivés, archives/essais-*/)
+//         npm run rapport:polene -- visuel    → dernier lancement de resultats/visuel/ (aussi : page-pdp…)
 //         npm run rapport:polene -- archives/2026-10-07-poc               → sommaire d'une archive
 //         npm run rapport:polene -- archives/2026-10-07-poc/regressions   → une série de l'archive
 //         npm run revue                       → revue des tests par la QA (scripts/revue.mjs), avec les rapports
 import { createReadStream, existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { exec } from 'node:child_process';
+import { createRequire } from 'node:module';
 import path from 'node:path';
 import { CAUSES, PERTINENCES, donneesRevue, enregistrerAvis } from './revue.mjs';
+import { PROJET, archiveServie, derniersResultats, listerTests } from './resultats.mjs';
 
-const PROJET = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
-// Sommaire rangé comme les catalogues de data/catalogue.json : par type de test, par page, puis les autres séries.
+// Sommaire rangé comme les catalogues de data/catalogue.json : par type de test, par page, puis les démos.
 const catalogue = JSON.parse(readFileSync(path.join(PROJET, 'data', 'catalogue.json'), 'utf8'));
 const ORDRE = [...catalogue.types.map(t => t.cle), ...catalogue.pages.map(p => `page-${p.cle}`)];
 const estSerie = dossier => existsSync(path.join(dossier, 'rapport-polene', 'index.html'));
@@ -56,6 +59,8 @@ if (existsSync(path.join(racine, '.env')) || existsSync(path.join(racine, 'packa
   console.error(`${racine} n'est pas un dossier de résultats.`);
   process.exit(1);
 }
+// Cartes assemblées : sommaire de resultats/ seulement (une archive garde une carte par série, comme avant).
+const assemble = !revue && !serie && path.resolve(racine) === path.join(PROJET, 'resultats');
 
 const TYPES = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
@@ -80,8 +85,25 @@ const serveur = createServer((requete, reponse) => {
     reponse.writeHead(200, { 'Content-Type': TYPES['.html'] }).end(pageLancements(precedents[1]));
     return;
   }
-  let fichier = path.join(racine, chemin);
-  const relatif = path.relative(racine, fichier);
+  // Carte assemblée : Rapport Polène des derniers résultats connus de ses tests.
+  const vue = chemin.match(/^\/vue\/([^/]+)\/(.*)$/);
+  if (vue && VUES.some(v => v.cle === vue[1])) {
+    servirVue(VUES.find(v => v.cle === vue[1]), vue[2], requete, reponse);
+    return;
+  }
+  // Essais archivés (archives/essais-*/) : pièces jointes des résultats repris par les cartes assemblées.
+  const archive = archiveServie(racine, chemin);
+  if (archive) {
+    servirFichier(archive.dossier, archive.reste, requete, reponse);
+    return;
+  }
+  servirFichier(racine, chemin, requete, reponse);
+});
+
+/** Sert un fichier de `dossier` (jamais au-dessus), index.html pour un dossier, par morceaux pour les vidéos. */
+function servirFichier(dossier, chemin, requete, reponse) {
+  let fichier = path.join(dossier, chemin);
+  const relatif = path.relative(dossier, fichier);
   if (relatif.startsWith('..') || path.isAbsolute(relatif)) {
     reponse.writeHead(403).end('Interdit');
     return;
@@ -102,7 +124,14 @@ const serveur = createServer((requete, reponse) => {
   }
   reponse.writeHead(200, { 'Content-Type': type, 'Content-Length': taille, 'Accept-Ranges': 'bytes' });
   createReadStream(fichier).pipe(reponse);
-});
+}
+
+// Liste des tests pour les cartes assemblées (une dizaine de secondes) : seulement pour le sommaire de resultats/.
+let liste = [];
+if (assemble) {
+  console.log('Préparation du sommaire (liste des tests)…');
+  liste = listerTests();
+}
 
 // PORT=9555 pour un port fixe, OUVRIR=0 pour ne pas ouvrir le navigateur (CI, contrôle automatique).
 serveur.listen(Number(process.env.PORT ?? 0), '127.0.0.1', () => {
@@ -212,7 +241,137 @@ function carte(dossier, { serie } = {}) {
     </div>`;
 }
 
+// ---------- Cartes assemblées (23 octobre 2026, demande QA) ----------
+// Une carte = un ensemble de tests (tout le TNR, un type, une page) et le dernier résultat connu de chacun, quel que
+// soit le lancement qui l'a produit : plus besoin de lancer chaque page pour remplir « Par page », ni de carte par essai.
+
+const DEMOS = ['regressions', 'demo-echec'];
+const envDe = projet => projet.split(' · ')[0];
+const avecEtiquettes = t => `${t.titre} ${t.etiquettes.join(' ')}`;
+// Visuels de la prod : joués seulement pendant une MEP (carte « Tests visuels de MEP »), hors TNR et pages.
+const visuelMep = t => t.etiquettes.includes('@visuel') && envDe(t.projet) === 'prod';
+
+/** Mêmes règles que le lancement du type (scripts/lancer.mjs) : grep, grepInvert, projets, QA_ENVS. */
+function filtreDuType(type) {
+  // Tout le TNR : tous les tests, visuels de la préprod compris (QA, 23 octobre 2026), sans les démos.
+  if (type.cle === 'tnr') return t => !visuelMep(t);
+  const grep = type.grep ? new RegExp(type.grep) : null;
+  const sauf = type.grepInvert ? new RegExp(type.grepInvert) : null;
+  const envs = type.variables?.QA_ENVS?.split(',').map(e => e.trim());
+  return t => (!grep || grep.test(avecEtiquettes(t))) && !sauf?.test(avecEtiquettes(t))
+    && (!type.projets || type.projets.includes(t.projet)) && (!envs || envs.includes(envDe(t.projet)));
+}
+
+// Test listé sur un projet où il ne tourne jamais : appareils hors de son type (structure : Chrome ordinateur et
+// iPhone), captures des sections en prod (elles n'existent qu'en préprod). Sans ça, « jamais joué » à tort.
+const restreints = catalogue.types.filter(t => t.projets && t.grep && !DEMOS.includes(t.cle));
+const concerne = t => !restreints.some(type => new RegExp(type.grep).test(avecEtiquettes(t)) && !type.projets.includes(t.projet))
+  && !(visuelMep(t) && t.etiquettes.includes('@sections'));
+
+const VUES = [
+  ...catalogue.types.filter(t => !DEMOS.includes(t.cle)).map(t => ({ cle: t.cle, nom: t.nom, serie: t.cle, filtre: filtreDuType(t) })),
+  // Une page : tous ses tests, visuels de la préprod compris.
+  ...catalogue.pages.map(p => ({ cle: `page-${p.cle}`, nom: p.nom, serie: `page-${p.cle}`, filtre: t => t.etiquettes.includes(`@${p.cle}`) && !visuelMep(t) })),
+].map(v => ({ ...v, filtre: t => concerne(t) && v.filtre(t) }));
+
+/** Données d'un Rapport Polène fait des derniers résultats connus des tests de la carte. */
+function assembler(v, resultats = derniersResultats(racine)) {
+  const tests = [];
+  const jamais = [];
+  for (const t of liste.filter(v.filtre)) {
+    const r = resultats.get(`${t.projet} › ${t.titre}`);
+    if (!r) { jamais.push({ titre: t.titre, projet: t.projet }); continue; }
+    // Pièces jointes servies depuis le rapport du lancement d'origine.
+    const essais = r.test.essais.map(e => ({ ...e, pieces: e.pieces.map(p => (p.chemin ? { ...p, chemin: `${r.url}${p.chemin}` } : p)) }));
+    tests.push({ ...r.test, essais, origine: { lien: `${r.url}#/test/${encodeURIComponent(r.test.id)}`, date: r.date, serie: r.serie } });
+  }
+  const dates = tests.map(t => t.origine.date).sort();
+  const ordreProjets = [...new Set(liste.map(t => t.projet))];
+  tests.sort((a, b) => ordreProjets.indexOf(a.projet) - ordreProjets.indexOf(b.projet));
+  const totaux = { reussi: 0, echec: 0, instable: 0, ignore: 0, interrompu: 0 };
+  tests.forEach(t => { totaux[t.statut]++; });
+  const derniere = dates.at(-1) ?? new Date().toISOString();
+  return {
+    titre: v.nom,
+    genereLe: new Date().toISOString(),
+    vue: { du: dates[0] ?? derniere, au: derniere, jamais },
+    lancement: { id: 'vue', date: derniere, duree: tests.reduce((s, t) => s + t.duree, 0), statut: '', totaux, tests: {} },
+    environnements: ['prod', 'preprod'].filter(e => tests.some(t => t.env === e)),
+    appareils: [...new Set(tests.map(t => t.appareil))],
+    playwright: [...resultats.values()].at(-1)?.playwright ?? '',
+    workers: 0,
+    reessais: 0,
+    commande: '',
+    rapportPlaywright: '',
+    tests,
+    historique: [],
+  };
+}
+
+/** Page d'une carte assemblée : la page du Rapport Polène (src/rapport/page/), ses données et le visualiseur de trace. */
+function servirVue(v, fichier, requete, reponse) {
+  const page = path.join(PROJET, 'src', 'rapport', 'page');
+  if (fichier === '' || fichier === 'index.html') {
+    const html = readFileSync(path.join(page, 'index.html'), 'utf8')
+      .replace('<!-- logo -->', readFileSync(path.join(page, 'logo-polene.svg'), 'utf8'));
+    reponse.writeHead(200, { 'Content-Type': TYPES['.html'] }).end(html);
+  } else if (fichier === 'donnees.js') {
+    reponse.writeHead(200, { 'Content-Type': TYPES['.js'] }).end(`window.RAPPORT = ${JSON.stringify(assembler(v))};\n`);
+  } else if (fichier === 'app.js' || fichier === 'app.css') {
+    servirFichier(page, fichier, requete, reponse);
+  } else if (fichier.startsWith('trace/')) {
+    const playwright = path.dirname(createRequire(import.meta.url).resolve('playwright-core/package.json'));
+    servirFichier(path.join(playwright, 'lib', 'vite', 'traceViewer'), fichier.slice('trace/'.length), requete, reponse);
+  } else {
+    reponse.writeHead(404).end('Introuvable');
+  }
+}
+
+const dateCourte = iso => new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+const periode = (du, au) => (dateCourte(du) === dateCourte(au) ? `résultats du ${dateCourte(au)}` : `résultats du ${dateCourte(du)} au ${dateCourte(au)}`);
+
+function carteAssemblee(v, resultats) {
+  const R = assembler(v, resultats);
+  const { statut, titre } = R.tests.length ? verdict(R) : { statut: 'ignore', titre: 'Jamais lancé' };
+  const lancements = series.includes(v.serie) ? 1 + lancementsRanges(v.serie).length : 0;
+  const details = [
+    R.environnements.join(', '),
+    pluriel(R.appareils.filter(a => a !== 'Connexion préprod').length, 'appareil', 'appareils'),
+    R.vue.jamais.length ? pluriel(R.vue.jamais.length, 'jamais joué', 'jamais joués') : '',
+  ].filter(Boolean).map(detail => `<span>${esc(detail)}</span>`).join(' · ');
+  return `
+    <div class="carte carte--${statut}">
+      <a class="carte__lien" href="/vue/${encodeURIComponent(v.cle)}/">
+        <span class="capitales">${esc(v.nom)}</span>
+        <strong class="verdict"><span class="puce" aria-hidden="true"></span>${esc(titre)}</strong>
+        <span class="details">${details}</span>
+        <span class="date">${R.tests.length ? esc(periode(R.vue.du, R.vue.au)) : `npm run ${v.cle.startsWith('page-') ? `page -- ${esc(v.cle.slice(5))}` : `type -- ${esc(v.cle)}`}`}</span>
+      </a>
+      ${lancements ? `<a class="carte__anciens" href="/${encodeURIComponent(v.serie)}/lancements/">${pluriel(lancements, 'lancement', 'lancements')} ›</a>` : ''}
+    </div>`;
+}
+
+function sommaireAssemble() {
+  const resultats = derniersResultats(racine);
+  const cartes = vues => vues.map(v => carteAssemblee(v, resultats));
+  const groupes = [
+    { titre: 'Tout le TNR', aide: 'dernier résultat de chaque test', cartes: cartes(VUES.filter(v => v.cle === 'tnr')) },
+    { titre: 'Par type de test', aide: 'npm run type -- <nom>', cartes: cartes(VUES.filter(v => v.cle !== 'tnr' && !v.cle.startsWith('page-'))) },
+    { titre: 'Par page', aide: 'npm run page -- <nom>', cartes: cartes(VUES.filter(v => v.cle.startsWith('page-'))) },
+    { titre: 'Démos', aide: 'npm run type -- regressions · demo-echec', cartes: DEMOS.filter(s => series.includes(s)).map(s => carte(`${s}/rapport-polene`, { serie: s })) },
+  ].filter(g => g.cartes.length);
+  const contenu = `
+    <p class="aide">Chaque carte reprend le dernier résultat connu de chacun de ses tests, quel que soit le lancement qui l'a produit. La date indique le résultat le plus ancien et le plus récent.</p>
+    ${groupes.map(g => `
+    <section>
+      <h2>${esc(g.titre)} <span class="capitales">${esc(g.aide)}</span></h2>
+      <div class="grille">${g.cartes.join('')}</div>
+    </section>`).join('')}`;
+  return gabarit(titreRacine(), contenu);
+}
+
 function sommaire() {
+  if (assemble) return sommaireAssemble();
   const groupes = [
     { titre: 'Par type de test', aide: 'npm run type -- <nom>', series: series.filter(s => catalogue.types.some(t => t.cle === s)) },
     { titre: 'Par page', aide: 'npm run page -- <nom>', series: series.filter(s => catalogue.pages.some(p => `page-${p.cle}` === s)) },
