@@ -134,7 +134,8 @@ pourChaqueFiche(version => {
         expect(attendus.length, `Les onglets ${ONGLETS_NOUVELLE.map(o => o.enClair).join(', ')} doivent être proposés (trouvés : ${trouves.join(', ')})`).toBe(ONGLETS_NOUVELLE.length);
         ONGLETS_NOUVELLE.forEach((o, i) => expect(attendus[i], `Onglet n° ${i + 1} : ${o.enClair}`).toMatch(o.libelle));
         const autres = trouves.filter(t => !ONGLETS_NOUVELLE.some(o => o.libelle.test(t)));
-        // Constat 50 : onglet « GOLDEN DATA TEST » en préprod, visible des clients.
+        // Onglet « GOLDEN DATA TEST » de la préprod : contribué volontairement (QA, 22 octobre 2026), il deviendra « QA ».
+        // Pas compté dans les onglets attendus, seulement noté.
         if (autres.length) testInfo.annotations.push({ type: 'Autres onglets', description: autres.join(', ') });
         // Fiche TNR PDP-09 : Description ouvert au chargement.
         await expect(onglet(ONGLETS_NOUVELLE[0].libelle), 'Au chargement, Description doit être ouvert').toHaveAttribute('aria-selected', 'true');

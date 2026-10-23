@@ -11,7 +11,7 @@ import { appelShopify } from '../src/shopify';
  * Sur de vrais produits, présents en prod et en préprod sous le même handle : le sac P08 (Cyme Mini camel, vue 3D) et
  * la bague P02 (Eroz). Les produits QA n'ont ni fil d'Ariane (ils ne sont dans aucune collection du menu) ni vue 3D
  * (le modèle 3D est retrouvé par la référence du produit). Chaque test tourne sur les deux fiches du Roll Out
- * (src/fiches.ts), en prod comme en préprod.
+ * (src/fiches.ts), en prod comme en préprod, sauf la vue 3D (nouvelle fiche seulement).
  */
 
 const SAC = produitFixe('P08');
@@ -173,7 +173,9 @@ pourChaqueFiche(version => {
     });
   });
 
-  test(`Fiche produit · vue 3D (${SAC.id}) @tnr @pdp`, async ({ page }, testInfo) => {
+  // Nouvelle fiche seulement : l'ancienne n'a plus de vue 3D (constat 43, essai de l'équipe), test retiré à la revue
+  // de la QA du 22 octobre 2026.
+  if (!ancienne) test(`Fiche produit · vue 3D (${SAC.id}) @tnr @pdp`, async ({ page }, testInfo) => {
     // Sans carte graphique, le navigateur de test dessine la 3D au processeur : lent, surtout à plusieurs en parallèle
     // (captures d'étape de plus de 15 s sous Chrome quand le Mac est chargé).
     test.slow();
@@ -184,13 +186,6 @@ pourChaqueFiche(version => {
     await etape(page, testInfo, `1. Ouvrir la fiche ${SAC.handle} : bouton « Vue 3D »`, async () => {
       await ouvrirFiche(page, SAC.handle);
       const bouton3d = page.getByRole('main').getByRole('button', { name: /^(3D View|Vue 3D)$/i }).filter({ visible: true }).first();
-      if (ancienne && !(await bouton3d.isVisible({ timeout: 5_000 }).catch(() => false))) {
-        // QA, 15 octobre 2026 : sur l'ancienne fiche, la 3D a été remplacée par une « 360 View » ou retirée ; c'est un
-        // essai de l'équipe, pas un bug (constat 43). La vue 3D se teste sur la nouvelle fiche.
-        const vue360 = await page.getByRole('main').getByRole('button', { name: /360/ }).filter({ visible: true }).count();
-        testInfo.annotations.push({ type: 'Constat 43', description: `Ancienne fiche sans vue 3D${vue360 ? ', bouton « 360 View » présent' : ''}` });
-        test.skip(true, 'Ancienne fiche sans vue 3D (essai de l\'équipe, constat 43)');
-      }
       await expect(bouton3d, 'Le bouton « Vue 3D » doit s\'afficher').toBeVisible();
     });
 
@@ -248,8 +243,9 @@ pourChaqueFiche(version => {
         for (const [nom, titre] of titres) {
           const bouton = page.getByRole('main').getByRole('button', { name: titre }).filter({ visible: true }).first();
           // Constat 50 : en préprod (nouvelle fiche), seul « Shipped with care » est là, sur le sac comme sur la bague.
+          // Bug confirmé par la QA le 22 octobre 2026 (accordéon retiré en préprod, cause à investiguer).
           if (!(await bouton.isVisible({ timeout: 5_000 }).catch(() => false))) {
-            expect.soft(false, `L'accordéon « ${nom} » doit s'afficher (constat 50 en préprod)`).toBe(true);
+            expect.soft(false, `L'accordéon « ${nom} » doit s'afficher (constat 50 en préprod : accordéon retiré, à investiguer)`).toBe(true);
             continue;
           }
           await expect(bouton, 'Fermé au départ').toHaveAttribute('aria-expanded', 'false');

@@ -36,10 +36,12 @@ test('Collection · menu des sous-collections (Sacs) @tnr @plp', async ({ page, 
   const liens = menu.locator('a.collection-menu__list--link');
   let cible = { nom: '', href: '' };
 
-  await etape(page, testInfo, '1. Ouvrir la collection Sacs : menu « Sacs par collection » au-dessus de la grille', async () => {
+  await etape(page, testInfo, '1. Ouvrir la collection Sacs : menu des sous-collections, titré « Sacs », au-dessus de la grille', async () => {
     await page.goto('collections/handbags', { waitUntil: 'domcontentloaded' });
     await expect(menu, 'Le menu des sous-collections doit s\'afficher').toBeVisible();
-    await expect(page.getByRole('main').getByRole('heading', { name: /Sacs\s+par collection|Bags\s+by collections?/i }), 'Le menu doit avoir son titre').toBeVisible();
+    // Titre du menu : « Sacs » en prod depuis le 21 octobre 2026 (avant : « Sacs par collection »), choix voulu (QA,
+    // 22 octobre 2026). La préprod garde « Bags by collections » : elle doit être mise à jour sur ce choix.
+    await expect(menu.getByRole('heading').first(), 'Le menu doit être titré « Sacs » (« Bags »), comme en prod depuis le 21 octobre 2026. En préprod : contribution à mettre à jour sur ce choix').toHaveText(/^\s*(Sacs|Bags)\s*$/i);
     const noms = await liens.allTextContents();
     testInfo.annotations.push({ type: 'Sous-collections', description: noms.map(n => n.trim()).join(', ') });
     expect(noms.length, 'Le menu doit proposer plusieurs sous-collections').toBeGreaterThanOrEqual(5);
@@ -74,7 +76,9 @@ test('Collection · menu des sous-collections (Sacs) @tnr @plp', async ({ page, 
     cible = { nom: ((await lien.textContent()) ?? '').trim(), href: (await lien.getAttribute('href')) ?? '' };
     await lien.evaluate(e => e.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'instant' }));
     await lien.click();
-    await expect(page, `Le clic doit ouvrir la collection ${cible.nom}`).toHaveURL(new RegExp(`${cible.href.replace(/^\/(fr-fr\/)?/, '')}$`));
+    // La prod ajoute parfois un paramètre de suivi au lien cliqué (« ?_su_rec=… », vu sous Safari et iPhone le
+    // 22 octobre 2026) : seul le chemin compte.
+    await expect(page, `Le clic doit ouvrir la collection ${cible.nom}`).toHaveURL(new RegExp(`${cible.href.replace(/^\/(fr-fr\/)?/, '')}(\\?.*)?$`));
     await expect(page.getByRole('main').getByRole('heading', { level: 1 }), `Titre de la collection ${cible.nom}`).toHaveText(new RegExp(cible.nom, 'i'));
     const actif = menu.locator('a[aria-current="page"]');
     await expect(actif, `L'entrée ${cible.nom} doit être marquée comme active`).toHaveText(new RegExp(`^\\s*${cible.nom}\\s*$`, 'i'));

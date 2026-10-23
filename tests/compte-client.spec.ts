@@ -344,7 +344,7 @@ test('Espace client · assistance : formulaire, email, FAQ, chat et réseaux soc
     expect(await faq.count(), 'La FAQ doit proposer 3 liens').toBe(3);
     for (const lien of await faq.all()) {
       // Fiche TNR (bug n° 2) : les liens de la FAQ doivent mener à l'aide en français, comme « See more ».
-      expect.soft(await lien.getAttribute('href'), `« ${await lien.textContent()} » doit mener à l'aide en français (/hc/fr/), constat 47`).toMatch(/^https:\/\/support\.polene-paris\.com\/hc\/fr\//);
+      expect.soft(await lien.getAttribute('href'), `« ${await lien.textContent()} » doit mener à l'aide en français (/hc/fr/), constat 47 : contribution de la préprod à corriger`).toMatch(/^https:\/\/support\.polene-paris\.com\/hc\/fr\//);
     }
     await expect(main.getByRole('link', { name: /^(See more|Voir plus)$/i }), '« See more » doit mener à l\'aide en français').toHaveAttribute('href', /^https:\/\/support\.polene-paris\.com\/hc\/fr\/?$/);
   });
@@ -416,7 +416,6 @@ test(`Espace client · alerte de retour en stock : inscription depuis la fiche, 
     await etape(page, testInfo, '3. Décocher la newsletter, saisir l\'email du compte, « Notify me » : « Thanks for subscribing »', async () => {
       const fenetre = fiche.backInStockModal;
       const newsletter = fenetre.getByRole('checkbox', { name: /newsletter/i });
-      if (await newsletter.isChecked()) testInfo.annotations.push({ type: 'Constat 13', description: 'Case newsletter de la fenêtre « Être prévenu(e) » cochée par défaut' });
       await newsletter.uncheck({ force: true });
       await expect(newsletter, 'La case newsletter doit être décochée avant l\'envoi').not.toBeChecked();
       // Garde-fou : l'adresse du compte de test ne doit jamais être inscrite à la newsletter par ce test.

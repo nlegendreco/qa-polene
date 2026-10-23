@@ -79,12 +79,7 @@ test.describe('Rupture', () => {
         await expect(fenetre, 'La fenêtre doit dire qu\'on sera prévenu du retour en stock').toContainText(/back in stock|retour en stock|de nouveau disponible/i);
         await expect(fenetre.getByRole('textbox', { name: /email/i }), 'Le champ email doit être là, vide').toHaveValue('');
         await expect(fenetre.getByRole('button', { name: /Notify me|Être prévenu|M'avertir/i }), 'Le bouton d\'envoi doit être là').toBeVisible();
-        // Constat 13 : la case newsletter est cochée par défaut (consentement RGPD non valable). Noté, pas bloquant tant
-        // que l'équipe ne l'a pas corrigé : passer en vérification le jour où elle doit être décochée.
-        const newsletter = fenetre.getByRole('checkbox', { name: /newsletter/i });
-        if (await newsletter.isChecked()) {
-          testInfo.annotations.push({ type: 'Constat 13', description: 'Case newsletter de la fenêtre « Être prévenu(e) » cochée par défaut' });
-        }
+        // Case newsletter cochée par défaut : politique de Polène, pas un bug (QA, 22 octobre 2026, ex-constat 13).
       });
 
       await etape(page, testInfo, '4. Fermer la fenêtre sans rien envoyer', async () => {
@@ -548,10 +543,7 @@ test.describe('Coming soon', () => {
       await expect(fenetre, 'La fenêtre « Coming soon » doit s\'ouvrir').toBeVisible();
       await expect(fenetre, 'La fenêtre doit proposer d\'être prévenu du lancement').toContainText(/first to know|launch|lancement/i);
       await expect(boutonEnvoi(fenetre), 'Le bouton d\'inscription doit être là').toBeVisible();
-      // Constat 37 : case newsletter cochée par défaut, comme dans la fenêtre « Être prévenu(e) » (constat 13).
-      if (await fenetre.getByRole('checkbox').first().isChecked()) {
-        testInfo.annotations.push({ type: 'Constat 37', description: 'Case newsletter de la fenêtre « Coming soon » cochée par défaut' });
-      }
+      // Case newsletter cochée par défaut : politique de Polène, pas un bug (QA, 22 octobre 2026, ex-constat 37).
     });
 
     await etape(page, testInfo, '4. Envoyer sans email, puis avec « test@ » : « Please type a valid e-mail », rien n\'est envoyé', async () => {

@@ -263,8 +263,9 @@ test('Panier · vide : connexion, réassurance, assistance et suggestions @tnr @
     await expect(email, 'Le contact par email doit être proposé').toHaveAttribute('href', /^mailto:\S+@polene-paris\.com$/);
     const formulaire = contenu.getByRole('link', { name: /Contact us form|^Contactez-nous$/i });
     const href = (await formulaire.getAttribute('href')) ?? '';
-    // Constat 45 : en préprod, le lien du formulaire de contact est vide (il recharge le panier).
-    expect.soft(href, 'Le formulaire de contact doit mener au support Polène (constat 45 en préprod : lien vide)').toMatch(/^https:\/\/support\.polene-paris\.com\/hc\/[a-z-]+\/requests\/new$/);
+    // Constat 45 : en préprod, le lien du formulaire de contact est vide (il recharge le panier). Contribution de la
+    // préprod à corriger (QA, 22 octobre 2026) ; juste en prod.
+    expect.soft(href, 'Le formulaire de contact doit mener au support Polène (constat 45 en préprod : lien vide, contribution à corriger)').toMatch(/^https:\/\/support\.polene-paris\.com\/hc\/[a-z-]+\/requests\/new$/);
     await bouton.focus();
     await page.keyboard.press('Enter');
     await expect(bouton, 'Entrée doit refermer l\'accordéon').toHaveAttribute('aria-expanded', 'false');
@@ -353,12 +354,11 @@ test(`Panier · favoris depuis la ligne et depuis « Remove item ? », le produi
     await expect(panier.lines, 'Mettre en favori ne doit pas retirer le produit du panier').toHaveCount(1);
   });
 
-  await etape(page, testInfo, '3. Croix de la ligne : la fenêtre « Remove item ? » sait-elle que le produit est en favori ? Fermer sans retirer', async () => {
+  await etape(page, testInfo, '3. Croix de la ligne : sans recharger, la fenêtre « Remove item ? » dit « Already in your wishlist ». Fermer sans retirer', async () => {
     await ouvrirFenetre();
-    // Constat 55 (15 octobre 2026) : sans rechargement, la fenêtre ignore le cœur de la ligne et propose encore
-    // « Add to wishlist » (un clic redit « ajouté », sans doublon). Noté sans échec ; rechargé, elle est juste (étape 4).
-    const libelle = await libelleFenetre();
-    if (!DEJA.test(libelle)) testInfo.annotations.push({ type: 'Constat 55', description: `Produit mis en favori par le cœur de la ligne, la fenêtre « Remove item ? » propose encore « ${libelle} » (correct une fois la page rechargée)` });
+    // Constat 55 (15 octobre 2026) : la fenêtre ignorait le cœur de la ligne tant que la page n'était pas rechargée.
+    // Corrigé (QA, 22 octobre 2026) : vérifié depuis, pour qu'un retour du bug soit vu.
+    await expect.poll(libelleFenetre, { message: 'Le produit vient d\'être mis en favori par le cœur de la ligne : la fenêtre doit le dire sans rechargement (constat 55)' }).toMatch(DEJA);
     await fermerFenetre();
   });
 
@@ -377,7 +377,7 @@ test(`Panier · favoris depuis la ligne et depuis « Remove item ? », le produi
     expect(await enregistres(), 'Le produit ne doit plus être dans les favoris du navigateur').not.toContain(idProduit);
   });
 
-  await etape(page, testInfo, '6. Recharger, croix, « Add to wishlist » dans la fenêtre : en favori, le bouton devient « Already in your wishlist »', async () => {
+  await etape(page, testInfo, '6. Recharger, croix, « Add to wishlist » dans la fenêtre : en favori, le bouton devient « Already in your wishlist », le cœur de la ligne se remplit', async () => {
     await page.reload({ waitUntil: 'domcontentloaded' });
     await panier.expectLoaded();
     await ouvrirFenetre();
@@ -389,9 +389,7 @@ test(`Panier · favoris depuis la ligne et depuis « Remove item ? », le produi
     expect(await enregistres(), 'Le produit doit être enregistré dans les favoris du navigateur').toContain(idProduit);
     await fermerFenetre();
     await expect.poll(() => header.cartCount(), { message: 'Le compteur du panier doit rester à 1' }).toBe(1);
-    if (await coeurLigne.getAttribute('aria-pressed') !== 'true') {
-      testInfo.annotations.push({ type: 'Constat 55', description: 'Produit mis en favori depuis la fenêtre, le cœur de la ligne reste vide (correct une fois la page rechargée)' });
-    }
+    await expect(coeurLigne, 'Produit mis en favori depuis la fenêtre : le cœur de la ligne doit se remplir sans rechargement (constat 55)').toHaveAttribute('aria-pressed', 'true');
   });
 
   await etape(page, testInfo, '7. Page des favoris : le produit y est', async () => {

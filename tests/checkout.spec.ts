@@ -74,8 +74,9 @@ test('Checkout · résumé de la commande, paiement express et blocs d\'informat
     await page.evaluate(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' }));
     for (const [titre, texte] of blocs) {
       const titres = page.getByRole('heading', { name: titre }).filter({ visible: true });
-      // Constat 46 : en préprod sous Android, les trois blocs restent masqués (affichés en prod sur le même appareil).
-      await expect(titres, `Le bloc ${titre.source} doit s'afficher une seule fois`).toHaveCount(1);
+      // Constat 46 : en préprod sous Android, les trois blocs restent masqués. Constat 56 : en prod sous Android,
+      // « Besoin d'aide ? » n'est plus affiché depuis le 21 octobre 2026 (bug confirmé par la QA le 22 octobre).
+      await expect(titres, `Le bloc ${titre.source} doit s'afficher une seule fois (sous Android : constat 46 en préprod, 56 en prod)`).toHaveCount(1);
       await titres.first().scrollIntoViewIfNeeded();
       await expect(titres.first().locator('xpath=..'), `Le bloc ${titre.source} doit avoir son texte`).toContainText(texte);
     }
