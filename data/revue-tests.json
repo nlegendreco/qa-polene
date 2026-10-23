@@ -1,6 +1,1505 @@
 {
   "_note": "Revue des tests par la QA (npm run revue). Une entrée par test (nom du Rapport Polène) : pertinence (utile, modifier, retirer), cause d'un échec (bug-site, changement-voulu, test-faux, instable, ne-sait-pas), commentaire, état du test au moment de l'avis. `analyses` : première analyse d'un échec, écrite avant la revue et affichée sur la fiche du test.",
-  "avis": {},
+  "avis": {
+    "Accessibilité · Bouton pause / lecture des vidéos au clavier (UAT)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:20:16.706Z"
+    },
+    "Accessibilité (axe) · Accueil": {
+      "pertinence": "modifier",
+      "cause": "",
+      "commentaire": "Il faut jouer ça sur plus de devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:17:33.140Z"
+    },
+    "Accessibilité (axe) · Accueil du compte": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut jouer ça sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:19:40.220Z"
+    },
+    "Accessibilité (axe) · Adresses": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut jouer ça sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:19:47.173Z"
+    },
+    "Accessibilité (axe) · Alertes de retour en stock": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut jouer ça sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:20:13.522Z"
+    },
+    "Accessibilité (axe) · Article Confection": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:18:43.385Z"
+    },
+    "Accessibilité (axe) · Assistance": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut jouer ça sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:20:16.647Z"
+    },
+    "Accessibilité (axe) · Blog Actualités": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:18:39.370Z"
+    },
+    "Accessibilité (axe) · Blog Boutiques": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:18:36.206Z"
+    },
+    "Accessibilité (axe) · Blog Sacs": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:18:18.053Z"
+    },
+    "Accessibilité (axe) · Checkout": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut jouer ça sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:19:38.422Z"
+    },
+    "Accessibilité (axe) · Collection": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:17:41.874Z"
+    },
+    "Accessibilité (axe) · Commandes": {
+      "pertinence": "modifier",
+      "cause": "",
+      "commentaire": "Il faut jouer ça sur tous les devices + il faut tester la page d'une commande individuelle",
+      "etat": "reussi",
+      "date": "2026-10-22T13:20:09.339Z"
+    },
+    "Accessibilité (axe) · Connexion": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut jouer ça sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:18:07.177Z"
+    },
+    "Accessibilité (axe) · Création de compte": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut jouer ça sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:18:19.919Z"
+    },
+    "Accessibilité (axe) · Design system": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:16:55.357Z"
+    },
+    "Accessibilité (axe) · Favoris": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut jouer ça sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:19:09.845Z"
+    },
+    "Accessibilité (axe) · Favoris du compte": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut jouer ça sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:20:11.537Z"
+    },
+    "Accessibilité (axe) · Friendly faces": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut jouer ça sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:18:56.873Z"
+    },
+    "Accessibilité (axe) · La Maison": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut jouer ça sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:18:53.603Z"
+    },
+    "Accessibilité (axe) · Liste des collections": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:17:41.938Z"
+    },
+    "Accessibilité (axe) · Mot de passe oublié": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut jouer ça sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:18:15.552Z"
+    },
+    "Accessibilité (axe) · Page introuvable": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut jouer ça sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:18:04.670Z"
+    },
+    "Accessibilité (axe) · Panier vide": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut jouer ça sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:17:57.537Z"
+    },
+    "Accessibilité (axe) · Profil": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut jouer ça sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:19:44.455Z"
+    },
+    "Accessibilité (axe) · Recherche": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut jouer ça sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:18:02.537Z"
+    },
+    "Accessibilité (axe) · Redirection factures SAP": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:35:50.811Z"
+    },
+    "Accessibilité (axe) · Savoir-faire": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut jouer ça sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:18:52.069Z"
+    },
+    "Accessibilité (axe) · Sections 1 (blog)": {
+      "pertinence": "modifier",
+      "cause": "",
+      "commentaire": "Alors enfaite j'aimerai découper ce test en accessibilité par section (on s'en fout que ce soit la page section 1 ou 2 ou 3). Il faut plutôt découper en nom de sections (sachant qu'ils sont sur la page.",
+      "etat": "reussi",
+      "date": "2026-10-22T13:21:15.506Z"
+    },
+    "Accessibilité (axe) · Sections 2 (blog)": {
+      "pertinence": "modifier",
+      "cause": "",
+      "commentaire": "Alors enfaite j'aimerai découper ce test en accessibilité par section (on s'en fout que ce soit la page section 1 ou 2 ou 3). Il faut plutôt découper en nom de sections (sachant qu'ils sont sur la page.",
+      "etat": "reussi",
+      "date": "2026-10-22T13:21:12.339Z"
+    },
+    "Accessibilité (axe) · Sections 3 (blog)": {
+      "pertinence": "modifier",
+      "cause": "",
+      "commentaire": "Alors enfaite j'aimerai découper ce test en accessibilité par section (on s'en fout que ce soit la page section 1 ou 2 ou 3). Il faut plutôt découper en nom de sections (sachant qu'ils sont sur la page.",
+      "etat": "reussi",
+      "date": "2026-10-22T13:21:27.355Z"
+    },
+    "Accessibilité (axe) · UAT accessibilité": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:16:49.873Z"
+    },
+    "Accueil · vidéos en lecture, page qui défile jusqu'au pied de page": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:28:50.491Z"
+    },
+    "Ancienne fiche › Accessibilité (axe) · Fiche produit": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:19:36.037Z"
+    },
+    "Ancienne fiche › Coloris · passer d'un coloris à l'autre (QA13, QA14, QA15)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:35.257Z"
+    },
+    "Ancienne fiche › Coming soon · fiche produit (QA04)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:23.227Z"
+    },
+    "Ancienne fiche › Fiche produit · barre d'achat fixe en bas de l'écran sur mobile (QA01)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:30:13.841Z"
+    },
+    "Ancienne fiche › Fiche produit · double clic sur « Add to cart » : un seul article (QA01)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:30:04.724Z"
+    },
+    "Ancienne fiche › Fiche produit · fil d'Ariane (P02)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:45.374Z"
+    },
+    "Ancienne fiche › Fiche produit · fil d'Ariane (P08)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:44.007Z"
+    },
+    "Ancienne fiche › Fiche produit · guide des tailles (QA09)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:30:00.658Z"
+    },
+    "Ancienne fiche › Fiche produit · onglets d'information (QA09)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:58.290Z"
+    },
+    "Ancienne fiche › Fiche produit · photos et zoom (P08)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:49.977Z"
+    },
+    "Ancienne fiche › Fiche produit · savoir-faire : accordéons et bloc éditorial (P02)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:56.559Z"
+    },
+    "Ancienne fiche › Fiche produit · savoir-faire : accordéons et bloc éditorial (P08)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:55.490Z"
+    },
+    "Ancienne fiche › Fiche produit · vue 3D (P08)": {
+      "pertinence": "retirer",
+      "cause": "",
+      "commentaire": "",
+      "etat": "jamais",
+      "date": "2026-10-22T13:15:32.492Z"
+    },
+    "Ancienne fiche › Précommande · de la fiche au checkout (QA05)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:33:03.573Z"
+    },
+    "Ancienne fiche › Précommande expirée · le produit redevient normal (QA07)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:28.923Z"
+    },
+    "Ancienne fiche › Précommande retardée · date affichée sur la fiche (QA06)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:31.225Z"
+    },
+    "Ancienne fiche › Prix · petit prix et prix au-dessus de 1 000 € (QA17, QA18)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:38.273Z"
+    },
+    "Ancienne fiche › Rupture · fiche produit (QA02)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:02.580Z"
+    },
+    "Ancienne fiche › Structure · Fiche produit": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:36:01.511Z"
+    },
+    "Ancienne fiche › Tailles · choisir une taille disponible (QA10)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:14.440Z"
+    },
+    "Ancienne fiche › Tailles · toutes les tailles épuisées (QA11)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:17.424Z"
+    },
+    "Ancienne fiche › Tailles · une taille en précommande (QA12)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:16.073Z"
+    },
+    "Ancienne fiche › Titre long · fiche, carte, panier et checkout sans débordement (QA21)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:33:09.341Z"
+    },
+    "Ancienne fiche › Visuel · Fiche produit Numéro Un": {
+      "pertinence": "retirer",
+      "cause": "",
+      "commentaire": "",
+      "etat": "jamais",
+      "date": "2026-10-22T13:15:42.655Z"
+    },
+    "Carte · ajout rapide d'un produit en stock (QA01)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:26:59.440Z"
+    },
+    "Carte · ajout rapide d'une taille (QA09)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:27:39.697Z"
+    },
+    "Carte · tailles épuisées : « Out of stock », ouvrent « Être prévenu(e) » sans rien ajouter (QA10)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:27:47.648Z"
+    },
+    "Checkout · cartes refusées : message clair, aucune commande": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:27:54.457Z"
+    },
+    "Checkout · formulaire vide ou faux : un message sous chaque champ, aucune commande (QA01)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:27:53.258Z"
+    },
+    "Checkout · lien vers les conditions générales de vente": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:27:55.689Z"
+    },
+    "Checkout · pays de livraison : le formulaire d'adresse suit le pays, clavier numérique en France": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:28:02.207Z"
+    },
+    "Checkout · résumé de la commande, paiement express et blocs d'information": {
+      "pertinence": "utile",
+      "cause": "bug-site",
+      "commentaire": "",
+      "etat": "echec",
+      "date": "2026-10-22T12:41:06.889Z"
+    },
+    "Collection · « Voir plus » charge la suite (C3)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:28:04.860Z"
+    },
+    "Collection · défilement infini (C2)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:28:06.542Z"
+    },
+    "Collection · filtres et tri (C1)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:28:03.599Z"
+    },
+    "Collection · menu des sous-collections (Sacs)": {
+      "pertinence": "utile",
+      "cause": "changement-voulu",
+      "commentaire": "En prod maintenant on aura toujours Bags pour la collection qui est accessible via le CTA \"View all\". Il faut donc préciser qu'il faut qu'on remette à jour la preprod sur ce choix.",
+      "etat": "echec",
+      "date": "2026-10-22T12:43:10.173Z"
+    },
+    "Collection · vide, et filtre sans résultat (C6, C7)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:28:09.092Z"
+    },
+    "Coming soon · carte de collection (QA04)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:26.240Z"
+    },
+    "Données · C1 QA Collection": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:26:30.522Z"
+    },
+    "Données · C2 QA Collection Infinite Scroll": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:26:33.122Z"
+    },
+    "Données · C3 QA Collection Load More": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:26:35.223Z"
+    },
+    "Données · C5 QA Collection Title": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:26:37.288Z"
+    },
+    "Données · C6 QA Collection Empty": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:26:39.055Z"
+    },
+    "Données · C7 QA Collection Out of Stock": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:26:40.472Z"
+    },
+    "Données · F1 QA Family Cyme Mini": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:26:42.889Z"
+    },
+    "Données · P02 Tailles toutes disponibles": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:23:56.945Z"
+    },
+    "Données · P08 Multi-coloris": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:24:05.890Z"
+    },
+    "Données · Produits QA cachés de la recherche": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:26:49.897Z"
+    },
+    "Données · QA01 Sac en stock : fiche complète, ajout au panier, achat préprod": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:24:20.207Z"
+    },
+    "Données · QA02 Rupture : « Être prévenu(e) », fenêtre d'alerte (sans envoi)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:24:29.755Z"
+    },
+    "Données · QA03 Dernière pièce : quantité bloquée à 1 au panier": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:24:31.888Z"
+    },
+    "Données · QA04 Coming soon : bouton, fenêtre d'inscription (sans envoi), carte": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:24:34.305Z"
+    },
+    "Données · QA05 Précommande : date affichée, ajout au panier, panier et checkout en précommande": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:24:37.095Z"
+    },
+    "Données · QA06 Précommande retardée : ce qu'affiche la fiche": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:24:38.238Z"
+    },
+    "Données · QA07 Précommande expirée : le produit redevient normal tout seul": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:24:39.722Z"
+    },
+    "Données · QA08 Étiquette « New » sur la carte": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:24:44.055Z"
+    },
+    "Données · QA09 Toutes les tailles disponibles, guide des tailles": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:24:45.372Z"
+    },
+    "Données · QA10 Seules les tailles en stock sont proposées": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:24:46.637Z"
+    },
+    "Données · QA11 Produit à tailles entièrement épuisé": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:24:47.824Z"
+    },
+    "Données · QA12 Une taille (M) en précommande, les autres en stock. Le jonc Éole du plan n'existe pas en préprod : manchette Éole à la place": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:24:50.389Z"
+    },
+    "Données · QA13 Coloris en stock, famille QA": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:24:54.105Z"
+    },
+    "Données · QA14 Coloris en rupture, dans la même famille": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:24:55.254Z"
+    },
+    "Données · QA15 Coloris d'une autre matière (le sélecteur regroupe par matière)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:24:57.787Z"
+    },
+    "Données · QA16 Vidéo dans la galerie (réglages video.* repris du vrai produit)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:26:20.080Z"
+    },
+    "Données · QA17 Fiche d'accessoire, petit prix (< 100 €)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:26:21.243Z"
+    },
+    "Données · QA18 Prix au-dessus de 1 000 € (espace des milliers). Prix en dollars, converti en euros pour la France": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:26:22.805Z"
+    },
+    "Données · QA19 Recommandations fixées à la main (produits QA) : le bloc « Complétez votre panier » devient prévisible": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:26:24.638Z"
+    },
+    "Données · QA20 Fiche minimale : sans photo au survol, sans vue 3D, sans vidéo ni détails. La page ne doit pas casser": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:26:25.955Z"
+    },
+    "Données · QA21 Titre long : retour à la ligne sur carte, fiche, panier, checkout": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:26:27.155Z"
+    },
+    "Données · QA22 Le seul produit QA visible dans la recherche : chercher « Searchable » doit le trouver, lui seul": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:26:28.405Z"
+    },
+    "En-tête · logo vers l'accueil, menu des catégories": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:28:34.458Z"
+    },
+    "En-tête et pied de page · chaque lien du site répond": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:28:40.758Z"
+    },
+    "Espace client · accueil et profil : nom, dernière commande, assistance, profil en lecture seule": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:28:31.264Z"
+    },
+    "Espace client · Adresses : liste, ajout, modification": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:28:10.608Z"
+    },
+    "Espace client · alerte de retour en stock : inscription depuis la fiche, alerte dans le compte, annulation (QA02)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Le constat 13 est lié à une politique de Polène c'est pas grave tu peux ignorer",
+      "etat": "reussi",
+      "date": "2026-10-22T13:33:03.511Z"
+    },
+    "Espace client · assistance : formulaire, email, FAQ, chat et réseaux sociaux": {
+      "pertinence": "utile",
+      "cause": "bug-site",
+      "commentaire": "Je pense que c'est un problème de contrib en preprod. En tout cas en prod on a pas le problème. Il faut donc préciser qu'on doit remettre à jour la preprod avec la bonne contrib pour que la QA se fasse correctement.",
+      "etat": "echec",
+      "date": "2026-10-22T12:44:31.093Z"
+    },
+    "Espace client · Commandes et détail d'une commande": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:28:14.556Z"
+    },
+    "Espace client · menu : chaque entrée ouvre sa page et devient l'entrée active": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:28:17.507Z"
+    },
+    "Espace client · suppression du compte : confirmation demandée, « Cancel » ne supprime rien": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:28:32.775Z"
+    },
+    "Favoris · client connecté : ajout depuis les fiches, page des favoris du compte, retrait": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:42.240Z"
+    },
+    "Favoris · visiteur : cœur de la fiche et de la carte, page des favoris": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:40.990Z"
+    },
+    "Nouveauté · étiquette « New in » sur la carte (QA08)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:27.557Z"
+    },
+    "Nouvelle fiche › Accessibilité (axe) · Fiche produit": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:19:29.369Z"
+    },
+    "Nouvelle fiche › Coloris · passer d'un coloris à l'autre (QA13, QA14, QA15)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:36.840Z"
+    },
+    "Nouvelle fiche › Coming soon · fiche produit (QA04)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:24.708Z"
+    },
+    "Nouvelle fiche › Fiche produit · barre d'achat fixe en bas de l'écran sur mobile (QA01)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:30:15.347Z"
+    },
+    "Nouvelle fiche › Fiche produit · double clic sur « Add to cart » : un seul article (QA01)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:30:07.991Z"
+    },
+    "Nouvelle fiche › Fiche produit · fil d'Ariane (P02)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:48.622Z"
+    },
+    "Nouvelle fiche › Fiche produit · fil d'Ariane (P08)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:47.340Z"
+    },
+    "Nouvelle fiche › Fiche produit · guide des tailles (QA09)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:30:02.991Z"
+    },
+    "Nouvelle fiche › Fiche produit · onglets d'information (QA09)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:30:01.775Z"
+    },
+    "Nouvelle fiche › Fiche produit · photos et zoom (P08)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:52.225Z"
+    },
+    "Nouvelle fiche › Fiche produit · savoir-faire : accordéons et bloc éditorial (P02)": {
+      "pertinence": "utile",
+      "cause": "bug-site",
+      "commentaire": "Pareil, l'accordéon a été retiré",
+      "etat": "echec",
+      "date": "2026-10-22T12:47:11.232Z"
+    },
+    "Nouvelle fiche › Fiche produit · savoir-faire : accordéons et bloc éditorial (P08)": {
+      "pertinence": "utile",
+      "cause": "bug-site",
+      "commentaire": "Cet accordéon a été retiré en preprod on doit investiguer et l'onglet \"Golden Data Test\" n'est pas un bug ça a été contribué volontairement mais on devrait le modifier pour afficher juste QA mais on ne devrait pas le prendre en ocmpte dans le test du layout de la page.",
+      "etat": "echec",
+      "date": "2026-10-22T12:46:40.418Z"
+    },
+    "Nouvelle fiche › Fiche produit · vue 3D (P08)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:53.575Z"
+    },
+    "Nouvelle fiche › Précommande · de la fiche au checkout (QA05)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:33:06.091Z"
+    },
+    "Nouvelle fiche › Précommande expirée · le produit redevient normal (QA07)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:30.157Z"
+    },
+    "Nouvelle fiche › Précommande retardée · date affichée sur la fiche (QA06)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:32.626Z"
+    },
+    "Nouvelle fiche › Prix · petit prix et prix au-dessus de 1 000 € (QA17, QA18)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:39.708Z"
+    },
+    "Nouvelle fiche › Rupture · fiche produit (QA02)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:05.059Z"
+    },
+    "Nouvelle fiche › Structure · Fiche produit": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:36:03.259Z"
+    },
+    "Nouvelle fiche › Tailles · choisir une taille disponible (QA10)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:18.940Z"
+    },
+    "Nouvelle fiche › Tailles · toutes les tailles épuisées (QA11)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:21.773Z"
+    },
+    "Nouvelle fiche › Tailles · une taille en précommande (QA12)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:20.440Z"
+    },
+    "Nouvelle fiche › Titre long · fiche, carte, panier et checkout sans débordement (QA21)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:33:11.525Z"
+    },
+    "Nouvelle fiche › Visuel · Fiche produit Numéro Un": {
+      "pertinence": "modifier",
+      "cause": "",
+      "commentaire": "Il faut tester en preprod ça. Le but c'est de tester que la preprod est cohérente par rapport à une version de la prod qui est sans bug et qui a été conservée. Le test en prod es inutile pour moi. Selon moi il sera utile pour les petits tests qu'on lancera sur chaque stores à chaque MEP",
+      "etat": "reussi",
+      "date": "2026-10-22T13:38:05.878Z"
+    },
+    "Panier · 10 produits : lignes complètes, sous-total, chaque ligne atteignable": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:32:05.175Z"
+    },
+    "Panier · dernière pièce, quantité bloquée à 1 (QA03)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:30:24.108Z"
+    },
+    "Panier · favoris depuis la ligne et depuis « Remove item ? », le produit reste au panier (QA01)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Le constat 55 est réglé on peut l'ignorer",
+      "etat": "reussi",
+      "date": "2026-10-22T13:32:02.630Z"
+    },
+    "Panier · mixte, en stock et précommande (QA01 + QA05)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:30:25.557Z"
+    },
+    "Panier · quantité, suppression et panier vide (QA01)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:30:21.095Z"
+    },
+    "Panier · récapitulatif et bouton « Continue » visible sans défiler (QA01)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:30:22.641Z"
+    },
+    "Panier · vide : connexion, réassurance, assistance et suggestions": {
+      "pertinence": "utile",
+      "cause": "bug-site",
+      "commentaire": "La contribution n'est pas correcte en preprod",
+      "etat": "echec",
+      "date": "2026-10-22T13:15:26.011Z"
+    },
+    "Parcours d'achat nominal": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:34:07.387Z"
+    },
+    "Pied de page · la newsletter refuse un email vide ou incomplet, sans rien envoyer": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:28:43.925Z"
+    },
+    "Précommande · carte de collection (QA05)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:12.725Z"
+    },
+    "Recherche · depuis l'en-tête, page de résultats": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:32:06.659Z"
+    },
+    "Rupture · carte de collection (QA02)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:29:08.241Z"
+    },
+    "Sections · Accueil": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut tester sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:22:37.504Z"
+    },
+    "Sections · Article Confection": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:23:25.470Z"
+    },
+    "Sections · Blog Actualités": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:23:13.471Z"
+    },
+    "Sections · Blog Boutiques": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut tester sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:23:23.509Z"
+    },
+    "Sections · Blog Sacs": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:23:11.948Z"
+    },
+    "Sections · Collection": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut tester sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:22:43.506Z"
+    },
+    "Sections · Connexion": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut tester sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:23:02.475Z"
+    },
+    "Sections · Création de compte": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut tester sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:23:09.271Z"
+    },
+    "Sections · Design system": {
+      "pertinence": "utile",
+      "cause": "bug-site",
+      "commentaire": "",
+      "etat": "echec",
+      "date": "2026-10-22T12:39:54.440Z"
+    },
+    "Sections · Favoris": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut tester sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:23:34.771Z"
+    },
+    "Sections · Fiche produit": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut tester sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:22:39.172Z"
+    },
+    "Sections · Friendly faces": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut tester sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:23:32.345Z"
+    },
+    "Sections · La Maison": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut tester sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:23:30.559Z"
+    },
+    "Sections · Liste des collections": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:22:45.536Z"
+    },
+    "Sections · Mot de passe oublié": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut tester sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:23:06.707Z"
+    },
+    "Sections · Page introuvable": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut tester sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:23:00.039Z"
+    },
+    "Sections · Panier vide": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut tester sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:22:53.687Z"
+    },
+    "Sections · Recherche": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut tester sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:22:57.171Z"
+    },
+    "Sections · Redirection factures SAP": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:35:54.059Z"
+    },
+    "Sections · Savoir-faire": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Il faut tester sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:23:28.872Z"
+    },
+    "Sections · Sections 1 (blog)": {
+      "pertinence": "modifier",
+      "cause": "",
+      "commentaire": "Alors enfaite j'aimerai découper ce test par section (on s'en fout que ce soit la page section 1 ou 2 ou 3). Il faut plutôt découper en nom de sections (sachant qu'ils sont sur la page. Il faut tester à la fois le visuel mais aussi les interactions avec les sections. Et il faut tester sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:22:03.207Z"
+    },
+    "Sections · Sections 2 (blog)": {
+      "pertinence": "modifier",
+      "cause": "",
+      "commentaire": "Alors enfaite j'aimerai découper ce test par section (on s'en fout que ce soit la page section 1 ou 2 ou 3). Il faut plutôt découper en nom de sections (sachant qu'ils sont sur la page. Il faut tester à la fois le visuel mais aussi les interactions avec les sections. Et il faut tester sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:22:04.620Z"
+    },
+    "Sections · Sections 3 (blog)": {
+      "pertinence": "modifier",
+      "cause": "",
+      "commentaire": "Alors enfaite j'aimerai découper ce test par section (on s'en fout que ce soit la page section 1 ou 2 ou 3). Il faut plutôt découper en nom de sections (sachant qu'ils sont sur la page. Il faut tester à la fois le visuel mais aussi les interactions avec les sections. Et il faut tester sur tous les devices",
+      "etat": "reussi",
+      "date": "2026-10-22T13:22:05.750Z"
+    },
+    "Sections · UAT accessibilité": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:22:07.004Z"
+    },
+    "Structure · Accueil du compte": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:36:04.609Z"
+    },
+    "Structure · Adresses": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:36:10.526Z"
+    },
+    "Structure · Alertes de retour en stock": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:36:12.760Z"
+    },
+    "Structure · Article Confection": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:35:18.826Z"
+    },
+    "Structure · Assistance": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:36:13.860Z"
+    },
+    "Structure · Blog Actualités": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:35:15.243Z"
+    },
+    "Structure · Blog Boutiques": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:35:17.126Z"
+    },
+    "Structure · Blog Sacs": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:35:13.842Z"
+    },
+    "Structure · Collection": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:34:57.709Z"
+    },
+    "Structure · Collection C1 QA Collection": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:32:17.958Z"
+    },
+    "Structure · Collection C5 QA Collection Title": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:32:19.292Z"
+    },
+    "Structure · Collection C7 QA Collection Out of Stock": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:32:21.342Z"
+    },
+    "Structure · Collection Crossbody": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:32:14.776Z"
+    },
+    "Structure · Collection Sacs": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:32:08.775Z"
+    },
+    "Structure · Commandes": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:36:06.509Z"
+    },
+    "Structure · Connexion": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:35:08.592Z"
+    },
+    "Structure · Création de compte": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:35:12.259Z"
+    },
+    "Structure · Design system": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Ok mais c'est vraiment un test bonus car normalement on a vraiment testé toute la page en amont",
+      "etat": "reussi",
+      "date": "2026-10-22T13:34:57.660Z"
+    },
+    "Structure · En-tête et pied de page": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:34:10.509Z"
+    },
+    "Structure · Favoris": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:35:26.142Z"
+    },
+    "Structure · Favoris du compte": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:36:11.610Z"
+    },
+    "Structure · Friendly faces": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:35:23.909Z"
+    },
+    "Structure · La Maison": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:35:22.560Z"
+    },
+    "Structure · Liste des collections": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:35:02.243Z"
+    },
+    "Structure · Mot de passe oublié": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:35:10.061Z"
+    },
+    "Structure · Page introuvable": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:35:07.475Z"
+    },
+    "Structure · Panier vide": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:35:03.647Z"
+    },
+    "Structure · Profil": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:36:07.859Z"
+    },
+    "Structure · Recherche": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:35:05.609Z"
+    },
+    "Structure · Redirection factures SAP": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:35:38.410Z"
+    },
+    "Structure · Savoir-faire": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "",
+      "etat": "reussi",
+      "date": "2026-10-22T13:35:20.410Z"
+    },
+    "Structure · Sections 1 (blog)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Ok mais c'est vraiment un test bonus car normalement on a vraiment testé toute la page en amont",
+      "etat": "reussi",
+      "date": "2026-10-22T13:34:50.544Z"
+    },
+    "Structure · Sections 2 (blog)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Ok mais c'est vraiment un test bonus car normalement on a vraiment testé toute la page en amont",
+      "etat": "reussi",
+      "date": "2026-10-22T13:34:51.611Z"
+    },
+    "Structure · Sections 3 (blog)": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Ok mais c'est vraiment un test bonus car normalement on a vraiment testé toute la page en amont",
+      "etat": "reussi",
+      "date": "2026-10-22T13:34:52.926Z"
+    },
+    "Structure · UAT accessibilité": {
+      "pertinence": "utile",
+      "cause": "",
+      "commentaire": "Ok mais c'est vraiment un test bonus car normalement on a vraiment testé toute la page en amont",
+      "etat": "reussi",
+      "date": "2026-10-22T13:34:55.646Z"
+    },
+    "Visuel · Accueil": {
+      "pertinence": "modifier",
+      "cause": "",
+      "commentaire": "Il faut tester en preprod ça. Le but c'est de tester que la preprod est cohérente par rapport à une version de la prod qui est sans bug et qui a été conservée. Le test en prod es inutile pour moi. Selon moi il sera utile pour les petits tests qu'on lancera sur chaque stores à chaque MEP",
+      "etat": "reussi",
+      "date": "2026-10-22T13:38:04.563Z"
+    },
+    "Visuel · Menu « Sacs » ouvert": {
+      "pertinence": "modifier",
+      "cause": "",
+      "commentaire": "Il faut tester en preprod ça. Le but c'est de tester que la preprod est cohérente par rapport à une version de la prod qui est sans bug et qui a été conservée. Le test en prod es inutile pour moi. Selon moi il sera utile pour les petits tests qu'on lancera sur chaque stores à chaque MEP\n\nPour ce test il faut tester tous les ongelts du menu",
+      "etat": "reussi",
+      "date": "2026-10-22T13:38:36.832Z"
+    },
+    "Visuel · Menu mobile ouvert": {
+      "pertinence": "modifier",
+      "cause": "",
+      "commentaire": "Il faut tester en preprod ça. Le but c'est de tester que la preprod est cohérente par rapport à une version de la prod qui est sans bug et qui a été conservée. Le test en prod es inutile pour moi. Selon moi il sera utile pour les petits tests qu'on lancera sur chaque stores à chaque MEP\n\nPour ce test il faut tester tous les ongelts du menu",
+      "etat": "reussi",
+      "date": "2026-10-22T13:38:51.447Z"
+    },
+    "Visuel · Panier avec un produit": {
+      "pertinence": "modifier",
+      "cause": "",
+      "commentaire": "Il faut tester en preprod ça. Le but c'est de tester que la preprod est cohérente par rapport à une version de la prod qui est sans bug et qui a été conservée. Le test en prod es inutile pour moi. Selon moi il sera utile pour les petits tests qu'on lancera sur chaque stores à chaque MEP",
+      "etat": "reussi",
+      "date": "2026-10-22T13:38:07.627Z"
+    }
+  },
   "analyses": {
     "Nouvelle fiche › Fiche produit · savoir-faire : accordéons et bloc éditorial (P08)": "Bug connu de la préprod (constat 50) : sous la description de la nouvelle fiche, seul l'accordéon « Shipped with care » est là, « Carefully crafted » manque ; un onglet « GOLDEN DATA TEST » est visible. La prod a les deux accordéons. Le test échoue à raison sur les 4 appareils.",
     "Nouvelle fiche › Fiche produit · savoir-faire : accordéons et bloc éditorial (P02)": "Bug connu de la préprod (constat 50), même cause que pour P08, sur la bague Eroz.",
