@@ -12,7 +12,24 @@ npm run page -- pdp --project "prod · iphone"   # options Playwright après le 
 QA_ENVS=prod npm run type -- tnr  # prod seule
 ```
 
-Chaque entrée a sa série (`resultats/<nom>/`, `resultats/page-<nom>/` pour une page) : lancer la fiche produit ne remplace pas le rapport de l'accessibilité. Le sommaire (`npm run rapport:polene`) range les cartes de la même façon : « Par type de test », « Par page », puis « Autres séries » (essais `SERIE=…`).
+Chaque entrée a sa série (`resultats/<nom>/`, `resultats/page-<nom>/` pour une page) : lancer la fiche produit ne remplace pas le rapport de l'accessibilité.
+
+## Sommaire du Rapport Polène
+
+`npm run rapport:polene` ouvre le sommaire (refait le 23 octobre 2026, demande QA). Quatre blocs :
+
+| Bloc | Cartes |
+|---|---|
+| Tout le TNR | Une carte : tous les tests, visuels de la préprod compris, sans les démos ni les visuels de MEP |
+| Par type de test | Une carte par type du catalogue (sauf `tnr` et les démos) |
+| Par page | Les 9 pages, toujours affichées. Une page = tous ses tests, visuels de la préprod compris (« Sections » : contrôles, axe et capture de chaque section) |
+| Démos | Régressions injectées et échec volontaire : leur dernier lancement, comme avant (un échec y est voulu) |
+
+Les cartes des trois premiers blocs sont **assemblées** : chacune reprend le dernier résultat connu de chacun de ses tests sur chaque appareil, quel que soit le lancement qui l'a produit (série d'un type, d'une page, lancement rangé, essai archivé). Lancer `npm run type -- controles` met donc à jour la carte « Contrôles » et les pages concernées : plus besoin de lancer chaque page pour remplir « Par page ». La carte donne la période des résultats (« résultats du 20 au 22 octobre ») et le nombre de tests jamais joués. Son rapport (`/vue/<nom>/`) est un Rapport Polène sans historique : chaque test a un bouton « Voir son lancement », et l'onglet « Jamais joués » liste les tests sans résultat. Le lien « N lancements » d'une carte ouvre les vrais lancements de sa série.
+
+Pas concernés (exclus des cartes) : un test sur un appareil où son type ne tourne pas (structure : Chrome ordinateur et iPhone) et les captures des sections en prod (elles n'existent qu'en préprod).
+
+Essais : un lancement de vérification se fait sous `SERIE=essai`, que le sommaire n'affiche pas mais dont il reprend les résultats. Les essais du 13 au 22 octobre 2026 (33 séries, 14 Go) et les deux faux lancements à 0 / 0 (`tnr`, `page-home`) sont dans `archives/essais-2026-10-22/` (hors Git) : le sommaire lit les dossiers `archives/essais-*/` comme sources de résultats et sert leurs pièces jointes. Une archive ouverte par `npm run rapport:polene -- archives/<nom>` garde une carte par série, comme avant.
 
 Les anciennes commandes (`npm run test:accessibilite`, `test:structure`, `test:visuel`, `test:regressions`, `test:demo-echec`, `test:donnees`) passent par le catalogue et donnent le même lancement.
 
@@ -38,7 +55,7 @@ Les types parcours, fonctionnel, contrôles, accessibilité et structure se part
 
 ## Par page
 
-Tous les types de test d'une page (fonctionnel, contrôles, accessibilité, structure), sans visuel ni démo. Aucun ne passe de commande : le parcours d'achat est dans `parcours`, pas dans une page.
+`npm run page -- <nom>` lance tous les types de test d'une page (fonctionnel, contrôles, accessibilité, structure), sans visuel ni démo. Aucun ne passe de commande : le parcours d'achat est dans `parcours`, pas dans une page. La carte de la page, dans le sommaire, compte en plus ses tests visuels de la préprod (accueil et menus 13, fiche 1, panier 2, checkout 1, espace client 4, pages éditoriales 3, sections 30).
 
 | Nom | Page | Tests |
 |---|---|---|
@@ -59,7 +76,7 @@ Un test qui porte deux étiquettes de page est dans les deux (favoris du visiteu
 | | Gardé |
 |---|---|
 | Dernier lancement d'une série | Rapport Polène, rapport Playwright, fichiers bruts (`resultats/<série>/`) |
-| Lancements précédents | Rapport Polène seul, dans `resultats/<série>/lancements/<date-heure>/` ; lien « N lancements précédents » sur la carte du sommaire |
+| Lancements précédents | Rapport Polène seul, dans `resultats/<série>/lancements/<date-heure>/` ; lien « N lancements » sur la carte du sommaire |
 | Après 30 jours | Tests en échec, instables ou interrompus : complets (captures, vidéo, trace). Tests réussis ou ignorés : statut et durée seulement |
 | Graphiques | 200 derniers lancements par série (`historique.json`) |
 | Lancement de MEP | `npm run archiver -- <nom>` : copie complète dans `archives/`, jamais allégée, zip sur le drive |

@@ -27,7 +27,7 @@ Sans `PREPROD_PASSWORD`, seuls les tests de prod sont lancés (un avertissement 
 | `npm run type -- <nom>` | Lance un type de test (`parcours`, `fonctionnel`, `controles`, `accessibilite`, `structure`, `donnees`, `visuel`…) |
 | `npm run page -- <nom>` | Lance tout ce qui touche une page (`home`, `plp`, `pdp`, `cart`, `checkout`, `search`, `account`, `content`, `sections`), sans commande |
 | `npm run test:donnees` | Préprod : vérifie que les produits fixes sont dans leur état prévu (rupture, précommande…), sans commande. Voir [docs/produits-fixes.md](docs/produits-fixes.md) |
-| `npm run rapport:polene` | Ouvre le **sommaire** : une carte par série avec son verdict (par type de test, par page, autres), qui mène à son Rapport Polène et à ses lancements précédents |
+| `npm run rapport:polene` | Ouvre le **sommaire** : tout le TNR, par type de test, par page, démos. Chaque carte reprend le dernier résultat connu de chacun de ses tests, quel que soit le lancement ([docs/catalogue.md](docs/catalogue.md#sommaire-du-rapport-polène)) |
 | `npm run rapport:polene -- visuel` | Ouvre directement le Rapport Polène d'une série (`tnr`, `visuel`, `page-pdp`…) |
 | `npm run revue` | Ouvre la **revue des tests** : une fiche par test (étapes, derniers résultats sur chaque appareil), où la QA dit s'il est utile et pourquoi il échoue ; avis enregistrés dans `data/revue-tests.json`, voir [docs/revue-tests.md](docs/revue-tests.md) |
 | `npm run rapport` | Ouvre le rapport Playwright d'origine du parcours (détail technique) |
