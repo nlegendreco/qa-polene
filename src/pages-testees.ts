@@ -11,8 +11,12 @@ import { produitFixe } from './produits-fixes';
  * references/<type de relevé>/<cle>/<projet>.json.
  */
 
-/** Appels limités par Shopify : les 4 appareils sont gardés pour les parcours critiques (décision QA du 12 octobre 2026). */
-export const APPAREILS = ['desktop-chrome', 'iphone'];
+/**
+ * Appareils des références de structure (test « bonus », QA, 22 octobre 2026) : Chrome ordinateur et iPhone. Depuis la
+ * revue du 22 octobre 2026, l'accessibilité (axe) tourne sur les 4 appareils (avant : ces deux-là, pour ménager les
+ * appels limités par Shopify).
+ */
+export const APPAREILS_STRUCTURE = ['desktop-chrome', 'iphone'];
 
 export interface PageTestee {
   /** Dossier du relevé : references/<type>/<cle>/. */
@@ -22,13 +26,28 @@ export interface PageTestee {
   etiquette: string;
   /** Code de réponse attendu, 200 par défaut. */
   statut?: number;
+  /** Page sans adresse fixe (détail d'une commande) : on ouvre `chemin`, puis le premier lien dont l'adresse contient `lien`. */
+  lien?: string;
 }
 
-const slug = (texte: string) => texte.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+export const slug = (texte: string) => texte.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 const { pages: pagesSections } = JSON.parse(readFileSync(join(__dirname, '..', 'data', 'pages-sections.json'), 'utf8')) as {
-  pages: { nom: string; chemin?: string; cheminProd?: string; produitFixe?: string; etiquette?: string; statut?: number }[];
+  pages: {
+    nom: string; chemin?: string; cheminProd?: string; produitFixe?: string; etiquette?: string; statut?: number;
+    intitules?: Record<string, string>;
+  }[];
 };
+
+/**
+ * Sections testées une à une (demande QA du 22 octobre 2026), sous le nom de l'intitulé posé au-dessus d'elles sur les
+ * pages Sections 1 à 3 (`intitules` de data/pages-sections.json) : tests/sections.spec.ts. Ces pages n'ont plus de
+ * relevé d'accessibilité d'ensemble.
+ */
+export const SECTIONS = pagesSections.filter(p => p.intitules).flatMap(p => Object.entries(p.intitules!).map(([cle, nom]) => ({
+  page: p.nom, chemin: p.chemin ?? '', cle, nom, dossier: slug(nom),
+})));
+export const PAGES_PAR_SECTION = new Set(pagesSections.filter(p => p.intitules).map(p => p.nom));
 
 /**
  * Pages de data/pages-sections.json, sauf la fiche produit, testée à part pour chaque fiche. Préprod : toutes ; prod :
@@ -65,6 +84,9 @@ export const sessionCompte = () => existsSync(SESSION_COMPTE);
 export const PAGES_COMPTE: PageTestee[] = [
   { cle: 'compte-accueil', nom: 'Accueil du compte', chemin: 'account', etiquette: '@account' },
   { cle: 'compte-commandes', nom: 'Commandes', chemin: 'account?view=orders', etiquette: '@account' },
+  // Demande QA du 22 octobre 2026 : la page d'une commande (la dernière du compte de test). Accessibilité seulement :
+  // sa structure dépend de la commande.
+  { cle: 'compte-commande', nom: 'Détail d\'une commande', chemin: 'account?view=orders', lien: '/account/orders/', etiquette: '@account' },
   { cle: 'compte-profil', nom: 'Profil', chemin: 'account?view=profile', etiquette: '@account' },
   { cle: 'compte-adresses', nom: 'Adresses', chemin: 'account/addresses', etiquette: '@account' },
   { cle: 'compte-favoris', nom: 'Favoris du compte', chemin: 'account?view=wishlist', etiquette: '@account' },
@@ -72,16 +94,16 @@ export const PAGES_COMPTE: PageTestee[] = [
   { cle: 'compte-assistance', nom: 'Assistance', chemin: 'account?view=assistance', etiquette: '@account' },
 ];
 
-/** Page testée seulement dans `envVoulu` (s'il est donné), et sur les appareils de APPAREILS. */
-export function conditions(testInfo: TestInfo, envVoulu: string | undefined, env: string, sujet: string) {
+/** Page testée seulement dans `envVoulu` (s'il est donné), et sur les `appareils` donnés (tous sinon). */
+export function conditions(testInfo: TestInfo, envVoulu: string | undefined, env: string, sujet: string, appareils?: string[]) {
   if (envVoulu) test.skip(env !== envVoulu, `Page testée en ${envVoulu} seulement`);
-  test.skip(!APPAREILS.includes(testInfo.project.name.split(' · ')[1]), `${sujet} : ${APPAREILS.join(' et ')} seulement (appels Shopify gardés pour les parcours critiques)`);
+  if (appareils) test.skip(!appareils.includes(testInfo.project.name.split(' · ')[1]), `${sujet} : ${appareils.join(' et ')} seulement`);
 }
 
 /** Version de la page dans l'environnement du test (voir PAGES) ; le test est ignoré si elle n'y existe pas. */
-export function pageDeLEnv(testInfo: TestInfo, page: (typeof PAGES)[number], env: string, sujet: string): PageTestee {
+export function pageDeLEnv(testInfo: TestInfo, page: (typeof PAGES)[number], env: string, sujet: string, appareils?: string[]): PageTestee {
   const version = env === 'prod' ? page.prod : page.preprod;
-  conditions(testInfo, version ? undefined : (page.preprod ? 'preprod' : 'prod'), env, sujet);
+  conditions(testInfo, version ? undefined : (page.preprod ? 'preprod' : 'prod'), env, sujet, appareils);
   return version!;
 }
 
@@ -118,6 +140,15 @@ export async function ouvrir(page: Page, chemin: string, statut = 200) {
   const reponse = await page.goto(chemin, { waitUntil: 'domcontentloaded' });
   expect(reponse?.status(), `La page ${chemin || 'd\'accueil'} doit répondre (code ${statut})`).toBe(statut);
   await preparer(page);
+}
+
+/** Ouvre une page de l'espace client, en suivant son lien si elle n'a pas d'adresse fixe (`lien`). */
+export async function ouvrirPageCompte(page: Page, p: PageTestee) {
+  await ouvrirEspaceClient(page, p.chemin);
+  if (!p.lien) return;
+  const lien = page.getByRole('main').locator(`a[href*="${p.lien}"]`).first();
+  await expect(lien, `La page ${p.chemin} doit proposer un lien vers ${p.nom.toLowerCase()} (aucune commande sur le compte de test ?)`).toBeAttached({ timeout: 20_000 });
+  await ouvrirEspaceClient(page, (await lien.getAttribute('href'))!);
 }
 
 /** Ouvre une page de l'espace client (test déclaré avec `test.use({ storageState: SESSION_COMPTE })`). */

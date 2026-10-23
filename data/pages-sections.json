@@ -1,26 +1,62 @@
 {
-  "description": "Pages de la préprod qui montrent les sections du thème. Deux sortes. Pages de sections de la QA (liste donnée le 12 octobre 2026, étiquette @sections) : « sections » donne les sections attendues, dans l'ordre (clé de la section dans le modèle Shopify, sans les intitulés « text_… » posés au-dessus de chaque section ni le réglage de couleur de fond) ; si l'équipe modifie une page volontairement, mettre la liste à jour ici. Pages réelles (12 octobre 2026, docs/sections-theme.md) : elles portent les sections du thème qu'on ne peut pas poser sur un article ; l'équipe les modifie, donc pas de liste figée, seulement l'état des sections. « couvre » : sections du thème que la page permet de tester. « produitFixe » : fiche d'un produit QA (data/donnees-qa.json). « statut » : code de réponse attendu (200 par défaut). « cheminProd » (16 octobre 2026) : page réelle qui existe aussi en prod, contrôlée là aussi (chemin en prod) ; absent : préprod seulement.",
+  "description": "Pages de la préprod qui montrent les sections du thème. Deux sortes. Pages de sections de la QA (liste donnée le 12 octobre 2026, étiquette @sections) : « sections » donne les sections attendues, dans l'ordre (clé de la section dans le modèle Shopify, sans les intitulés « text_… » posés au-dessus de chaque section ni le réglage de couleur de fond) ; si l'équipe modifie une page volontairement, mettre la liste à jour ici. Pages réelles (12 octobre 2026, docs/sections-theme.md) : elles portent les sections du thème qu'on ne peut pas poser sur un article ; l'équipe les modifie, donc pas de liste figée, seulement l'état des sections. « couvre » : sections du thème que la page permet de tester. « produitFixe » : fiche d'un produit QA (data/donnees-qa.json). « statut » : code de réponse attendu (200 par défaut). « cheminProd » (16 octobre 2026) : page réelle qui existe aussi en prod, contrôlée là aussi (chemin en prod) ; absent : préprod seulement. « intitules » (22 octobre 2026, demande QA) : sur les pages Sections 1 à 3, chaque section est testée à part (tests/sections.spec.ts), sous le nom de l'intitulé « text_… » posé au-dessus d'elle ; les sections sans intitulé (en-tête et fin d'article) restent vérifiées avec la page. Sur Sections 3, la section Text est posée sous l'intitulé « Split Screen Media » (et « Text » n'a rien en dessous) : rattachée ici à « Text ».",
   "pages": [
     {
       "id": "S1",
       "nom": "Sections 1 (blog)",
       "chemin": "blogs/editorials/sections",
       "role": "Sections des articles de blog : listes d'articles, médias, écrans partagés, carte, teaser de collection",
-      "sections": ["main", "article_list_ifNJL4", "blog_double_media_UHPagg", "blog_layer_sections_VHyB3a", "blog_media_98YdEf", "blog_promoted_item_dgncaW", "blog_split_screen_3HwbJN", "blog_splitscreen_map_xFrGGx", "blog_text_exgPnA", "blog_triple_media_VUFxpV", "cta_yNXNAc", "section_collection_teaser_8Cjq9W", "cta_bwqgGt"]
+      "sections": ["main", "article_list_ifNJL4", "blog_double_media_UHPagg", "blog_layer_sections_VHyB3a", "blog_media_98YdEf", "blog_promoted_item_dgncaW", "blog_split_screen_3HwbJN", "blog_splitscreen_map_xFrGGx", "blog_text_exgPnA", "blog_triple_media_VUFxpV", "cta_yNXNAc", "section_collection_teaser_8Cjq9W", "cta_bwqgGt"],
+      "intitules": {
+        "article_list_ifNJL4": "Article List",
+        "blog_double_media_UHPagg": "Blog Double Media",
+        "blog_layer_sections_VHyB3a": "Blog Layer Sections",
+        "blog_media_98YdEf": "Blog Media",
+        "blog_promoted_item_dgncaW": "Blog Promoted Item",
+        "blog_split_screen_3HwbJN": "Blog Split Screen",
+        "blog_splitscreen_map_xFrGGx": "Blog Split Screen Map",
+        "blog_text_exgPnA": "Blog Text",
+        "blog_triple_media_VUFxpV": "Blog Triple Media",
+        "cta_yNXNAc": "CTA",
+        "section_collection_teaser_8Cjq9W": "Collection Teaser"
+      }
     },
     {
       "id": "S2",
       "nom": "Sections 2 (blog)",
       "chemin": "blogs/editorials/sections-2",
       "role": "Carrousel, compte à rebours, héros, mosaïque, suivi de commande, bannière produit, recommandations, newsletter",
-      "sections": ["main", "carousel_KDRRib", "countdown_teaser_4NjCk4", "article_link_list_dWfgmK", "hero_flowers_y4xXTW", "media_collection_teaser_dh9Uen", "mosaic_py9JVW", "order_tracker_M8p9Ld", "product_banner_JaHfW4", "product_recommendations_xzADyH", "product_recommendations_TnBndb", "split_newsletter_block_kcy6Fq", "cta_4ppUQ7"]
+      "sections": ["main", "carousel_KDRRib", "countdown_teaser_4NjCk4", "article_link_list_dWfgmK", "hero_flowers_y4xXTW", "media_collection_teaser_dh9Uen", "mosaic_py9JVW", "order_tracker_M8p9Ld", "product_banner_JaHfW4", "product_recommendations_xzADyH", "product_recommendations_TnBndb", "split_newsletter_block_kcy6Fq", "cta_4ppUQ7"],
+      "intitules": {
+        "carousel_KDRRib": "Carousel",
+        "countdown_teaser_4NjCk4": "Countdown Teaser",
+        "article_link_list_dWfgmK": "Explore More Articles",
+        "hero_flowers_y4xXTW": "Hero Flowers",
+        "media_collection_teaser_dh9Uen": "Media Collection Teaser",
+        "mosaic_py9JVW": "Mosaic",
+        "order_tracker_M8p9Ld": "Order Tracker",
+        "product_banner_JaHfW4": "Product Banner",
+        "product_recommendations_xzADyH": "Product Recommandations",
+        "product_recommendations_TnBndb": "Product Recommandations (Cart)",
+        "split_newsletter_block_kcy6Fq": "Split Newsletter Block"
+      }
     },
     {
       "id": "S3",
       "nom": "Sections 3 (blog)",
       "chemin": "blogs/editorials/sections-3",
       "role": "Blocs promo, écran partagé, galerie à texte fixe, frises, vidéo",
-      "sections": ["main", "split_promo_block_TxQJEf", "text_FrMiyi", "split_screen_media_QWj7e3", "text_collection_teaser_nhaCwg", "sticky_text_gallery_UbywXn", "featured_media_frieze_HiyNMf", "text_with_frieze_TTtLxX", "video_LzLF6p", "blog_text_bRPnxe", "cta_GTYEUE"]
+      "sections": ["main", "split_promo_block_TxQJEf", "text_FrMiyi", "split_screen_media_QWj7e3", "text_collection_teaser_nhaCwg", "sticky_text_gallery_UbywXn", "featured_media_frieze_HiyNMf", "text_with_frieze_TTtLxX", "video_LzLF6p", "blog_text_bRPnxe", "cta_GTYEUE"],
+      "intitules": {
+        "split_promo_block_TxQJEf": "Split Promo Block",
+        "text_FrMiyi": "Text",
+        "split_screen_media_QWj7e3": "Split Screen Media",
+        "text_collection_teaser_nhaCwg": "Text Collection Teaser",
+        "sticky_text_gallery_UbywXn": "Sticky Text Gallery",
+        "featured_media_frieze_HiyNMf": "Featured Media Frieze",
+        "text_with_frieze_TTtLxX": "Text with Frieze",
+        "video_LzLF6p": "Video"
+      }
     },
     {
       "id": "UAT",

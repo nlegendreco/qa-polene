@@ -1,0 +1,13 @@
+{
+  "page": "creation-de-compte",
+  "projet": "prod · android",
+  "date": "2026-10-22",
+  "problemes": [
+    {
+      "regle": "color-contrast",
+      "impact": "grave",
+      "aide": "Les éléments doivent avoir un contraste de couleurs suffisant",
+      "nombre": 4
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "page": "compte-commandes",
+  "projet": "preprod · android",
+  "date": "2026-10-22",
+  "problemes": [
+    {
+      "regle": "aria-required-parent",
+      "impact": "critique",
+      "aide": "Certains rôles ARIA doivent être contenus par des parents spécifiques",
+      "nombre": 7
+    },
+    {
+      "regle": "color-contrast",
+      "impact": "grave",
+      "aide": "Les éléments doivent avoir un contraste de couleurs suffisant",
+      "nombre": 3
+    }
+  ]
+}

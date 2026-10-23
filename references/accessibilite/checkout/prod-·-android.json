@@ -1,0 +1,19 @@
+{
+  "page": "checkout",
+  "projet": "prod · android",
+  "date": "2026-10-22",
+  "problemes": [
+    {
+      "regle": "color-contrast",
+      "impact": "grave",
+      "aide": "Les éléments doivent avoir un contraste de couleurs suffisant",
+      "nombre": 2
+    },
+    {
+      "regle": "label-content-name-mismatch",
+      "impact": "grave",
+      "aide": "Le contenu textuel des éléments doit aussi se retrouver dans leur intitulé accessible",
+      "nombre": 1
+    }
+  ]
+}

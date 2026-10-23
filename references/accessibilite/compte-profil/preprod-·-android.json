@@ -1,0 +1,31 @@
+{
+  "page": "compte-profil",
+  "projet": "preprod · android",
+  "date": "2026-10-22",
+  "problemes": [
+    {
+      "regle": "aria-required-parent",
+      "impact": "critique",
+      "aide": "Certains rôles ARIA doivent être contenus par des parents spécifiques",
+      "nombre": 7
+    },
+    {
+      "regle": "autocomplete-valid",
+      "impact": "grave",
+      "aide": "L’attribut autocomplete doit être utilisé correctement",
+      "nombre": 1
+    },
+    {
+      "regle": "color-contrast",
+      "impact": "grave",
+      "aide": "Les éléments doivent avoir un contraste de couleurs suffisant",
+      "nombre": 3
+    },
+    {
+      "regle": "select-name",
+      "impact": "critique",
+      "aide": "L’élément 'select' doit avoir un nom accessible",
+      "nombre": 1
+    }
+  ]
+}

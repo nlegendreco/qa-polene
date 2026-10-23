@@ -4,7 +4,7 @@ import { CartPage } from '../src/pages/cart';
 import { CheckoutPage } from '../src/pages/checkout';
 import { verifierAccessibilite } from '../src/accessibilite';
 import {
-  PAGES, PAGES_COMPTE, SESSION_COMPTE, conditions, ficheProduit, ouvrir, ouvrirEspaceClient, pageDeLEnv, preparer,
+  PAGES, PAGES_COMPTE, PAGES_PAR_SECTION, SESSION_COMPTE, conditions, ficheProduit, ouvrir, ouvrirPageCompte, pageDeLEnv, preparer,
   produitPanier, sessionCompte,
 } from '../src/pages-testees';
 
@@ -12,12 +12,14 @@ import {
  * Accessibilité relevée par axe, page par page, comparée au relevé de chaque page (src/accessibilite.ts) : seul un
  * problème absent du relevé fait échouer le test, ceux en cours de correction sont notés. Préprod : pages de sections
  * et pages réelles (data/pages-sections.json), espace client, checkout ; prod : les pages réelles qui y existent.
- * Ordinateur et téléphone (Chrome, iPhone), comme les pages de sections (src/pages-testees.ts). Lecture seule, sans commande.
+ * Les 4 appareils (demande QA du 22 octobre 2026 ; avant : Chrome ordinateur et iPhone). Lecture seule, sans commande.
+ * Sections une à une : tests/sections.spec.ts.
  */
 
 const SUJET = 'Accessibilité';
 
-for (const pageTestee of PAGES) {
+// Pages Sections 1 à 3 : relevées section par section (tests/sections.spec.ts).
+for (const pageTestee of PAGES.filter(p => !PAGES_PAR_SECTION.has(p.nom))) {
   test(`Accessibilité (axe) · ${pageTestee.nom} @tnr @accessibilite ${pageTestee.etiquette}`, async ({ page, qaEnv }, testInfo) => {
     const p = pageDeLEnv(testInfo, pageTestee, qaEnv.name, SUJET);
     await etape(page, testInfo, `1. Ouvrir la page ${p.nom}`, () => ouvrir(page, p.chemin, p.statut));
@@ -55,7 +57,7 @@ test.describe('Espace client', () => {
     test(`Accessibilité (axe) · ${p.nom} @tnr @accessibilite @account`, async ({ page, qaEnv }, testInfo) => {
       conditions(testInfo, 'preprod', qaEnv.name, SUJET);
       test.skip(!sessionCompte(), `Pas de session client : lancer « npm run connexion:compte » (${SESSION_COMPTE})`);
-      await etape(page, testInfo, `1. Ouvrir la page ${p.nom} de l'espace client`, () => ouvrirEspaceClient(page, p.chemin));
+      await etape(page, testInfo, `1. Ouvrir la page ${p.nom} de l'espace client`, () => ouvrirPageCompte(page, p));
       await etape(page, testInfo, '2. Relever l\'accessibilité et la comparer au relevé de la page', () => verifierAccessibilite(page, testInfo, p.cle));
     });
   }

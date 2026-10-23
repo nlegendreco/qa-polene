@@ -10,6 +10,9 @@ import { decrireErreur, erreurIgnoree, verifierLargeur } from '../src/controles'
  * (accueil, fiche produit, panier, compte…). On vérifie que chaque section attendue est là, s'affiche, que ses images
  * chargent, sans erreur JavaScript, sans texte d'erreur Shopify et sans débordement de l'écran. Lecture seule.
  * Les pages réelles qui existent aussi en prod (`cheminProd`) y passent les mêmes contrôles (16 octobre 2026).
+ * Les 4 appareils depuis le 22 octobre 2026 (demande QA ; avant : Chrome ordinateur et iPhone). Pages Sections 1 à 3 :
+ * chaque section est aussi testée à part, sous son intitulé (tests/sections.spec.ts) ; ici, leur présence, leur ordre,
+ * les erreurs JS et la largeur de la page.
  */
 
 interface PageSections {
@@ -29,15 +32,12 @@ interface PageSections {
   etiquette?: string;
   /** Code de réponse attendu, 200 par défaut (404 pour la page introuvable). */
   statut?: number;
+  /** Sections testées une à une sous leur intitulé (tests/sections.spec.ts) : ici, seulement leur présence et leur ordre. */
+  intitules?: Record<string, string>;
 }
 
 const { pages } = JSON.parse(readFileSync(join(__dirname, '..', 'data', 'pages-sections.json'), 'utf8')) as { pages: PageSections[] };
 
-/**
- * Appels limités par Shopify (429) : les 4 appareils sont gardés pour les parcours critiques (décision QA du
- * 12 octobre 2026). Les sections se vérifient sur un ordinateur et un téléphone.
- */
-const APPAREILS = ['desktop-chrome', 'iphone'];
 
 /** Intitulés posés au-dessus de chaque section (« Carousel », « Mosaic »…) et réglage de couleur de fond : pas suivis. */
 const SECTION_TECHNIQUE = /^(text|setting_background_color)_[A-Za-z0-9]{6}$/;
@@ -63,7 +63,6 @@ for (const pageSections of pages) {
     const enProd = pageSections.cheminProd !== undefined;
     test.skip(qaEnv.name === 'prod' && !enProd, 'Page de la préprod uniquement');
     const chemin = qaEnv.name === 'prod' ? pageSections.cheminProd! : pageSections.produitFixe ? `products/${produitFixe(pageSections.produitFixe).handle}` : pageSections.chemin ?? '';
-    test.skip(!APPAREILS.includes(testInfo.project.name.split(' · ')[1]), `Sections : ${APPAREILS.join(' et ')} seulement (appels Shopify gardés pour les parcours critiques)`);
     testInfo.annotations.push({ type: 'Page', description: `${chemin || 'accueil'} : ${pageSections.role}` });
     if (pageSections.couvre) testInfo.annotations.push({ type: 'Sections du thème', description: pageSections.couvre.join(', ') });
     const erreursJs: string[] = [];
@@ -145,7 +144,7 @@ for (const pageSections of pages) {
       });
       await page.waitForTimeout(500);
 
-      const problemes = await sections.evaluateAll((liste, sansHauteur) => liste.map(s => {
+      const problemes = (await sections.evaluateAll((liste, sansHauteur) => liste.map(s => {
         const cle = s.id.replace(/^shopify-section-template--\d+__/, '');
         const hauteur = s.getBoundingClientRect().height;
         // Images réellement affichées : visibles (ni masquées ni transparentes, comme la 2e photo d'une carte produit
@@ -163,7 +162,9 @@ for (const pageSections of pages) {
           vide: hauteur < 1 && !new RegExp(sansHauteur).test(cle),
           cassees,
         };
-      }).filter(p => p.vide || p.cassees.length), SANS_HAUTEUR.source);
+      }).filter(p => p.vide || p.cassees.length), SANS_HAUTEUR.source))
+        // Sections testées une à une (tests/sections.spec.ts) : leurs images et leur affichage y sont vérifiés.
+        .filter(p => !pageSections.intitules?.[p.cle]);
 
       for (const p of problemes) {
         await testInfo.attach(`🧩 section ${p.cle}`, { body: await page.locator(`[id$="__${p.cle}"]`).screenshot().catch(() => Buffer.from('')), contentType: 'image/png' });

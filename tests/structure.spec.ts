@@ -2,7 +2,7 @@ import { test, expect, etape, pourChaqueFiche } from '../src/fixtures';
 import { ficheAffichee } from '../src/fiches';
 import { releverStructure, verifierStructure } from '../src/structure';
 import {
-  PAGES, PAGES_COMPTE, SESSION_COMPTE, conditions, ficheProduit, ouvrir, ouvrirEspaceClient, pageDeLEnv, sessionCompte,
+  APPAREILS_STRUCTURE, PAGES, PAGES_COMPTE, SESSION_COMPTE, conditions, ficheProduit, ouvrir, ouvrirEspaceClient, pageDeLEnv, sessionCompte,
 } from '../src/pages-testees';
 
 /**
@@ -15,7 +15,7 @@ import {
 const SUJET = 'Structure';
 
 test('Structure · En-tête et pied de page @tnr @structure @home', async ({ page, qaEnv }, testInfo) => {
-  conditions(testInfo, undefined, qaEnv.name, SUJET);
+  conditions(testInfo, undefined, qaEnv.name, SUJET, APPAREILS_STRUCTURE);
   await etape(page, testInfo, '1. Ouvrir la page d\'accueil', () => ouvrir(page, ''));
   // L'en-tête et le pied de page sont les mêmes sur toutes les pages : relevés une fois, ici.
   await etape(page, testInfo, '2. Comparer les liens et boutons de l\'en-tête (menus compris) à la référence', async () =>
@@ -29,7 +29,7 @@ test('Structure · En-tête et pied de page @tnr @structure @home', async ({ pag
 // affichées, images, erreurs) et le test visuel.
 for (const pageTestee of PAGES.filter(p => p.etiquette !== '@home')) {
   test(`Structure · ${pageTestee.nom} @tnr @structure ${pageTestee.etiquette}`, async ({ page, qaEnv }, testInfo) => {
-    const p = pageDeLEnv(testInfo, pageTestee, qaEnv.name, SUJET);
+    const p = pageDeLEnv(testInfo, pageTestee, qaEnv.name, SUJET, APPAREILS_STRUCTURE);
     await etape(page, testInfo, `1. Ouvrir la page ${p.nom}`, () => ouvrir(page, p.chemin, p.statut));
     await etape(page, testInfo, '2. Comparer les titres, boutons et liens de la page à la référence', async () =>
       verifierStructure(testInfo, p.cle, await releverStructure(page, 'contenu')));
@@ -38,7 +38,7 @@ for (const pageTestee of PAGES.filter(p => p.etiquette !== '@home')) {
 
 pourChaqueFiche(fiche => {
   test('Structure · Fiche produit @tnr @structure @pdp', async ({ page, qaEnv }, testInfo) => {
-    conditions(testInfo, undefined, qaEnv.name, SUJET);
+    conditions(testInfo, undefined, qaEnv.name, SUJET, APPAREILS_STRUCTURE);
     await etape(page, testInfo, '1. Ouvrir la fiche produit', async () => {
       await ouvrir(page, ficheProduit(qaEnv.name));
       expect(await ficheAffichee(page), `Le Roll Out devait servir l'${fiche} fiche`).toBe(fiche);
@@ -50,9 +50,9 @@ pourChaqueFiche(fiche => {
 
 test.describe('Espace client', () => {
   if (sessionCompte()) test.use({ storageState: SESSION_COMPTE });
-  for (const p of PAGES_COMPTE) {
+  for (const p of PAGES_COMPTE.filter(p => !p.lien)) {
     test(`Structure · ${p.nom} @tnr @structure @account`, async ({ page, qaEnv }, testInfo) => {
-      conditions(testInfo, 'preprod', qaEnv.name, SUJET);
+      conditions(testInfo, 'preprod', qaEnv.name, SUJET, APPAREILS_STRUCTURE);
       test.skip(!sessionCompte(), `Pas de session client : lancer « npm run connexion:compte » (${SESSION_COMPTE})`);
       await etape(page, testInfo, `1. Ouvrir la page ${p.nom} de l'espace client`, () => ouvrirEspaceClient(page, p.chemin));
       await etape(page, testInfo, '2. Comparer les titres, boutons et liens de la page à la référence', async () =>

@@ -64,10 +64,13 @@ function ligne(p: Probleme, avant?: number): string {
 
 /**
  * Analyse la page telle qu'elle est affichée et la compare à son relevé. `cle` : dossier du relevé
- * (references/accessibilite/<cle>/), un par page testée.
+ * (references/accessibilite/<cle>/), un par page testée. `zone` : sélecteur de la partie analysée (une section),
+ * la page entière sinon.
  */
-export async function verifierAccessibilite(page: Page, testInfo: TestInfo, cle: string) {
-  const resultats = await new AxeBuilder({ page, axeSource: SOURCE_AXE }).withTags(TAGS).exclude(EXCLUS).analyze();
+export async function verifierAccessibilite(page: Page, testInfo: TestInfo, cle: string, zone?: string) {
+  const axe = new AxeBuilder({ page, axeSource: SOURCE_AXE }).withTags(TAGS).exclude(EXCLUS);
+  if (zone) axe.include(zone);
+  const resultats = await axe.analyze();
   const problemes: Probleme[] = resultats.violations.map(v => ({
     regle: v.id,
     impact: IMPACT[v.impact ?? ''] ?? 'inconnu',
