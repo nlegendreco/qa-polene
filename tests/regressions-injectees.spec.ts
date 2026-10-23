@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs';
 import type { Page } from '@playwright/test';
 import { test } from '../src/fixtures';
-import { PAGES_VISUELLES, verifierPage } from '../src/visuel';
+import { PAGES_VISUELLES, nomDeCapture, verifierPage } from '../src/visuel';
 
 /**
  * Démo POC 2.5 : le test casse lui-même la page (sans toucher au site) juste avant la capture,
@@ -47,7 +47,7 @@ for (const regression of REGRESSIONS) {
     // Garde-fou : ne jamais enregistrer une page cassée comme référence.
     test.skip(testInfo.config.updateSnapshots === 'all' || testInfo.config.updateSnapshots === 'changed',
       'Démo désactivée pendant la mise à jour des références');
-    if (!existsSync(testInfo.snapshotPath(`${pageVisuelle.fichier}.png`))) {
+    if (!existsSync(testInfo.snapshotPath(pageVisuelle.fichier, nomDeCapture(testInfo.project.name)))) {
       throw new Error('Référence visuelle absente : lancer d\'abord npm run test:visuel:maj');
     }
     testInfo.annotations.push({ type: 'Régression injectée', description: regression.libelle });

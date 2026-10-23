@@ -93,8 +93,9 @@ export default defineConfig({
     // Aucune tolérance en nombre de pixels : un prix masqué ne change que quelques dizaines de pixels.
     toHaveScreenshot: { scale: 'css', animations: 'disabled', caret: 'hide', stylePath: './src/visuel.css', threshold: 0.2 },
   },
-  // Références visuelles : references/<page>/<projet>.png, versionnées avec les tests.
-  snapshotPathTemplate: '{testDir}/../references/{arg}/{projectName}{ext}',
+  // Références visuelles : references/<page>/<projet>.png, versionnées avec les tests. Le projet fait partie du nom
+  // donné à toHaveScreenshot (src/visuel.ts) : la préprod est comparée à la capture du projet de la prod.
+  snapshotPathTemplate: '{testDir}/../references/{arg}{ext}',
   fullyParallel: true,
   workers: 4,
   retries: 0,

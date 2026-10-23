@@ -24,20 +24,19 @@
     {
       "cle": "controles",
       "nom": "Contrôles des pages",
-      "description": "Sections présentes et dans l'ordre, images chargées, ni erreur JS ni page plus large que l'écran (pages de sections et pages réelles)",
+      "description": "Sections présentes et dans l'ordre, chaque section des pages Sections 1 à 3 à part, images chargées, ni erreur JS ni page plus large que l'écran (pages de sections et pages réelles), 4 appareils",
       "grep": "@controles"
     },
     {
       "cle": "accessibilite",
       "nom": "Accessibilité",
-      "description": "axe comparé au relevé de chaque page, et bouton pause / lecture au clavier",
-      "grep": "@accessibilite",
-      "projets": ["prod · desktop-chrome", "prod · iphone", "preprod · desktop-chrome", "preprod · iphone"]
+      "description": "axe comparé au relevé de chaque page et de chaque section, et bouton pause / lecture au clavier, 4 appareils",
+      "grep": "@accessibilite"
     },
     {
       "cle": "structure",
       "nom": "Structure des pages",
-      "description": "Titres, boutons et liens de chaque page comparés à la référence, en-tête et pied de page compris",
+      "description": "Titres, boutons et liens de chaque page comparés à la référence, en-tête et pied de page compris (test bonus, Chrome ordinateur et iPhone)",
       "grep": "@structure",
       "projets": ["prod · desktop-chrome", "prod · iphone", "preprod · desktop-chrome", "preprod · iphone"]
     },
@@ -51,9 +50,17 @@
     {
       "cle": "visuel",
       "nom": "Tests visuels",
-      "description": "Accueil, les deux fiches, le panier et le menu ouvert (« Sacs » sur ordinateur, menu mobile) comparés à la référence en pixels, prod, 4 appareils",
+      "description": "Préprod comparée en pixels aux captures de la prod (accueil, fiche, paniers, checkout, connexion, pages de contenu, chaque onglet du menu), et chaque section des pages Sections 1 à 3 comparée à sa capture (préprod), 4 appareils",
       "grep": "@visuel",
-      "variables": { "VISUEL": "1", "QA_ENVS": "prod" },
+      "variables": { "VISUEL": "1", "QA_ENVS": "preprod" },
+      "options": ["--workers", "2", "--retries", "1"]
+    },
+    {
+      "cle": "visuel-mep",
+      "nom": "Tests visuels de MEP",
+      "description": "Prod, pendant une MEP : les pages dont le contenu ne change pas (paniers, checkout, connexion, 404, favoris, menus) comparées à la référence, 4 appareils",
+      "grep": "@visuel",
+      "variables": { "VISUEL": "1", "MEP": "1", "QA_ENVS": "prod" },
       "options": ["--workers", "2", "--retries", "1"]
     },
     {
