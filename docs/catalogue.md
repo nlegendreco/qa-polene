@@ -18,18 +18,19 @@ Les anciennes commandes (`npm run test:accessibilite`, `test:structure`, `test:v
 
 ## Par type de test
 
-Les types parcours, fonctionnel, contrôles, accessibilité et structure se partagent les tests `@tnr` : chaque test est dans un seul de ces types. Nombres de tests au 21 octobre 2026 (un test de l'ancienne et de la nouvelle fiche compte pour deux) ; un test tourne ensuite sur plusieurs appareils et environnements. Le 20 octobre, une page testée en prod et en préprod comptait pour deux (un test par environnement, fusionnés le 21) et l'espace client avait 5 tests en double : 251 au lieu de 209.
+Les types parcours, fonctionnel, contrôles, accessibilité et structure se partagent les tests `@tnr` : chaque test est dans un seul de ces types. Nombres de tests au 22 octobre 2026, après la revue de la QA (un test de l'ancienne et de la nouvelle fiche compte pour deux ; chaque section des pages Sections 1 à 3 a son test de contrôle et son test d'axe : 30 + 30) ; un test tourne ensuite sur plusieurs appareils et environnements. Le 20 octobre, une page testée en prod et en préprod comptait pour deux (un test par environnement, fusionnés le 21) et l'espace client avait 5 tests en double : 251 au lieu de 209.
 
 | Nom | Contenu | Tests |
 |---|---|---|
-| `tnr` | Tout, sauf visuel et démos (comme `npm test`). ⚠ 4 commandes de test en préprod : demande « oui » | 209 |
+| `tnr` | Tout, sauf visuel et démos (comme `npm test`). ⚠ 4 commandes de test en préprod : demande « oui » | 265 |
 | `parcours` | Tests qui traversent plusieurs pages (`@journey`) : parcours d'achat, précommande jusqu'au checkout, titre long, alerte de retour en stock. ⚠ 4 commandes de test en préprod : demande « oui » | 6 |
 | `fonctionnel` | Ce que fait chaque page : états produit, fiche, galerie, collections et cartes, recherche, favoris, panier, checkout, en-tête, espace client | 80 |
-| `controles` | Pages de sections et pages réelles : sections, images, erreurs JS, largeur (`@controles`) | 24 |
-| `accessibilite` | axe en cran et bouton pause / lecture au clavier | 34 |
+| `controles` | Pages de sections et pages réelles : sections, images, erreurs JS, largeur, et chaque section des pages Sections 1 à 3 à part (`@controles`), 4 appareils | 54 |
+| `accessibilite` | axe en cran (pages et sections) et bouton pause / lecture au clavier, 4 appareils | 62 |
 | `structure` | Titres, boutons et liens comparés à la référence | 32 |
 | `donnees` | Produits fixes P02 et P08, produits et collections QA de la préprod | 32 |
-| `visuel` | Comparaison en pixels, prod : accueil, deux fiches, panier, menu ouvert (ordinateur et mobile) | 6 |
+| `visuel` | Comparaison en pixels, préprod : pages comparées aux captures de la prod, sections comparées à leur capture (22 octobre 2026) | 54 |
+| `visuel-mep` | Comparaison en pixels, prod, pendant une MEP : pages dont le contenu ne change pas (`npm run test:visuel:mep`) | 54 (dont 20 joués : 8 pages et 12 menus) |
 | `regressions` | Démo : défauts injectés, doivent échouer | 4 |
 | `demo-echec` | Démo : échec volontaire | 1 |
 
@@ -47,9 +48,9 @@ Tous les types de test d'une page (fonctionnel, contrôles, accessibilité, stru
 | `cart` | Panier | 10 |
 | `checkout` | Checkout | 6 |
 | `search` | Recherche | 4 |
-| `account` | Espace client, connexion et favoris | 33 |
+| `account` | Espace client, connexion et favoris | 34 |
 | `content` | Pages éditoriales (blogs, articles, Savoir-faire, 404) | 27 |
-| `sections` | Pages de sections du thème (sections, UAT, design system) | 16 |
+| `sections` | Pages de sections du thème (sections, chaque section à part, UAT, design system) | 73 |
 
 Un test qui porte deux étiquettes de page est dans les deux (favoris du visiteur : `@pdp` et `@plp`).
 

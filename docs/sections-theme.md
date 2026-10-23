@@ -62,6 +62,42 @@ Total testé automatiquement : 69 sections sur 83 (37 + 27 + 2 + 3). Les pages d
 
 Limites connues : sur le panier vide, `wishlist-slider` et le bloc de recommandations n'ont rien à montrer (vides) ; `article-link-list` est vide sur l'article Confection ; le bloc d'application de la connexion (pré-remplissage de l'email) est invisible par nature.
 
+## Sections testées une à une (22 octobre 2026)
+
+Demande QA : sur les pages Sections 1 à 3, chaque section est un test à part, nommé d'après l'intitulé posé au-dessus d'elle (« Carousel », « Mosaic »…), quelle que soit la page. 30 sections, sur les 4 appareils :
+
+- `Section · <intitulé>` (`tests/sections.spec.ts`, type « contrôles ») : la section est sur la page, sous son intitulé, s'affiche, ses images chargent, sans texte d'erreur Shopify ;
+- `Accessibilité (axe) · Section <intitulé>` (même fichier, type « accessibilité ») : axe limité à la section, relevé `references/accessibilite/sections/<intitulé>/` ;
+- `Visuel · Section <intitulé>` (`tests/visuel-sections.spec.ts`, type « visuel ») : capture de la section, référence prise en préprod (`references/sections/<intitulé>/`), à valider par la QA.
+
+Restent vérifiés par page (`Sections · Sections 1 (blog)`…) : présence et ordre des sections, erreurs JavaScript, largeur de la page, et les sections sans intitulé (en-tête et fin d'article). La correspondance intitulé → section est dans `intitules` de `data/pages-sections.json`. Sur Sections 3, la section Text est posée sous l'intitulé « Split Screen Media », et l'intitulé « Text » n'a rien en dessous : le test le signale (« Intitulé ») ; à remettre dans l'ordre sur la page.
+
+### Interactions par section (proposition, à valider par la QA avant d'être codée)
+
+Relevé du HTML de la préprod le 22 octobre 2026 : composants du thème, boutons, formulaires, vidéos.
+
+| Section | Ce qui réagit | Interactions proposées |
+| --- | --- | --- |
+| Article List | carrousel d'articles, points | flèches au clavier et points : la diapositive change ; chaque carte mène à son article |
+| Blog Double Media, Blog Layer Sections, Blog Media, Blog Split Screen, Blog Text | rien (texte et photos) | aucune : contrôles, accessibilité et capture suffisent |
+| Blog Promoted Item | produit mis en avant : ajout au panier, favori, bouton pause / lecture de la vidéo | ajout au panier (notification, compteur), cœur des favoris (`aria-pressed`, compteur), pause / lecture au clavier |
+| Blog Split Screen Map | carrousel (boutiques), points, 3 liens | changer de diapositive ; les liens mènent à une page qui répond |
+| Blog Triple Media | carrousel de photos, points | changer de diapositive (mobile : au doigt, comme la galerie de la fiche) |
+| CTA, Product Banner, Hero Flowers, Split Promo Block, Split Screen Media, Text | un ou deux liens | le lien mène à une page qui répond (200) |
+| Collection Teaser | 4 cartes produit avec ajout rapide et favori | ajout rapide d'une carte (comme `tests/cartes-collection.spec.ts`), cœur d'une carte |
+| Carousel | carrousel de produits qui défile seul, points | défilement automatique (la position change), arrêt au survol ou au focus si prévu, cartes cliquables |
+| Countdown Teaser | compte à rebours, champ email, bouton « CONFIRM » | le compte à rebours affiche une date valable (aujourd'hui « 00000000 ») ; email vide ou « test@ » refusé, sans envoi |
+| Explore More Articles | 3 liens d'articles | les liens mènent à des articles qui répondent |
+| Media Collection Teaser | cartes produit | chaque carte mène à sa fiche |
+| Mosaic | vidéo et bouton pause / lecture | pause / lecture au clavier (déjà testé sur la page UAT) |
+| Order Tracker | suivi de commande (`order-tracker`) | formulaire de suivi : numéro vide ou faux refusé avec un message, sans vraie commande |
+| Product Recommandations, Product Recommandations (Cart) | recommandations (vides sur un article) | à décider : vides par nature sur un article (pas de produit de référence) |
+| Split Newsletter Block | champ email, bouton « CONFIRM » | email vide ou « test@ » refusé, sans envoi (jamais d'inscription réelle) |
+| Text Collection Teaser | carrousel qui défile seul | défilement automatique, liens |
+| Sticky Text Gallery | texte fixe pendant que les photos défilent | au défilement, le texte reste à l'écran et la photo affichée change |
+| Featured Media Frieze, Text with Frieze | frise (carrousel) | la frise défile ; liens de Text with Frieze |
+| Video | lecteur vidéo et ses commandes (`component-video-controls`) | lecture, pause, son au clavier |
+
 ## Refaire le relevé
 
 Lecture seule, avec la CLI Shopify connectée avec le droit `read_themes` : lister `sections/*.liquid` et lire `templates/*.json` du thème `MAIN` (requête GraphQL `themes(roles: [MAIN]) { files(filenames: [...]) }`), puis comparer les `type` des sections posées dans `article.sections-1` à `3` avec la liste des fichiers.

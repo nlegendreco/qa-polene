@@ -32,10 +32,11 @@ Sans `PREPROD_PASSWORD`, seuls les tests de prod sont lancés (un avertissement 
 | `npm run revue` | Ouvre la **revue des tests** : une fiche par test (étapes, derniers résultats sur chaque appareil), où la QA dit s'il est utile et pourquoi il échoue ; avis enregistrés dans `data/revue-tests.json`, voir [docs/revue-tests.md](docs/revue-tests.md) |
 | `npm run rapport` | Ouvre le rapport Playwright d'origine du parcours (détail technique) |
 | `npm run test:demo-echec` | Démo d'un échec volontaire (bouton « Ajouter au panier » masqué) |
-| `npm run test:visuel` | Tests visuels (prod) : compare l'accueil, la fiche produit (nouvelle et ancienne) et le panier × 4 appareils, le menu « Sacs » ouvert (ordinateurs) et le menu mobile ouvert (téléphones) à la référence |
-| `npm run test:visuel:maj` | Sauvegarde la référence actuelle dans `archives/references/<date>/`, puis la reprend (après une MEP validée, avec l'accord de tout le monde) |
+| `npm run test:visuel` | Tests visuels (préprod, 4 appareils) : la préprod comparée aux captures de la prod (accueil, fiche, paniers, checkout, connexion, pages de contenu, chaque onglet du menu), et chaque section des pages Sections 1 à 3 comparée à sa capture |
+| `npm run test:visuel:mep` | Tests visuels de MEP (prod) : les pages dont le contenu ne change pas, comparées à la référence |
+| `npm run test:visuel:maj` | Sauvegarde les références dans `archives/references/<date>/`, puis les reprend : la prod pour les pages, la préprod pour les sections (après une MEP validée, avec l'accord de tout le monde) |
 | `npm run test:regressions` | Démo : 4 régressions injectées (desktop Chrome + iPhone), chacune **doit** échouer |
-| `npm run test:accessibilite` | Accessibilité (prod et préprod, Chrome ordinateur et iPhone) : axe sur 51 pages, comparé au relevé de chaque page (seul un problème absent du relevé échoue), et bouton pause / lecture au clavier. Voir [docs/accessibilite.md](docs/accessibilite.md) |
+| `npm run test:accessibilite` | Accessibilité (prod et préprod, 4 appareils) : axe sur chaque page et chaque section des pages Sections 1 à 3, comparé à son relevé (seul un problème absent du relevé échoue), et bouton pause / lecture au clavier. Voir [docs/accessibilite.md](docs/accessibilite.md) |
 | `npm run test:accessibilite:maj` | Enregistre les corrections d'accessibilité dans `references/accessibilite/` (le relevé ne fait que rétrécir), avec l'accord de la QA |
 | `npm run test:structure` | Structure (prod et préprod, Chrome ordinateur et iPhone) : titres, boutons et liens de chaque page, en-tête et pied de page, comparés à la référence. Voir [docs/structure.md](docs/structure.md) |
 | `npm run test:structure:maj` | Reprend les références de structure qui ont changé (après une MEP ou un changement voulu), avec l'accord de la QA |
@@ -100,20 +101,25 @@ Le rapport est servi en local (la trace en a besoin) : laisser la fenêtre du te
 
 **Le rapport Playwright d'origine** (`npm run rapport`) reste disponible pour le détail technique, avec un lien depuis chaque fiche du Rapport Polène. Il ne garde que le dernier lancement de la série.
 
-## Les tests visuels (`tests/visuel.spec.ts`, POC 2)
+## Les tests visuels (`tests/visuel.spec.ts`, `tests/visuel-sections.spec.ts`)
 
-3 pages capturées en entier sur les 4 appareils, soit 12 captures, comparées pixel par pixel à la référence :
+Depuis le 22 octobre 2026 (revue de la QA), **la prod est la référence et c'est la préprod qu'on compare** : la capture de chaque page est prise en prod, sur une prod sans bug, et gardée ; la préprod est comparée à cette capture à chaque lancement. Tant que la préprod n'est pas à jour avec la prod (textes en anglais, prix convertis, catalogue), ses tests échouent : c'est attendu, la préprod doit à terme suivre la prod.
 
-| Page | Adresse |
-|---|---|
-| Accueil | `/` |
-| Fiche produit | `/products/numero-un-textured-black` (Numéro Un noir grainé, en ligne depuis 2017) |
-| Panier | `/cart` avec ce produit, ajouté directement par l'API Shopify |
+| Page | Adresse | Comparée en prod pendant une MEP |
+|---|---|---|
+| Accueil | `/` | non (campagnes) |
+| Fiche produit (nouvelle fiche) | `/products/numero-un-textured-black` (Numéro Un noir grainé, en ligne depuis 2017) | non (coloris, stocks) |
+| Panier avec un produit, panier vide | `/cart` | oui |
+| Checkout | sans rien saisir, cadres de paiement masqués | oui |
+| Page introuvable, connexion, mot de passe oublié, création de compte, favoris | | oui |
+| Savoir-faire, boutiques | `/pages/craftsmanship`, `/blogs/stores` | non (contenu éditorial) |
+| Menu : chaque onglet ouvert | ordinateur : Sacs, Bijoux, Accessoires, Savoir-Faire, Boutiques ; téléphone : menu, puis chaque sous-menu (et Service client) | oui |
+
+Pendant une MEP, `npm run test:visuel:mep` compare en prod les seules pages dont le contenu ne change pas. Les sections des pages Sections 1 à 3 (qui n'existent qu'en préprod) ont leur référence prise en préprod, `references/sections/<section>/`.
 
 Les collections ne sont plus comparées en pixels : les mentions de stock (« Être prévenu(e) », « Précommande le … ») changent plusieurs fois par jour en prod. Elles sont vérifiées par leur structure (voir plus bas).
 
-- **Prod uniquement** pour l'instant : la préprod n'a ni les mêmes textes ni les mêmes prix.
-- **Référence** : dossier `references/<page>/<appareil>.png`. C'est l'« état validé » de la QA.
+- **Référence** : dossier `references/<page>/<projet de la prod>.png` (la préprod sur iPhone est comparée à `prod-·-iphone.png`). C'est l'« état validé » de la QA. Le test de la préprod n'écrit jamais une référence de la prod.
 - **2 navigateurs à la fois** (au lieu de 4) pour ne pas saturer le Mac : environ 2 minutes par passage.
 - **Densité 1 pixel par point** sur tous les appareils : même mise en page que sur le vrai appareil, mais en densité 3 l'iPhone émulé réduit les photos différemment d'un passage à l'autre.
 - **Un second essai automatique** si une capture diffère : un vrai défaut échoue deux fois. Un test qui passe au second essai est marqué « flaky » (instable) dans le rapport, à surveiller. La démo des régressions n'a pas de second essai.

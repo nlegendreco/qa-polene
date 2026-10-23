@@ -39,6 +39,18 @@ Les avis forment la liste de travail :
 
 Une fois traité, l'avis reste dans le fichier (historique de la décision dans Git).
 
+## Suite donnée à la revue du 22 octobre 2026
+
+214 tests revus. Ce qui a changé :
+
+- **Tests visuels** : la prod est la référence, la préprod lui est comparée (ses échecs sont attendus tant qu'elle n'est pas à jour) ; en prod, comparaison seulement pendant une MEP et sur les pages à contenu fixe (`npm run test:visuel:mep`). Pages ajoutées : panier vide, checkout, page introuvable, connexion, mot de passe oublié, création de compte, favoris, savoir-faire, boutiques, et chaque onglet du menu (ordinateur et téléphone). Ancienne fiche retirée (la prod ne la sert plus).
+- **Accessibilité (axe)** : 4 appareils ; premiers relevés de Safari et Android pris comme point de départ ([écarts](accessibilite.md#relevés-de-safari-et-android-22-octobre-2026)) ; page d'une commande ajoutée.
+- **Pages de sections** : chaque section est un test, nommé d'après l'intitulé posé au-dessus (contrôles, axe limité à la section, capture) ; 4 appareils. Interactions par section proposées dans [sections-theme.md](sections-theme.md#interactions-par-section-proposition-à-valider-par-la-qa-avant-dêtre-codée), à valider avant d'être codées.
+- **Constats** : 1, 13, 37 et 52 (cases newsletter cochées) sont la politique de Polène, plus notés ; 55 (favoris du panier) devient une vérification qui échoue ; 56 nouveau (« Besoin d'aide ? » absent du checkout de la prod sous Android) ; 45 et 47 : contributions de la préprod à corriger ; 27 : bug.
+- **Fiche produit** : vue 3D testée sur la nouvelle fiche seule ; onglet « GOLDEN DATA TEST » (ajout de la QA) ignoré et masqué des captures.
+- **Collection Sacs** : titre « Sacs » attendu (changement voulu de la prod, la préprod doit suivre).
+- **Structure** : gardée sur les pages de sections, le design system et l'UAT (test bonus), Chrome ordinateur et iPhone.
+
 ## Fichier des avis
 
 `data/revue-tests.json`, versionné :

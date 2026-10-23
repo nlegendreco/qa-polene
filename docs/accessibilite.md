@@ -20,7 +20,8 @@ Chaque test joint « ♿ accessibilité, détail axe » : pour chaque problème,
 - **Règles** : WCAG 2.1 niveaux A et AA (`wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa`), la base du RGAA. Textes d'axe en français (traduction fournie avec axe).
 - **Zones exclues** : bulle du chat Zendesk et photos Instagram de l'accueil (contenu de tiers, qui change d'un passage à l'autre).
 - **Pages** : toutes celles de `data/pages-sections.json` en préprod (pages de sections, UAT, design system, pages réelles), celles qui existent aussi en prod (`cheminProd`), la fiche produit sur chacune des deux fiches du Roll Out (QA01 en préprod, Cyme Mini camel en prod), le checkout sans rien saisir (prod et préprod), les 7 pages de l'espace client de la préprod (session `npm run connexion:compte`).
-- **Appareils** : Chrome ordinateur et iPhone (limite d'appels Shopify, comme les pages de sections).
+- **Appareils** : les 4 depuis le 22 octobre 2026 (demande QA ; avant : Chrome ordinateur et iPhone, limite d'appels Shopify). Les relevés de Safari ordinateur et Android ont été pris ce jour-là comme point de départ (accord QA).
+- **Sections une à une** (22 octobre 2026) : sur les pages Sections 1 à 3, axe est limité à chaque section (`Accessibilité (axe) · Section <intitulé>`, relevé `references/accessibilite/sections/<intitulé>/`), au lieu d'un relevé par page. Espace client : la page d'une commande s'ajoute (la dernière du compte de test).
 - **Granularité** : le cran porte sur le type de problème par page, pas sur chaque élément. Un bouton sans nom de plus sur une page qui en a déjà n'est pas un échec (le nombre en hausse est noté). Suivre chaque élément aurait fait échouer les tests à chaque changement de produits dans une grille.
 
 Stabilité (16 octobre 2026) : 3 passages pour les pages de la préprod et 6 pages de la prod, 2 pour les autres pages de la prod, mêmes problèmes et mêmes nombres partout. Détection vérifiée : un problème retiré du relevé fait échouer le test (« Problème(s) d'accessibilité absent(s) du relevé… »), un faux problème ajouté au relevé est noté « corrigé », et `test:accessibilite:maj` le retire (le relevé revient à l'identique).
@@ -44,6 +45,20 @@ Le détail page par page est dans les relevés (`references/accessibilite/`) et 
 
 À noter : le constat 12 (boutons sans nom accessible sur la fiche produit, le panier, les favoris, la connexion et la création de compte, relevé le 6 octobre 2026) n'est plus vu par axe sur ces pages. Corrigé depuis, ou relevé par un autre moyen que les règles WCAG d'axe : je ne sais pas.
 
+## Relevés de Safari et Android (22 octobre 2026)
+
+Premiers relevés pris comme point de départ (accord QA) : 97 relevés de pages sur Safari ordinateur et Android (prod et préprod), plus les 30 sections × 4 appareils et la page d'une commande sur Chrome et iPhone. Pas de relevé pour l'ancienne fiche en prod (le Roll Out ne la sert plus) ni pour l'espace client en prod (testé en préprod seulement).
+
+Comparés à Chrome ordinateur (pour Safari ordinateur) et à iPhone (pour Android) : **Safari ordinateur relève exactement les mêmes problèmes que Chrome, sur toutes les pages et toutes les sections.** Android diffère d'iPhone sur 4 relevés seulement :
+
+| Page | Écart d'Android par rapport à iPhone | Explication probable |
+| --- | --- | --- |
+| Checkout (prod et préprod) | pas de « zoom désactivé » (`meta-viewport`) | à vérifier : la page de Shopify ne déclare peut-être pas la même balise selon le navigateur |
+| Collection Sacs (prod) | contraste (4 éléments au lieu de 2) et libellés d'ajout rapide (4 au lieu de 2) | même problème, plus de cartes à l'écran (écran plus large) ou produits différents ce jour-là |
+| Recherche (prod) | ni contraste ni libellés d'ajout rapide (iPhone : 2 chacun) | résultats de recherche différents d'un passage à l'autre (constat 14) ou produits en précommande absents |
+
+Ces explications ne sont pas vérifiées ; aucune ne met en cause le site sur Android plus que sur iPhone.
+
 ## Ce qu'axe ne voit pas
 
 axe lit la page sans s'en servir. Il ne voit qu'une partie des problèmes d'accessibilité :
@@ -61,5 +76,5 @@ Pour ça, il faut des tests écrits exprès, comme celui du bouton pause / lectu
 1. **Fenêtres et menus ouverts** : analyser aussi les états qu'axe ne voit pas page fermée : menu de l'en-tête et menu mobile, notification d'ajout au panier, « Remove item ? », « Choose your size », « Être prévenu(e) », fenêtre des photos, filtres des collections. Même mécanisme de relevé.
 2. **Tests au clavier**, sur le modèle du bouton pause / lecture : menu de l'en-tête (constat 15), tailles et coloris des deux fiches (constats 34 et 38), fenêtres (focus gardé dedans, Échap, retour du focus au bouton qui l'a ouverte), parcours d'achat au clavier.
 3. **Annonces aux lecteurs d'écran** : compteur du panier après un ajout (constat 29), messages des formulaires.
-4. **Safari et Android** : pas couverts (limite d'appels Shopify). À ajouter si la QA veut les 4 appareils.
+4. **Safari et Android** : couverts depuis le 22 octobre 2026 (premiers relevés pris ce jour-là). Écarts avec Chrome et iPhone : voir « Relevés de Safari et Android » ci-dessous.
 5. **QA** : relire le premier relevé et dire si un de ces problèmes doit être remonté à l'équipe tout de suite, ou si l'équipe les a déjà dans ses corrections. Valider le principe du cran (qui donne l'accord pour `test:accessibilite:maj`).
